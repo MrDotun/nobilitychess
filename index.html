@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nobility Chess Academy | Master Your Mind</title>
+    <style>
+        /* CSS Variables for an Exotic, Premium Look */
+        :root {
+            --primary-bg: #0b0c10;
+            --secondary-bg: #1f2833;
+            --accent-gold: #d4af37;
+            --text-light: #c5c6c7;
+            --text-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        /* Smooth Fade-in Animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(11, 12, 16, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav a {
+            color: var(--text-white);
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover { color: var(--accent-gold); }
+
+        /* Hero Section with Slider Placeholder */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(11, 12, 16, 0.8), rgba(11, 12, 16, 0.8)), url('PLACEHOLDER-FOR-YOUR-IMAGE.jpg') center/cover;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            color: var(--text-white);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .hero h1 span { color: var(--accent-gold); }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        /* Interactive Button with Hover Effects */
+        .btn-gold {
+            background-color: transparent;
+            border: 2px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 15px 40px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold:hover {
+            background-color: var(--accent-gold);
+            color: var(--primary-bg);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Elegant Modal (Pop-up) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-content {
+            background: var(--secondary-bg);
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--accent-gold);
+            text-align: center;
+            max-width: 400px;
+            transform: translateY(-50px);
+            transition: transform 0.5s ease;
+        }
+
+        .modal-content h2 { color: var(--accent-gold); margin-top: 0; }
+        .close-btn { background: none; border: none; color: var(--text-white); font-size: 20px; cursor: pointer; float: right; }
+    </style>
+</head>
+<body>
+
+    <audio id="chessSound" src="PLACEHOLDER-SOUND.mp3" preload="auto"></audio>
+
+    <header>
+        <div class="logo">Nobility Chess</div>
+        <nav>
+            <a href="classroom.html">Classroom</a>
+            <a href="puzzle.html">Puzzles</a>
+            <a href="weekly.html">Assignments</a>
+            <a href="engine.html">Play Mr. Busayo</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Master The <span>Board</span></h1>
+        <p>Welcome to the digital realm of Nobility Chess Academy. Elevate your mind, conquer your opponents, and become a champion.</p>
+        <button class="btn-gold" onclick="makeMove()">Make Your Move</button>
+    </section>
+
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-content" id="modalBox">
+            <button class="close-btn" onclick="closeModal()">✖</button>
+            <h2>Welcome, Grandmaster</h2>
+            <p>Ready to challenge Mr. Adekunle Busayo? Step into the arena and prove your worth.</p>
+            <button class="btn-gold" style="margin-top: 20px; padding: 10px 20px; font-size: 14px;" onclick="location.href='engine.html'">Enter Arena</button>
+        </div>
+    </div>
+
+    <script>
+        // Trigger Pop-up and Sound when the user interacts
+        function makeMove() {
+            // Play sound
+            const sound = document.getElementById('chessSound');
+            sound.play().catch(error => console.log("Audio play blocked until user interacts"));
+
+            // Show Modal with smooth animation
+            const modal = document.getElementById('welcomeModal');
+            const modalBox = document.getElementById('modalBox');
+            modal.style.display = 'flex';
+            
+            // Slight delay to allow display:flex to apply before changing opacity
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modalBox.style.transform = 'translateY(0)';
+            }, 50);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('welcomeModal');
+            const modalBox = document.getElementById('modalBox');
+            
+            modal.style.opacity = '0';
+            modalBox.style.transform = 'translateY(-50px)';
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500); // Wait for transition to finish
+        }
+
+        // Optional: Auto-trigger pop-up after 5 seconds of loading the site
+        /*
+        window.onload = () => {
+            setTimeout(makeMove, 5000); 
+        };
+        */
+    </script>
+
+</body>
+</html>
