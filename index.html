@@ -3,209 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nobility Chess Academy | Master Your Mind</title>
+    <title>Nobility Chess Academy | Adekunle Busayo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for an Exotic, Premium Look */
         :root {
-            --primary-bg: #0b0c10;
-            --secondary-bg: #1f2833;
-            --accent-gold: #d4af37;
-            --text-light: #c5c6c7;
-            --text-white: #ffffff;
+            --gold: #d4af37;
+            --dark: #0b0c10;
+            --card-bg: #1f2833;
+            --text: #c5c6c7;
+            --transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-light);
+            background-color: var(--dark);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
         }
 
-        /* Smooth Fade-in Animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
+        h1, h2, .logo { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(11, 12, 16, 0.95); backdrop-filter: blur(15px);
+            z-index: 1000; box-sizing: border-box; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-links a {
+            color: white; text-decoration: none; margin-left: 25px;
+            font-size: 13px; text-transform: uppercase; transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-links a:hover { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+
+        /* Section Handling */
+        section {
+            display: none; /* Hidden by default */
+            min-height: 100vh;
+            padding: 120px 50px 50px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header & Navigation */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: rgba(11, 12, 16, 0.9);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-sizing: border-box;
-            backdrop-filter: blur(10px);
+        /* Hero Styling */
+        .hero { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .hero h1 { font-size: 4rem; margin: 0; }
+        .hero-img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 20px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+
+        /* Grid Layouts */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+        .card { 
+            background: var(--card-bg); border: 1px solid rgba(212, 175, 55, 0.1); 
+            padding: 20px; border-radius: 12px; transition: var(--transition);
+            position: relative; overflow: hidden;
         }
+        .card:hover { border-color: var(--gold); transform: translateY(-10px); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        /* Button Styling */
+        .btn {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 12px 30px; text-transform: uppercase; cursor: pointer;
+            transition: var(--transition); font-weight: bold;
         }
+        .btn:hover { background: var(--gold); color: var(--dark); box-shadow: 0 0 20px var(--gold); }
 
-        nav a {
-            color: var(--text-white);
-            text-decoration: none;
-            margin-left: 30px;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
+        /* The Secret Footer Link */
+        footer { padding: 40px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.1); }
+        .secret-gate { opacity: 0.1; transition: 0.3s; cursor: pointer; text-decoration: none; }
+        .secret-gate:hover { opacity: 1; color: var(--gold); }
 
-        nav a:hover { color: var(--accent-gold); }
-
-        /* Hero Section with Slider Placeholder */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(11, 12, 16, 0.8), rgba(11, 12, 16, 0.8)), url('PLACEHOLDER-FOR-YOUR-IMAGE.jpg') center/cover;
-            animation: fadeInUp 1.5s ease-out;
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            color: var(--text-white);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .hero h1 span { color: var(--accent-gold); }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
-
-        /* Interactive Button with Hover Effects */
-        .btn-gold {
-            background-color: transparent;
-            border: 2px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 15px 40px;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-gold:hover {
-            background-color: var(--accent-gold);
-            color: var(--primary-bg);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-
-        /* Elegant Modal (Pop-up) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .modal-content {
-            background: var(--secondary-bg);
-            padding: 40px;
-            border-radius: 10px;
-            border: 1px solid var(--accent-gold);
-            text-align: center;
-            max-width: 400px;
-            transform: translateY(-50px);
-            transition: transform 0.5s ease;
-        }
-
-        .modal-content h2 { color: var(--accent-gold); margin-top: 0; }
-        .close-btn { background: none; border: none; color: var(--text-white); font-size: 20px; cursor: pointer; float: right; }
+        /* Audio Helper */
+        #clickSound { display: none; }
     </style>
 </head>
 <body>
 
-    <audio id="chessSound" src="PLACEHOLDER-SOUND.mp3" preload="auto"></audio>
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
-    <header>
-        <div class="logo">Nobility Chess</div>
-        <nav>
-            <a href="classroom.html">Classroom</a>
-            <a href="puzzle.html">Puzzles</a>
-            <a href="weekly.html">Assignments</a>
-            <a href="engine.html">Play Mr. Busayo</a>
-        </nav>
-    </header>
+<nav>
+    <div class="logo">Nobility Academy</div>
+    <div class="nav-links">
+        <a onclick="showSection('home')">Home</a>
+        <a onclick="showSection('classroom')">Classroom</a>
+        <a onclick="showSection('puzzles')">Puzzles</a>
+        <a onclick="showSection('weekly')">Tasks</a>
+        <a onclick="showSection('engine')">Challenge Coach</a>
+    </div>
+</nav>
 
-    <section class="hero">
-        <h1>Master The <span>Board</span></h1>
-        <p>Welcome to the digital realm of Nobility Chess Academy. Elevate your mind, conquer your opponents, and become a champion.</p>
-        <button class="btn-gold" onclick="makeMove()">Make Your Move</button>
-    </section>
+<section id="home" class="active hero">
+    <img src="logo.png" alt="Logo" class="hero-img"> <h1>Adekule <span style="color:white;">Busayo</span></h1>
+    <p style="font-size: 1.2rem; max-width: 700px; line-height: 1.6;">Instructor at Child Legacy International & Brain Builders. Founder of Nobility Chess Academy. We don't just move pieces; we build leaders.</p>
+    <button class="btn" onclick="showSection('engine')">Enter the Arena</button>
+</section>
 
-    <div class="modal-overlay" id="welcomeModal">
-        <div class="modal-content" id="modalBox">
-            <button class="close-btn" onclick="closeModal()">✖</button>
-            <h2>Welcome, Grandmaster</h2>
-            <p>Ready to challenge Mr. Adekunle Busayo? Step into the arena and prove your worth.</p>
-            <button class="btn-gold" style="margin-top: 20px; padding: 10px 20px; font-size: 14px;" onclick="location.href='engine.html'">Enter Arena</button>
+<section id="classroom">
+    <h1 style="text-align: center;">Video Classroom</h1>
+    <div class="grid">
+        <div class="card"><h3>1. Introduction to Chess</h3><p>Learn the board and the pieces.</p><button class="btn">Watch</button></div>
+        <div class="card"><h3>2. The Sicilian Defense</h3><p>Advance strategy for black pieces.</p><button class="btn">Watch</button></div>
+        <div class="card"><h3>3. Endgame Mastery</h3><p>How to finish the game like a pro.</p><button class="btn">Watch</button></div>
+    </div>
+</section>
+
+<section id="puzzles" style="text-align:center;">
+    <h1>Daily Puzzles</h1>
+    <p>Solve 100 random challenges to sharpen your vision.</p>
+    <div style="width: 400px; height: 400px; background: #333; margin: auto; border: 4px solid var(--gold); display: flex; align-items: center; justify-content: center;">
+        [Interactive Chessboard Here]
+    </div>
+    <br>
+    <button class="btn" onclick="playClick()">New Puzzle</button>
+</section>
+
+<section id="weekly">
+    <h1 style="text-align: center;">Weekly Assignments</h1>
+    <div class="card" style="max-width: 600px; margin: auto; border-left: 5px solid var(--gold);">
+        <h2 style="color: white;">Mission Brief: Week 12</h2>
+        <ul style="line-height: 2;">
+            <li>Complete "Mate in 2" puzzle series.</li>
+            <li>Submit your recorded game against the Engine.</li>
+            <li>Read: "The Art of the Sacrifice."</li>
+        </ul>
+    </div>
+</section>
+
+<section id="engine" style="text-align:center;">
+    <h1>Challenge Mr. Adekule Busayo</h1>
+    <p>The AI engine is trained on the Coach's personal strategies.</p>
+    <div id="board-engine" style="width: 450px; margin: auto; border: 5px solid white;"></div>
+    <p>Status: <span id="status" style="color: var(--gold);">Waiting for your move...</span></p>
+</section>
+
+<section id="store">
+    <h1 style="text-align: center;">The Vault: Gaming Accessories</h1>
+    <div class="grid">
+        <div class="card">
+            <div style="height:150px; background:#000; margin-bottom:10px;"></div> <h3>PlayStation 5 DualSense</h3>
+            <p style="color:var(--gold); font-weight:bold;">₦65,000</p>
+            <button class="btn" onclick="window.location.href='https://wa.me/2347039739084'">Order via WhatsApp</button>
         </div>
     </div>
+</section>
 
-    <script>
-        // Trigger Pop-up and Sound when the user interacts
-        function makeMove() {
-            // Play sound
-            const sound = document.getElementById('chessSound');
-            sound.play().catch(error => console.log("Audio play blocked until user interacts"));
+<footer>
+    <p>&copy; 2026 Nobility Chess Academy | <a class="secret-gate" onclick="showSection('store')">Admin & Store Access</a></p>
+</footer>
 
-            // Show Modal with smooth animation
-            const modal = document.getElementById('welcomeModal');
-            const modalBox = document.getElementById('modalBox');
-            modal.style.display = 'flex';
-            
-            // Slight delay to allow display:flex to apply before changing opacity
-            setTimeout(() => {
-                modal.style.opacity = '1';
-                modalBox.style.transform = 'translateY(0)';
-            }, 50);
-        }
+<script>
+    function playClick() {
+        const sound = document.getElementById('clickSound');
+        sound.currentTime = 0;
+        sound.play();
+    }
 
-        function closeModal() {
-            const modal = document.getElementById('welcomeModal');
-            const modalBox = document.getElementById('modalBox');
-            
-            modal.style.opacity = '0';
-            modalBox.style.transform = 'translateY(-50px)';
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 500); // Wait for transition to finish
-        }
+    function showSection(sectionId) {
+        playClick();
+        
+        // Hide all sections
+        const sections = document.querySelectorAll('section');
+        sections.forEach(s => s.classList.remove('active'));
 
-        // Optional: Auto-trigger pop-up after 5 seconds of loading the site
-        /*
-        window.onload = () => {
-            setTimeout(makeMove, 5000); 
-        };
-        */
-    </script>
+        // Show target section
+        const target = document.getElementById(sectionId);
+        target.classList.add('active');
+
+        // Scroll to top smoothly
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
 
 </body>
 </html>
