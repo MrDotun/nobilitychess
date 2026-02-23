@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nobility Chess Academy | Adekunle Busayo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #d4af37;
+            --wine: #580c1f;
             --dark: #0b0c10;
-            --card-bg: #1f2833;
+            --card-bg: rgba(31, 40, 51, 0.9);
             --text: #c5c6c7;
-            --transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            --transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         body {
@@ -20,166 +21,280 @@
             color: var(--text);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        h1, h2, .logo { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; }
+        h1, h2, h3, .logo { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; }
 
-        /* Navigation */
+        /* --- 1. SPLASH SCREEN & FLOATING SHIELD --- */
+        #splash-screen {
+            position: fixed; inset: 0; background: var(--dark);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 1s, visibility 1s;
+        }
+
+        .shield-container { perspective: 1000px; margin-bottom: 30px; }
+        .logo-shield {
+            width: 220px; height: 220px; background: var(--wine);
+            border: 4px solid var(--gold); border-radius: 50% 50% 50% 50% / 10% 10% 90% 90%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            animation: floatShield 4s ease-in-out infinite;
+        }
+        .logo-shield img { width: 140px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+
+        @keyframes floatShield {
+            0%, 100% { transform: translateY(0) rotateX(5deg); }
+            50% { transform: translateY(-25px) rotateX(-5deg); }
+        }
+
+        /* --- 2. NAVIGATION --- */
         nav {
             position: fixed; top: 0; width: 100%; padding: 20px 50px;
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(11, 12, 16, 0.95); backdrop-filter: blur(15px);
-            z-index: 1000; box-sizing: border-box; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 1000; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            opacity: 0; transform: translateY(-100%); transition: 1s;
         }
+        nav.visible { opacity: 1; transform: translateY(0); }
 
         .nav-links a {
             color: white; text-decoration: none; margin-left: 25px;
-            font-size: 13px; text-transform: uppercase; transition: var(--transition);
-            cursor: pointer;
+            font-size: 12px; text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            font-weight: 600;
         }
-
         .nav-links a:hover { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
 
-        /* Section Handling */
-        section {
-            display: none; /* Hidden by default */
-            min-height: 100vh;
-            padding: 120px 50px 50px;
-            animation: fadeIn 0.8s ease-out forwards;
+        /* --- 3. SECTION HANDLING --- */
+        section { display: none; min-height: 100vh; padding: 120px 50px 50px; box-sizing: border-box; text-align: center; }
+        section.active { display: block; animation: sectionIn 0.8s ease-out; }
+
+        @keyframes sectionIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        section.active { display: block; }
+        .reveal-on-scroll {
+            opacity: 0; transform: translateY(50px); filter: blur(10px);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- 4. HERO & IMPACT --- */
+        .hero-img { 
+            width: 200px; height: 200px; border-radius: 50%; 
+            border: 5px solid var(--gold); margin-bottom: 25px;
+            object-fit: cover; box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
         }
 
-        /* Hero Styling */
-        .hero { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .hero h1 { font-size: 4rem; margin: 0; }
-        .hero-img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 20px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+        .impact-bar {
+            display: flex; align-items: center; justify-content: center; gap: 30px;
+            background: linear-gradient(90deg, transparent, rgba(88, 12, 31, 0.3), transparent);
+            padding: 40px; margin: 50px auto; max-width: 900px;
+            border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .impact-number { font-size: 5rem; font-weight: 900; color: var(--gold); font-family: 'Cinzel'; }
 
-        /* Grid Layouts */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+        /* --- 5. BOLD BLOCKS & GRID --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
         .card { 
-            background: var(--card-bg); border: 1px solid rgba(212, 175, 55, 0.1); 
-            padding: 20px; border-radius: 12px; transition: var(--transition);
-            position: relative; overflow: hidden;
+            background: var(--card-bg); border: 3px solid var(--gold); 
+            padding: 40px; border-radius: 25px; transition: var(--transition);
         }
-        .card:hover { border-color: var(--gold); transform: translateY(-10px); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .card:hover { transform: scale(1.05) translateY(-15px); background: var(--wine); }
+        .icon-box { font-size: 3.5rem; margin-bottom: 15px; display: block; }
 
-        /* Button Styling */
+        /* --- 6. BUTTONS --- */
         .btn {
-            background: transparent; border: 1px solid var(--gold); color: var(--gold);
-            padding: 12px 30px; text-transform: uppercase; cursor: pointer;
-            transition: var(--transition); font-weight: bold;
+            background: linear-gradient(45deg, var(--gold), #f3cf7a);
+            color: var(--dark); border: none; padding: 18px 45px;
+            border-radius: 50px; font-weight: 900; text-transform: uppercase;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 10px 0 #b38f20;
+            font-size: 1.1rem;
         }
-        .btn:hover { background: var(--gold); color: var(--dark); box-shadow: 0 0 20px var(--gold); }
+        .btn:active { transform: translateY(6px); box-shadow: 0 4px 0 #b38f20; }
+        .vanish { animation: vanishPop 0.6s forwards; }
 
-        /* The Secret Footer Link */
-        footer { padding: 40px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.1); }
-        .secret-gate { opacity: 0.1; transition: 0.3s; cursor: pointer; text-decoration: none; }
-        .secret-gate:hover { opacity: 1; color: var(--gold); }
+        @keyframes vanishPop {
+            50% { transform: scale(0); opacity: 0; filter: blur(20px); }
+            100% { transform: scale(1); opacity: 1; filter: blur(0); }
+        }
 
-        /* Audio Helper */
-        #clickSound { display: none; }
+        /* --- 7. 3D CAROUSEL --- */
+        .carousel-viewport { height: 450px; perspective: 1200px; display: flex; justify-content: center; align-items: center; }
+        .carousel-ring { width: 250px; height: 320px; position: relative; transform-style: preserve-3d; animation: rotateCarousel 20s linear infinite; }
+        .carousel-item { position: absolute; width: 100%; height: 100%; border: 3px solid var(--gold); border-radius: 15px; overflow: hidden; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-item:nth-child(1) { transform: rotateY(0deg) translateZ(350px); }
+        .carousel-item:nth-child(2) { transform: rotateY(120deg) translateZ(350px); }
+        .carousel-item:nth-child(3) { transform: rotateY(240deg) translateZ(350px); }
+
+        @keyframes rotateCarousel { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
+
+        /* --- 8. MINI STORE PREVIEW --- */
+        #gaming-store { background: radial-gradient(circle at center, #1a1a1a 0%, #0b0c10 100%); border-top: 2px solid var(--wine); }
+        .gaming-btn { background: linear-gradient(45deg, var(--wine), #80162f) !important; color: white !important; box-shadow: 0 8px 0 #3d0815 !important; }
+
     </style>
 </head>
 <body>
 
 <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
-<nav>
+<div id="splash-screen">
+    <div class="shield-container">
+        <div class="logo-shield">
+            <img src="Screenshot_20260223-215614.jpg" alt="Logo">
+        </div>
+    </div>
+    <h2 class="reveal-on-scroll" style="color: var(--gold); font-size: 1.5rem;">Nobility Chess Academy</h2>
+</div>
+
+<nav id="main-nav">
     <div class="logo">Nobility Academy</div>
     <div class="nav-links">
         <a onclick="showSection('home')">Home</a>
         <a onclick="showSection('classroom')">Classroom</a>
         <a onclick="showSection('puzzles')">Puzzles</a>
-        <a onclick="showSection('weekly')">Tasks</a>
-        <a onclick="showSection('engine')">Challenge Coach</a>
+        <a onclick="showSection('surprise')">Kids' Surprise</a>
+        <a onclick="showSection('gaming-store')">Store</a>
     </div>
 </nav>
 
-<section id="home" class="active hero">
-    <img src="logo.png" alt="Logo" class="hero-img"> <h1>Adekule <span style="color:white;">Busayo</span></h1>
-    <p style="font-size: 1.2rem; max-width: 700px; line-height: 1.6;">Instructor at Child Legacy International & Brain Builders. Founder of Nobility Chess Academy. We don't just move pieces; we build leaders.</p>
-    <button class="btn" onclick="showSection('engine')">Enter the Arena</button>
+<section id="home" class="active">
+    <div class="reveal-on-scroll">
+        <img src="1001364637.jpg" class="hero-img" alt="Adekunle Busayo">
+        <h1 style="font-size: 3.5rem; margin: 0;">Adekunle <span style="color:white;">Busayo</span></h1>
+        <p style="font-size: 1.3rem; max-width: 800px; margin: 20px auto;">Instructor at Child Legacy International & Brain Builders. Shaping minds across Nigeria.</p>
+    </div>
+
+    <div id="impact" class="impact-bar reveal-on-scroll">
+        <div class="impact-number" data-target="28">0</div>
+        <div style="text-align: left;">
+            <p style="margin:0; font-size: 1.5rem; font-weight: 900; color: white;">Schools Impacted</p>
+            <p style="margin:0; color: var(--gold);">Bringing Chess Excellence to 28+ Institutions.</p>
+        </div>
+    </div>
+
+    <button class="btn reveal-on-scroll" onclick="animateAndGo(this, 'classroom')">Enter the Arena</button>
 </section>
 
 <section id="classroom">
-    <h1 style="text-align: center;">Video Classroom</h1>
+    <h2 class="reveal-on-scroll" style="font-size: 3rem;">Master the Board</h2>
     <div class="grid">
-        <div class="card"><h3>1. Introduction to Chess</h3><p>Learn the board and the pieces.</p><button class="btn">Watch</button></div>
-        <div class="card"><h3>2. The Sicilian Defense</h3><p>Advance strategy for black pieces.</p><button class="btn">Watch</button></div>
-        <div class="card"><h3>3. Endgame Mastery</h3><p>How to finish the game like a pro.</p><button class="btn">Watch</button></div>
-    </div>
-</section>
-
-<section id="puzzles" style="text-align:center;">
-    <h1>Daily Puzzles</h1>
-    <p>Solve 100 random challenges to sharpen your vision.</p>
-    <div style="width: 400px; height: 400px; background: #333; margin: auto; border: 4px solid var(--gold); display: flex; align-items: center; justify-content: center;">
-        [Interactive Chessboard Here]
-    </div>
-    <br>
-    <button class="btn" onclick="playClick()">New Puzzle</button>
-</section>
-
-<section id="weekly">
-    <h1 style="text-align: center;">Weekly Assignments</h1>
-    <div class="card" style="max-width: 600px; margin: auto; border-left: 5px solid var(--gold);">
-        <h2 style="color: white;">Mission Brief: Week 12</h2>
-        <ul style="line-height: 2;">
-            <li>Complete "Mate in 2" puzzle series.</li>
-            <li>Submit your recorded game against the Engine.</li>
-            <li>Read: "The Art of the Sacrifice."</li>
-        </ul>
-    </div>
-</section>
-
-<section id="engine" style="text-align:center;">
-    <h1>Challenge Mr. Adekule Busayo</h1>
-    <p>The AI engine is trained on the Coach's personal strategies.</p>
-    <div id="board-engine" style="width: 450px; margin: auto; border: 5px solid white;"></div>
-    <p>Status: <span id="status" style="color: var(--gold);">Waiting for your move...</span></p>
-</section>
-
-<section id="store">
-    <h1 style="text-align: center;">The Vault: Gaming Accessories</h1>
-    <div class="grid">
-        <div class="card">
-            <div style="height:150px; background:#000; margin-bottom:10px;"></div> <h3>PlayStation 5 DualSense</h3>
-            <p style="color:var(--gold); font-weight:bold;">₦65,000</p>
-            <button class="btn" onclick="window.location.href='https://wa.me/2347039739084'">Order via WhatsApp</button>
+        <div class="card reveal-on-scroll">
+            <span class="icon-box">🛡️</span>
+            <h3>Defense Lab</h3>
+            <p>Master the structures that make a King untouchable.</p>
+        </div>
+        <div class="card reveal-on-scroll">
+            <span class="icon-box">⚔️</span>
+            <h3>Attack Squad</h3>
+            <p>Tactical strikes and combinations used by the Greats.</p>
+        </div>
+        <div class="card reveal-on-scroll">
+            <span class="icon-box">👑</span>
+            <h3>Legacy Prep</h3>
+            <p>Endgame precision for the leaders of tomorrow.</p>
         </div>
     </div>
 </section>
 
-<footer>
-    <p>&copy; 2026 Nobility Chess Academy | <a class="secret-gate" onclick="showSection('store')">Admin & Store Access</a></p>
-</footer>
+<section id="surprise">
+    <h2 class="reveal-on-scroll" style="font-size: 3rem;">Grand Masters Arena</h2>
+    <div class="carousel-viewport reveal-on-scroll">
+        <div class="carousel-ring">
+            <div class="carousel-item"><img src="1771877010696.jpg"></div>
+            <div class="carousel-item"><img src="1771877893498.jpg"></div>
+            <div class="carousel-item"><img src="1771879595551.jpg"></div>
+        </div>
+    </div>
+</section>
+
+<section id="gaming-store">
+    <div class="reveal-on-scroll">
+        <h2 style="font-size: 3rem;">Beyond the Board</h2>
+        <p style="color: var(--gold); font-weight: bold; letter-spacing: 2px;">PREMIUM VIDEO GAMES & INSTALLATION</p>
+    </div>
+    <div class="grid" style="max-width: 800px; margin: 40px auto;">
+        <div class="card reveal-on-scroll" style="border-color: var(--wine);">
+            <span class="icon-box">🎮</span>
+            <h3>Game Sales</h3>
+            <p>The latest titles for all consoles.</p>
+        </div>
+        <div class="card reveal-on-scroll" style="border-color: var(--wine);">
+            <span class="icon-box">⚙️</span>
+            <h3>Pro Setup</h3>
+            <p>Expert console installation and tuning.</p>
+        </div>
+    </div>
+    <a href="store.html" style="text-decoration: none;">
+        <button class="btn gaming-btn reveal-on-scroll">Visit Store ➔</button>
+    </a>
+</section>
+
+<section id="puzzles"><h2>Chess Puzzles Coming Soon</h2></section>
 
 <script>
-    function playClick() {
-        const sound = document.getElementById('clickSound');
-        sound.currentTime = 0;
-        sound.play();
+    // 1. Splash Logic
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                document.getElementById('main-nav').classList.add('visible');
+                initObserver();
+            }, 1000);
+        }, 3500);
+    });
+
+    // 2. Navigation
+    function showSection(id) {
+        document.getElementById('clickSound').play().catch(()=>{});
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+        initObserver();
     }
 
-    function showSection(sectionId) {
-        playClick();
-        
-        // Hide all sections
-        const sections = document.querySelectorAll('section');
-        sections.forEach(s => s.classList.remove('active'));
+    // 3. Button Animation
+    function animateAndGo(btn, targetId) {
+        btn.classList.add('vanish');
+        setTimeout(() => {
+            showSection(targetId);
+            btn.classList.remove('vanish');
+        }, 500);
+    }
 
-        // Show target section
-        const target = document.getElementById(sectionId);
-        target.classList.add('active');
+    // 4. Reveal Observer
+    function initObserver() {
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transitionDelay = `${index * 0.15}s`;
+                    entry.target.classList.add('visible');
+                    if(entry.target.id === 'impact') startCounter();
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => obs.observe(el));
+    }
 
-        // Scroll to top smoothly
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 5. Counter Logic
+    function startCounter() {
+        const counter = document.querySelector('.impact-number');
+        if (counter.classList.contains('done')) return;
+        const target = +counter.getAttribute('data-target');
+        let count = 0;
+        const update = () => {
+            if (count < target) {
+                count++;
+                counter.innerText = count + "+";
+                setTimeout(update, 50);
+            } else { counter.classList.add('done'); }
+        };
+        update();
     }
 </script>
 
