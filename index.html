@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nobility Chess Academy</title>
+    <title>Mobility Chess Academy</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #d4af37; --wine: #5d1823; --dark: #0b0c10; }
         
-        /* FAST LOAD: Splash is now only 1 second total */
         body { margin: 0; background: var(--dark); color: #c5c6c7; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
+        /* SPLASH: Set to 0s duration as requested */
         #splash {
             position: fixed; inset: 0; background: var(--dark);
             display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 2000; transition: 0.5s;
+            align-items: center; z-index: 2000; transition: 0s;
         }
 
-        /* SHIELD FIX: Padding added so "N.C.A" isn't covered */
         .shield {
             width: 220px; height: 240px; background: var(--wine);
             border: 4px solid var(--gold); border-radius: 20% 20% 45% 45%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 10px; /* Space for the NCA text */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 10px;
         }
+        /* Logo text placed beneath the designed inscription (shield) */
+        .logo-text { color: var(--gold); font-family: 'Cinzel'; margin-top: 15px; font-size: 1.1rem; text-align: center; font-weight: 700; }
         .shield img { width: 95%; height: auto; object-fit: contain; }
 
-        /* NAV: Logo + Text beside it */
         nav {
             position: fixed; top: 0; width: 100%; padding: 10px 20px;
             display: none; align-items: center; justify-content: space-between;
@@ -37,31 +37,25 @@
         .nav-logo { width: 40px; height: 40px; border: 1px solid var(--gold); border-radius: 5px; }
         .nav-title { font-family: 'Cinzel'; color: var(--gold); font-size: 0.9rem; font-weight: 700; }
 
-        /* CONTENT SECTIONS */
         section { display: none; min-height: 100vh; padding: 80px 20px; text-align: center; box-sizing: border-box; }
         section.active { display: block; animation: quickFade 0.4s ease; }
         @keyframes quickFade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CAROUSEL WITH 3-SECOND PAUSE */
-        .stage { height: 260px; perspective: 1000px; display: flex; justify-content: center; align-items: center; }
-        
+        /* REVOLVING IMAGES: Changed object-fit to 'contain' to prevent cropping */
+        .stage { height: 260px; perspective: 1000px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         .ring { 
-            width: 130px; 
-            height: 180px; 
+            width: 150px; 
+            height: 200px; 
             transform-style: preserve-3d; 
-            /* Total 12s duration (approx 3s pause + 1s transit per image) */
             animation: revolve 12s ease-in-out infinite; 
         }
+        .ring div { position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 8px; overflow: hidden; background: #000; }
+        .ring img { width: 100%; height: 100%; object-fit: contain; } /* Prevents cropping */
         
-        .ring div { position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 8px; overflow: hidden; }
-        .ring img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Fixed Positions for 3 images */
-        .img1 { transform: rotateY(0deg) translateZ(160px); }
-        .img2 { transform: rotateY(120deg) translateZ(160px); }
-        .img3 { transform: rotateY(240deg) translateZ(160px); }
+        .img1 { transform: rotateY(0deg) translateZ(180px); }
+        .img2 { transform: rotateY(120deg) translateZ(180px); }
+        .img3 { transform: rotateY(240deg) translateZ(180px); }
 
-        /* Logic: Hold for 25% of the total time (3s) then rotate */
         @keyframes revolve {
             0%, 25% { transform: rotateY(0deg); }
             33%, 58% { transform: rotateY(-120deg); }
@@ -69,16 +63,25 @@
             100% { transform: rotateY(-360deg); }
         }
 
-        /* SLIDE BUTTON */
-        .slide-btn {
-            background: var(--gold); color: black; padding: 16px 45px;
-            border: none; border-radius: 50px; font-weight: 900;
-            cursor: pointer; margin-top: 25px; transform: translateX(-110%);
-            animation: slideIn 0.6s forwards 0.2s; box-shadow: 0 6px 0 #8a6d1d;
+        /* MAGNIFIED PROFILE IMAGE: Large enough to cover most of the page */
+        .profile-img { 
+            width: 280px; 
+            height: 280px; 
+            border-radius: 50%; 
+            border: 4px solid var(--gold); 
+            margin: 20px auto; 
+            object-fit: cover;
+            display: block;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
-        @keyframes slideIn { to { transform: translateX(0); } }
 
-        /* ACADEMY GRID */
+        .slide-btn {
+            background: var(--gold); color: black; padding: 18px 50px;
+            border: none; border-radius: 50px; font-weight: 900;
+            cursor: pointer; margin-top: 20px; display: inline-block;
+            box-shadow: 0 6px 0 #8a6d1d; font-size: 1rem;
+        }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; max-width: 400px; margin: 0 auto; }
         .box { background: #161b22; border: 1.5px solid var(--wine); padding: 20px 10px; border-radius: 12px; text-decoration: none; color: white; }
         .box:hover { border-color: var(--gold); background: var(--wine); }
@@ -90,12 +93,14 @@
 
 <div id="splash">
     <div class="shield">
-        <img src="Screenshot_20260223-215614.jpg"> </div>
+        <img src="Screenshot_20260223-215614.jpg">
+    </div>
+    <div class="logo-text">Welcome to Mobility Chess Academy</div>
 </div>
 
 <nav id="main-nav">
     <div class="nav-brand">
-        <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">NOBILITY CHESS</span>
+        <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">MOBILITY CHESS</span>
     </div>
     <div style="font-size: 10px; font-weight: 900; cursor: pointer;" onclick="show('home')">HOME</div>
 </nav>
@@ -108,8 +113,11 @@
             <div class="img3"><img src="1771879595551.jpg"></div> 
         </div>
     </div>
-    <img src="1771879595551.jpg" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--gold); margin-top:15px;"> 
-    <p style="font-weight:900; margin:5px 0 0 0; color:var(--gold);">ADEKUNLE BUSAYO</p>
+    
+    <img src="1771879595551.jpg" class="profile-img"> 
+    
+    <p style="font-weight:900; margin:5px 0 0 0; color:var(--gold); font-size: 1.2rem;">ADEKUNLE BUSAYO</p>
+    
     <button class="slide-btn" onclick="show('academy')">ENTER ACADEMY ➔</button>
 </section>
 
@@ -135,13 +143,11 @@
     }
 
     window.onload = () => {
+        // Reduced timeouts to near-zero for "0 second" feel
         setTimeout(() => {
-            document.getElementById('splash').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('splash').style.display = 'none';
-                document.getElementById('main-nav').style.display = 'flex';
-            }, 500);
-        }, 1000); 
+            document.getElementById('splash').style.display = 'none';
+            document.getElementById('main-nav').style.display = 'flex';
+        }, 100); 
     };
 </script>
 
