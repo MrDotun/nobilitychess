@@ -42,15 +42,32 @@
         section.active { display: block; animation: quickFade 0.4s ease; }
         @keyframes quickFade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CAROUSEL */
+        /* CAROUSEL WITH 3-SECOND PAUSE */
         .stage { height: 260px; perspective: 1000px; display: flex; justify-content: center; align-items: center; }
-        .ring { width: 130px; height: 180px; transform-style: preserve-3d; animation: revolve 15s linear infinite; }
+        
+        .ring { 
+            width: 130px; 
+            height: 180px; 
+            transform-style: preserve-3d; 
+            /* Total 12s duration (approx 3s pause + 1s transit per image) */
+            animation: revolve 12s ease-in-out infinite; 
+        }
+        
         .ring div { position: absolute; inset: 0; border: 2px solid var(--gold); border-radius: 8px; overflow: hidden; }
         .ring img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Fixed Positions for 3 images */
         .img1 { transform: rotateY(0deg) translateZ(160px); }
         .img2 { transform: rotateY(120deg) translateZ(160px); }
         .img3 { transform: rotateY(240deg) translateZ(160px); }
-        @keyframes revolve { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
+
+        /* Logic: Hold for 25% of the total time (3s) then rotate */
+        @keyframes revolve {
+            0%, 25% { transform: rotateY(0deg); }
+            33%, 58% { transform: rotateY(-120deg); }
+            66%, 91% { transform: rotateY(-240deg); }
+            100% { transform: rotateY(-360deg); }
+        }
 
         /* SLIDE BUTTON */
         .slide-btn {
@@ -80,15 +97,19 @@
     <div class="nav-brand">
         <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">NOBILITY CHESS</span>
     </div>
-    <div style="font-size: 10px; font-weight: 900;" onclick="show('home')">HOME</div>
+    <div style="font-size: 10px; font-weight: 900; cursor: pointer;" onclick="show('home')">HOME</div>
 </nav>
 
 <section id="home" class="active">
     <div class="stage">
         <div class="ring">
-            <div class="img1"><img src="1771877010696.jpg"></div> <div class="img2"><img src="1771877893498.jpg"></div> <div class="img3"><img src="1771879595551.jpg"></div> </div>
+            <div class="img1"><img src="1771877010696.jpg"></div> 
+            <div class="img2"><img src="1771877893498.jpg"></div> 
+            <div class="img3"><img src="1771879595551.jpg"></div> 
+        </div>
     </div>
-    <img src="1771879595551.jpg" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--gold); margin-top:15px;"> <p style="font-weight:900; margin:5px 0 0 0; color:var(--gold);">ADEKUNLE BUSAYO</p>
+    <img src="1771879595551.jpg" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--gold); margin-top:15px;"> 
+    <p style="font-weight:900; margin:5px 0 0 0; color:var(--gold);">ADEKUNLE BUSAYO</p>
     <button class="slide-btn" onclick="show('academy')">ENTER ACADEMY ➔</button>
 </section>
 
@@ -113,7 +134,6 @@
         window.scrollTo(0,0);
     }
 
-    // SPEED FIX: Only 1 second wait time
     window.onload = () => {
         setTimeout(() => {
             document.getElementById('splash').style.opacity = '0';
