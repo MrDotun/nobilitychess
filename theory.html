@@ -15,30 +15,34 @@
             --wine: #722f37;
             --yellow: #FFD700;
             --white: #ffffff;
+            --sky-blue: #e3f2fd;
+            --grass-green: #4caf50;
         }
 
         body {
             font-family: 'Trebuchet MS', sans-serif;
             margin: 0;
-            background-color: #f0f2f5;
+            background-color: var(--sky-blue); /* Brighter for kids */
             color: #333;
         }
 
         header {
-            background: var(--navy);
+            background: linear-gradient(to right, var(--navy), var(--wine));
             color: white;
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
-            border-bottom: 6px solid var(--wine);
+            border-bottom: 8px solid var(--yellow);
+            border-radius: 0 0 20px 20px;
         }
 
-        header h1 { margin: 0; letter-spacing: 2px; text-transform: uppercase; }
-        header p { color: var(--yellow); margin: 5px 0 0; font-style: italic; }
+        header h1 { margin: 0; letter-spacing: 2px; text-transform: uppercase; font-size: 2rem; }
+        header p { color: var(--yellow); margin: 8px 0 0; font-style: italic; font-size: 1.1rem; }
 
         nav {
             background: var(--wine);
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         nav a {
@@ -46,93 +50,122 @@
             text-decoration: none;
             margin: 0 15px;
             font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
         }
+        
+        nav a:hover { background: var(--yellow); color: var(--navy); }
 
         .main-layout {
             display: flex;
-            flex-wrap: wrap;
-            max-width: 1250px;
-            margin: 30px auto;
-            gap: 20px;
+            flex-direction: column; /* Better alignment for mobile */
+            align-items: center;    /* Centralizes the content */
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 30px;
             padding: 0 15px;
+        }
+
+        @media (min-width: 900px) {
+            .main-layout { flex-direction: row; align-items: flex-start; }
         }
 
         #board-section {
             flex: 1.2;
-            min-width: 350px;
+            width: 100%;
+            max-width: 550px;
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 25px; /* Rounded corners for kid-friendly look */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             text-align: center;
-            height: fit-content;
-            position: sticky;
-            top: 20px;
+            border: 4px solid var(--navy);
         }
 
         #myBoard {
             width: 100%;
-            max-width: 480px;
             margin: 0 auto;
-            border: 5px solid #333;
+            border: 8px solid #444;
+            border-radius: 10px;
+            box-sizing: border-box;
         }
 
-        .controls { margin-top: 20px; }
+        .controls { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
+        
         .btn-tool {
             background: var(--navy);
             color: white;
             border: none;
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 12px 24px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 50px; /* Bubble buttons */
             font-weight: bold;
+            box-shadow: 0 4px var(--wine);
+            transition: 0.2s;
         }
+
+        .btn-tool:active { transform: translateY(3px); box-shadow: 0 1px var(--wine); }
 
         #lesson-menu {
             flex: 1;
-            min-width: 350px;
+            width: 100%;
+            max-width: 500px;
         }
 
         .chapter-title {
-            background: var(--navy);
-            color: var(--yellow);
-            padding: 10px 15px;
-            margin: 20px 0 10px 0;
-            border-radius: 5px;
-            font-size: 1.2rem;
+            background: var(--grass-green); /* Energetic color */
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            box-shadow: 0 4px 0 #388e3c;
         }
 
         .topic-btn {
             width: 100%;
             background: var(--white);
             color: var(--navy);
-            padding: 15px;
+            padding: 18px;
             text-align: left;
-            border: 1px solid #ddd;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            border-radius: 15px;
             display: flex;
             justify-content: space-between;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
-        .topic-btn:hover { background: #f9f9f9; border-left: 5px solid var(--wine); }
+        .topic-btn:hover { border-color: var(--wine); background-color: #fff9c4; transform: scale(1.02); }
 
         .content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.4s ease;
             background: #fff;
-            border-left: 5px solid var(--wine);
+            border-radius: 0 0 15px 15px;
+            margin-top: -10px;
+            margin-bottom: 10px;
         }
 
-        .inner-text { padding: 15px; line-height: 1.6; font-size: 0.95rem; }
+        .inner-text { 
+            padding: 20px; 
+            line-height: 1.6; 
+            font-size: 1rem; 
+            border: 2px solid var(--wine);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            background: #fdfdfd;
+        }
 
-        .active-content { max-height: 400px; margin-bottom: 10px; overflow-y: auto; }
+        .active-content { max-height: 500px; }
 
-        footer { text-align: center; padding: 40px; color: var(--navy); }
+        footer { text-align: center; padding: 40px; color: var(--navy); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -143,78 +176,78 @@
 </header>
 
 <nav>
-    <a href="index.html">Home</a>
-    <a href="puzzles.html">Puzzles</a>
-    <a href="assessment.html">Assessments</a>
+    <a href="index.html">🏠 Home</a>
+    <a href="puzzles.html">🧩 Puzzles</a>
+    <a href="assessment.html">📝 Assessments</a>
 </nav>
 
 <div class="main-layout">
     <section id="board-section">
         <div id="myBoard"></div>
         <div class="controls">
-            <button class="btn-tool" onclick="board.start()">Reset</button>
-            <button class="btn-tool" onclick="board.flip()">Flip Board</button>
+            <button class="btn-tool" onclick="board.start()">🔄 Reset</button>
+            <button class="btn-tool" onclick="board.flip()">🔃 Flip Board</button>
         </div>
-        <p id="topic-display" style="font-weight: bold; color: var(--wine); margin-top: 15px;">Topic: Standard Start</p>
+        <p id="topic-display" style="font-size: 1.2rem; font-weight: bold; color: var(--wine); margin-top: 15px;">Topic: Standard Start</p>
     </section>
 
     <section id="lesson-menu">
-        <div class="chapter-title">Chapter 1: The Foundations</div>
+        <div class="chapter-title">🛡️ Chapter 1: The Foundations</div>
         
-        <button class="topic-btn" onclick="loadPos('start', 'Development', this)">Development <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('start', 'Development', this)">Development <span>⭐</span></button>
         <div class="content"><div class="inner-text">Think of Chess as a race! Development means bringing your pieces out from the back row into the action. If you leave your Knights and Bishops sleeping, your army is too weak to win. <strong>Tip:</strong> Try to move every piece at least once before moving the same piece twice!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', 'Castling', this)">Castling <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', 'Castling', this)">Castling <span>🏰</span></button>
         <div class="content"><div class="inner-text">Every King needs a castle! Castling protects your King by tucking him safely in the corner and brings your Rook into the center to fight. You can only do this if the King and Rook haven't moved yet and the path is clear.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('4k3/8/8/8/8/8/4P3/4K3 w - - 0 1', 'Endgame Planning', this)">Endgame Planning <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('4k3/8/8/8/8/8/4P3/4K3 w - - 0 1', 'Endgame Planning', this)">Endgame Planning <span>🏆</span></button>
         <div class="content"><div class="inner-text">When most pieces are gone, your King stops hiding! In the Endgame, the King becomes a hero that helps his Pawns reach the other side. Your main goal is to turn a Pawn into a Queen to deliver the final checkmate.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r1bqk2r/pp2bppp/2n1pn2/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R w KQkq - 0 1', 'Trading/Exchanges', this)">Trading <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r1bqk2r/pp2bppp/2n1pn2/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R w KQkq - 0 1', 'Trading/Exchanges', this)">Trading <span>🤝</span></button>
         <div class="content"><div class="inner-text">Trading is like an equal swap. If you take a Knight and the opponent takes yours, that is a trade. A Noble player only trades when it helps them. Never trade your best attacking piece for an opponent's piece that isn't doing anything!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('8/8/8/2pP4/8/8/8/8 w - c6 0 1', 'En Passant', this)">En Passant <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('8/8/8/2pP4/8/8/8/8 w - c6 0 1', 'En Passant', this)">En Passant <span>👻</span></button>
         <div class="content"><div class="inner-text">This is a secret "Ghost Move." If an enemy pawn jumps two squares to land right next to yours, you can capture it as if it only moved one square. But be careful—you must do it <strong>immediately</strong> on the next turn, or the ghost vanishes!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('k7/7P/8/8/8/8/8/K7 w - - 0 1', 'Promotion', this)">Promotion <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('k7/7P/8/8/8/8/8/K7 w - - 0 1', 'Promotion', this)">Promotion <span>👑</span></button>
         <div class="content"><div class="inner-text">The Pawn is a tiny soldier with a big dream. If he makes it all the way to the 8th rank, he levels up! You can turn him into a Queen, Rook, Bishop, or Knight. Most players choose the Queen because she is the most powerful.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('8/P7/8/8/8/2k5/8/2K5 w - - 0 1', 'Underpromotion', this)">Underpromotion <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('8/P7/8/8/8/2k5/8/2K5 w - - 0 1', 'Underpromotion', this)">Underpromotion <span>💡</span></button>
         <div class="content"><div class="inner-text">Sometimes, a Queen is <i>too</i> powerful and causes a stalemate (a draw). In this lesson, we promote to a <strong>Knight</strong> instead to give a check and win the game. It’s all about being smart, not just strong!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r4rk1/pb2bp1p/1p2p1p1/2p1P3/3P4/2PB1N2/P4PPP/R2R2K1 w - - 0 1', 'Prophylaxis', this)">Prophylaxis <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r4rk1/pb2bp1p/1p2p1p1/2p1P3/3P4/2PB1N2/P4PPP/R2R2K1 w - - 0 1', 'Prophylaxis', this)">Prophylaxis <span>🧠</span></button>
         <div class="content"><div class="inner-text">This is the "Mind Reading" move. Instead of just making your own plan, you ask: "What is my opponent planning to do to me?" Prophylaxis is a move that stops their best idea before they even get to try it.</div></div>
 
-        <div class="chapter-title">Chapter 2: Tactics & Strategy</div>
+        <div class="chapter-title">⚔️ Chapter 2: Tactics & Strategy</div>
 
-        <button class="topic-btn" onclick="loadPos('8/8/p7/kp6/p7/K7/8/8 w - - 0 1', 'Zugzwang', this)">Zugzwang <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('8/8/p7/kp6/p7/K7/8/8 w - - 0 1', 'Zugzwang', this)">Zugzwang <span>🌪️</span></button>
         <div class="content"><div class="inner-text">In Chess, you MUST move when it is your turn. Zugzwang is a trap where every possible move you can make is a bad one. It’s like being forced to step into a hole because you aren't allowed to stay still!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppppppp/2n5/4P3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 1', 'Center Control', this)">Center Control <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppppppp/2n5/4P3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 1', 'Center Control', this)">Center Control <span>🎯</span></button>
         <div class="content"><div class="inner-text">The middle of the board (e4, d4, e5, d5) is the "High Ground." If you control the center, your pieces can jump to any side of the board much faster. Own the center, own the game!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', 'Pawn Structures', this)">Pawn Structures <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', 'Pawn Structures', this)">Pawn Structures <span>🧱</span></button>
         <div class="content"><div class="inner-text">Pawns are like the walls of a castle. When they stand together in a chain, they are strong. When they are alone (Isolated), they are weak targets. Learn to build your walls so your bigger pieces can hide behind them.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('4k3/8/4r3/8/8/4R3/4Q3/4K3 w - - 0 1', 'Pins', this)">Pins <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('4k3/8/4r3/8/8/4R3/4Q3/4K3 w - - 0 1', 'Pins', this)">Pins <span>📌</span></button>
         <div class="content"><div class="inner-text">A Pin is when you attack a piece that cannot move because a more important piece (like the King) is behind it. It's like putting a thumbtack through two pieces at once! The piece in front is "pinned" to the board.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('1q6/2k5/8/4B3/8/8/8/4K3 w - - 0 1', 'Skewers', this)">Skewers <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('1q6/2k5/8/4B3/8/8/8/4K3 w - - 0 1', 'Skewers', this)">Skewers <span>🍢</span></button>
         <div class="content"><div class="inner-text">A Skewer is like a "Reverse Pin." You attack a big piece (like a King), and when he runs away, you take the piece that was hiding behind him. It's named after a kebab stick because it goes right through them!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r3k3/8/3N4/8/2q5/8/8/4K3 w - - 0 1', 'Forks', this)">Forks <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r3k3/8/3N4/8/2q5/8/8/4K3 w - - 0 1', 'Forks', this)">Forks <span>🍴</span></button>
         <div class="content"><div class="inner-text">A Fork is when one piece attacks two or more enemies at the same time. Knights are the kings of forks! In this position, the White Knight is attacking the King, the Queen, AND the Rook all at once.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r1bqkb1r/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', 'Scholar Mate', this)">Scholar's Mate <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r1bqkb1r/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', 'Scholar Mate', this)">Scholar's Mate <span>⚡</span></button>
         <div class="content"><div class="inner-text">This is the famous 4-move checkmate! It tries to catch the weak f7 square. Every Noble player must learn how it works so they can block it and make the opponent's Queen regret coming out too early.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1', 'Openings', this)">Openings <span>+</span></button>
+        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1', 'Openings', this)">Openings <span>📖</span></button>
         <div class="content"><div class="inner-text">Every great player has a favorite way to start. Whether it is the <strong>Ruy Lopez</strong> (shown here), the <strong>Sicilian Defense</strong>, or the <strong>Italian Game</strong>, learning the names helps you remember the best plans!</div></div>
     </section>
 </div>
 
 <footer>
-    &copy; 2026 Nobility Chess Academy | Head Instructor: Mr. Adekunle Busayo
+    &copy; 2026 Nobility Chess Academy | Instructor: Mr. Adekunle Busayo
 </footer>
 
 <script>
@@ -234,6 +267,11 @@
             allContent[i].classList.remove("active-content");
         }
         btn.nextElementSibling.classList.add("active-content");
+        
+        // Auto-scroll to board on mobile when a topic is clicked
+        if (window.innerWidth < 900) {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
     }
 
     $(window).resize(board.resize);
