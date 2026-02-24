@@ -123,6 +123,31 @@
             text-align: justify;
         }
 
+        /* CONTACT LINK STYLE */
+        .ceo-contact {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .contact-pill {
+            display: inline-flex;
+            align-items: center;
+            background: var(--wine);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: var(--yellow);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid var(--yellow);
+            transition: 0.3s;
+        }
+        .contact-pill:hover {
+            background: var(--yellow);
+            color: var(--wine);
+        }
+        .contact-pill i { margin-right: 8px; font-size: 1.1rem; }
+
         .slide-btn {
             background: var(--wine); color: var(--yellow); padding: 22px 60px;
             border: 2px solid var(--yellow); border-radius: 50px; font-weight: 900;
@@ -151,11 +176,11 @@
             background: rgba(255, 255, 255, 0.05); 
             border: 3px solid var(--yellow); 
             padding: 25px 10px; 
-            border-radius: 25px; /* Rounded for a friendly look */
+            border-radius: 25px; 
             text-decoration: none; 
             color: white; 
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 0 var(--wine); /* 3D effect */
+            box-shadow: 0 8px 0 var(--wine); 
             position: relative;
         }
 
@@ -221,7 +246,12 @@
         <p style="font-weight:900; margin:0 0 10px 0; color:var(--yellow); font-size: 1.3rem; font-family: 'Cinzel';">ADEKUNLE BUSAYO</p>
         <div class="intro-text">
             Meet <b>Mr. Adekunle Busayo</b>, the visionary CEO of <b>Nobility Chess</b>. Under his leadership, the academy has become a powerhouse of intellect, providing expert chess instruction to over <b>28 prestigious schools</b> across Nigeria. <br><br>
-            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>—specializing in gaming industry installation and professional software solutions.
+            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>.
+        </div>
+        <div class="ceo-contact">
+            <a href="https://wa.me/2347039739084" target="_blank" class="contact-pill">
+                💬 CHAT WITH THE CEO
+            </a>
         </div>
     </div>
     
