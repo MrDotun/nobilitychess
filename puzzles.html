@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>50 Chess Puzzles - Nobility Chess</title>
+    <title>Nobility Chess - Custom 50 Puzzles</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -14,7 +14,6 @@
             --wine: #722f37;
             --navy: #00004d;
             --yellow: #f1c40f;
-            --light: #f4f4f4;
         }
 
         body {
@@ -72,9 +71,9 @@
             text-align: center;
             height: 40px;
             margin: 15px 0;
-            font-style: italic;
+            font-weight: bold;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .controls {
@@ -110,7 +109,7 @@
             <span>Puzzle <span id="p-count">1</span></span>
         </div>
         
-        <div class="hint-text" id="status-msg">White to move!</div>
+        <div class="hint-text" id="status-msg">Find the Checkmate!</div>
         
         <div id="board"></div>
 
@@ -121,79 +120,62 @@
     </div>
 
 <script>
-    // 50 STRICTLY VERIFIED PUZZLES (f: FEN, t: target square, h: hint text)
-    // Every position is White to Move. None start in checkmate.
-    const puzzles = [
-        // Back Rank Mates
-        {f: '6k1/5ppp/8/8/8/8/8/1R4K1 w - - 0 1', t: 'b8', h: 'Back Rank Checkmate!'},
-        {f: '6k1/5ppp/8/8/8/8/8/2R3K1 w - - 0 1', t: 'c8', h: 'Back Rank Checkmate!'},
-        {f: '6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1', t: 'd8', h: 'Back Rank Checkmate!'},
-        {f: '6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1', t: 'e8', h: 'Back Rank Checkmate!'},
-        {f: '6k1/5ppp/8/8/8/8/8/5R1K w - - 0 1', t: 'f8', h: 'Back Rank Checkmate!'},
-        
-        // Scholar's Mate Patterns
-        {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Scholar's Mate!"},
-        {f: 'r1bqkbnr/pppp1ppp/8/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K2R w KQkq - 0 1', t: 'f7', h: "Kiss of Death!"},
-        {f: 'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Attack the weakest pawn!"},
-        {f: 'r1bqkbnr/pppp1ppp/2n5/8/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Queen and Bishop team up!"},
-        {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Find the instant win!"},
-
-        // Edge Rook Mates
-        {f: '1k6/8/1K6/8/8/8/8/2R5 w - - 0 1', t: 'c8', h: 'Corner the King!'},
-        {f: '2k5/8/2K5/8/8/8/8/3R4 w - - 0 1', t: 'd8', h: 'The Elevator Mate!'},
-        {f: '3k4/8/3K4/8/8/8/8/4R3 w - - 0 1', t: 'e8', h: 'Straight up the middle!'},
-        {f: '4k3/8/4K3/8/8/8/8/5R2 w - - 0 1', t: 'f8', h: 'Cut off the King!'},
-        {f: '5k2/8/5K2/8/8/8/8/6R1 w - - 0 1', t: 'g8', h: 'Checkmate on the edge!'},
-
-        // Queen Kiss Mates
-        {f: '1k6/8/1K6/Q7/8/8/8/8 w - - 0 1', t: 'b7', h: 'Get up close!'},
-        {f: '2k5/8/2K5/1Q6/8/8/8/8 w - - 0 1', t: 'c7', h: 'Support your Queen!'},
-        {f: '3k4/8/3K4/2Q5/8/8/8/8 w - - 0 1', t: 'd7', h: 'Deliver the Queen!'},
-        {f: '4k3/8/4K3/3Q4/8/8/8/8 w - - 0 1', t: 'e7', h: 'The Queen Kiss!'},
-        {f: '5k2/8/5K2/4Q3/8/8/8/8 w - - 0 1', t: 'f7', h: 'Endgame victory!'},
-
-        // Free Captures (Rooks)
-        {f: '4k3/4r3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the free Rook!'},
-        {f: '3k4/3r4/8/8/8/8/3R4/3K4 w - - 0 1', t: 'd7', h: 'Snap up the Rook!'},
-        {f: '2k5/2r5/8/8/8/8/2R5/2K5 w - - 0 1', t: 'c7', h: 'Trade the Rooks!'},
-        {f: '1k6/1r6/8/8/8/8/1R6/1K6 w - - 0 1', t: 'b7', h: 'Clear the board!'},
-        {f: 'k7/r7/8/8/8/8/R7/K7 w - - 0 1', t: 'a7', h: 'Easy capture!'},
-
-        // Free Captures (Queens)
-        {f: '4k3/4q3/8/8/8/8/4Q3/4K3 w - - 0 1', t: 'e7', h: 'Take the Queen!'},
-        {f: '3k4/3q4/8/8/8/8/3Q4/3K4 w - - 0 1', t: 'd7', h: 'Queen trade!'},
-        {f: '2k5/2q5/8/8/8/8/2Q5/2K5 w - - 0 1', t: 'c7', h: 'Win the Queen!'},
-        {f: '1k6/1q6/8/8/8/8/1Q6/1K6 w - - 0 1', t: 'b7', h: 'Capture it!'},
-        {f: 'k7/q7/8/8/8/8/Q7/K7 w - - 0 1', t: 'a7', h: 'Grab the free piece!'},
-
-        // Pawn Promotions
-        {f: '8/1P6/8/8/8/8/8/1k4K1 w - - 0 1', t: 'b8', h: 'Promote to a Queen!'},
-        {f: '8/2P5/8/8/8/8/8/2k3K1 w - - 0 1', t: 'c8', h: 'Push for the win!'},
-        {f: '8/3P4/8/8/8/8/8/3k2K1 w - - 0 1', t: 'd8', h: 'One step left!'},
-        {f: '8/4P3/8/8/8/8/8/4k1K1 w - - 0 1', t: 'e8', h: 'Get a new piece!'},
-        {f: '8/5P3/8/8/8/8/8/5k1K w - - 0 1', t: 'f8', h: 'March to the end!'},
-
-        // Knight captures Bishop
-        {f: '4k3/8/8/4b3/8/3N4/8/5K2 w - - 0 1', t: 'e5', h: 'Galloping Knight!'},
-        {f: '4k3/8/8/3b4/8/4N3/8/5K2 w - - 0 1', t: 'd5', h: 'Knight jump!'},
-        {f: '4k3/8/8/5b2/8/4N3/8/5K2 w - - 0 1', t: 'f5', h: 'Take the Bishop!'},
-        {f: '4k3/8/8/2b5/8/3N4/8/5K2 w - - 0 1', t: 'c5', h: 'Fork the square!'},
-        {f: '4k3/8/8/6b1/8/5N2/8/5K2 w - - 0 1', t: 'g5', h: 'Hop and capture!'},
-
-        // Ladder Mates
-        {f: '3k4/4R3/5R2/8/8/8/8/7K w - - 0 1', t: 'f8', h: 'Ladder Checkmate!'},
-        {f: '2k5/3R4/4R3/8/8/8/8/7K w - - 0 1', t: 'e8', h: 'Roll the Rooks!'},
-        {f: '1k6/2R5/3R4/8/8/8/8/7K w - - 0 1', t: 'd8', h: 'Step by step mate!'},
-        {f: 'k7/1R6/2R5/8/8/8/8/7K w - - 0 1', t: 'c8', h: 'Trap the King!'},
-        {f: '4k3/5R2/6R1/8/8/8/8/7K w - - 0 1', t: 'g8', h: 'Double Rook finish!'},
-
-        // Easy One-Move Captures
-        {f: '4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the Knight!'},
-        {f: '4k3/4b3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the Bishop!'},
-        {f: '4k3/4p3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Eat the Pawn!'},
-        {f: '3k4/3n4/8/8/8/8/3R4/3K4 w - - 0 1', t: 'd7', h: 'Grab the horse!'},
-        {f: '6k1/R7/1R6/8/8/8/8/7K w - - 0 1', t: 'b8', h: 'The Final Checkmate!'}
+    // YOUR EXACT 50 FENs
+    const rawFens = [
+        "4R3/8/8/2Pkp3/N7/4rnKB/1nb5/b1r5",
+        "b1B3Q1/5K2/5NP1/n7/2p2k1P/3pN2R/1B1P4/4qn2",
+        "1k6/1P5Q/8/7B/8/5K2/8/8",
+        "6Q1/1Nn5/2p1rp2/2p5/2r1k2P/2PN3K/4PP2/1B2R3",
+        "8/8/7N/3p2pk/3p2p1/3P4/P1K5/8",
+        "1n3NR1/2B1R3/2pK1p2/2N2p2/5kbp/1r1p4/3ppr2/4b1QB",
+        "K1B5/P2r4/1p1r1n2/4k3/8/3PPP2/8/8",
+        "8/1P5B/8/2P5/8/6K1/NkP3p1/RN6",
+        "8/8/5b2/8/8/5pk1/8/2BQK2R",
+        "3N4/4BPP1/5Kpp/1BPp1Q1b/1p1kq2R/2b1r2n/1p1ppr2/8",
+        "7k/1n6/7K/2p3Q1/1pr2p2/1qb5/8/1b6",
+        "8/3Q4/3p4/2b2n2/3N1p2/nR2B2b/p7/k1K5",
+        "4K3/4P3/P1N2pP1/1BPk1P2/4N3/pP1p1Q2/1br2P2/q1r5",
+        "5br1/pKn1P3/2Q5/3n4/2P1kP1N/1Npp1R2/r5B1/qb6",
+        "8/Bbp1r3/R2p2p1/2P1p1Pp/3R3K/6N1/3P1kp1/3Q4",
+        "2K5/1B3N2/8/5R2/3k4/8/7B/4r3",
+        "8/2p2P1n/2p2P2/p1R2P2/2P2k2/K7/P3p1P1/8",
+        "1q4b1/8/N2n1NQ1/2P2p2/B1k2rRr/1p1Rp2p/4K3/B7",
+        "8/8/Q6B/2p5/p2k2P1/p7/5N2/N4K2",
+        "4RbB1/1pr5/N7/7n/1p1B1P2/1P1kPR2/rP6/2nK4",
+        "8/P2pBq2/2P5/P2k1r2/Bp1N2Q1/1P6/2K1R1bb/8",
+        "6K1/p7/P2kPp1Q/1p1NR3/3N3P/2P2Pp1/3P4/8",
+        "8/8/8/4R1n1/7N/3K4/3p4/4N2k",
+        "8/8/8/1p6/1p6/k7/1R6/N2N3K",
+        "2b2q2/1pPP1pPP/1Np1BkNB/8/2n1PPP1/7n/7K/8",
+        "8/1P2krP1/8/8/8/8/8/4K3",
+        "8/1P6/8/8/3p4/1p1k4/3ppK2/8",
+        "8/k3p3/8/5P1P/K6p/N7/7b/8",
+        "2B5/rR5K/4N3/p4p2/R5N1/5krn/7Q/6n1",
+        "3Q2br/5p2/4pN2/1p6/1K3kP1/8/2PN1P2/4R3",
+        "8/8/8/8/Q7/6pK/6P1/6bk",
+        "1b1q1Bn1/2pPrN1b/4Qp2/P1k5/1p1N1Rn1/1P1p4/1R1P4/4K2B",
+        "4k3/7N/4K3/8/7B/8/7n/8",
+        "5n2/R3P1qn/1NBNp3/1pk5/3p1P2/2b3pR/1PP2p2/1KB4Q",
+        "Qb6/2p5/1PB2PPp/1PpRN1pb/p3k3/6P1/5P2/1nK5",
+        "1r1R3B/4q2B/8/3N1n2/3Pr3/8/K1k2n2/2b5",
+        "8/8/8/7p/5p1K/4PN2/R7/5k2",
+        "8/3Q4/8/1p3N2/2k5/8/2N5/6K1",
+        "3Q4/8/6pk/8/8/7P/8/4K2R",
+        "8/5P2/2r2pPb/3nnk1r/1PB1pN1P/1q5p/b5P1/2K5",
+        "Q7/8/2K5/8/4N2R/3P4/3Pk3/8",
+        "5k2/8/5B2/8/2K5/8/8/5Q2",
+        "4k2r/8/4Kp2/8/4R3/8/4R3/7n",
+        "7n/Q2B4/1Bpp4/1b1kN3/p4pN1/P4Pp1/3Kn1P1/8",
+        "b6/r3N1K1/1p3R2/4k1p1/2p1r3/Q1P2bqN/4n2B/4R3",
+        "7/2p1p3/1p3n1R/R1q1kP2/2QNr1P1/B3p1P1/4K2n/8",
+        "8/8/1q1k4/2NP4/PP3K2/1P4N1/8/8",
+        "K2Q4/n3p3/2PpP1p1/2N1N3/1PPkBP2/3n3p/bP2RP2/2R3bq",
+        "1B1NR3/2rp4/p2k2pQ/R6p/pK4br/P4p1p/5P1P/5N2",
+        "7B/6R1/8/3pn3/3k4/Pr2p3/6K1/8"
     ];
+
+    // Format FENs to be valid (White to move)
+    const puzzles = rawFens.map(fen => fen + " w - - 0 1");
 
     let currentIdx = 0;
     let score = 0;
@@ -201,20 +183,28 @@
     let game = new Chess();
     let sourceSquare = null;
 
-    // Load pieces securely from Wikipedia theme CDN
     function pieceTheme(piece) {
         return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
     }
 
     function initPuzzle() {
-        const p = puzzles[currentIdx];
-        game.load(p.f);
-        board.position(p.f);
+        const fen = puzzles[currentIdx];
+        
+        // Load FEN safely
+        const success = game.load(fen);
+        if(!success) {
+            console.error("Invalid FEN at index", currentIdx, fen);
+            document.getElementById('status-msg').innerText = "Broken FEN string. Skipping to next.";
+            setTimeout(loadNextPuzzle, 2000);
+            return;
+        }
+
+        board.position(fen);
         sourceSquare = null;
         $('.square-55d63').css('background', '');
         
         const msgBox = document.getElementById('status-msg');
-        msgBox.innerText = p.h;
+        msgBox.innerText = "Find the Checkmate!";
         msgBox.style.color = 'white';
         
         document.getElementById('next-btn').disabled = true;
@@ -222,21 +212,19 @@
     }
 
     function onSquareClick(square) {
-        // Stop clicks if puzzle is already solved
         if (!document.getElementById('next-btn').disabled) return;
 
         if (sourceSquare === null) {
-            // First click: Select a piece
             if (game.get(square) && game.get(square).color === 'w') {
                 sourceSquare = square;
                 highlightSquare(square);
             }
         } else {
-            // Second click: Make the move
+            // Attempt the move
             const move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
             
             if (move === null) {
-                // If invalid move, see if they clicked a different friendly piece
+                // If invalid move, reselect piece
                 if (game.get(square) && game.get(square).color === 'w') {
                     sourceSquare = square;
                     $('.square-55d63').css('background', '');
@@ -246,8 +234,8 @@
                     $('.square-55d63').css('background', '');
                 }
             } else {
-                // Move is valid, now check if it's the CORRECT puzzle move
-                validateMove(move);
+                // Move is valid. Let's see if it's CHECKMATE!
+                validateMate();
                 sourceSquare = null;
             }
         }
@@ -257,23 +245,29 @@
         $('.square-' + square).css('background', 'rgba(241, 196, 15, 0.7)');
     }
 
-    function validateMove(move) {
-        const targetSquare = puzzles[currentIdx].t;
+    function validateMate() {
         const msgBox = document.getElementById('status-msg');
 
-        // We specifically check if they landed on the exact target square
-        if (move.to === targetSquare) {
-            msgBox.innerText = "BRILLIANT! 🌟";
+        if (game.in_checkmate()) {
+            msgBox.innerText = "BRILLIANT! CHECKMATE! 🌟";
             msgBox.style.color = "#2ecc71"; // Bright Green
             score++;
             document.getElementById('score').innerText = score;
             document.getElementById('next-btn').disabled = false;
+            board.position(game.fen());
         } else {
-            msgBox.innerText = "Oops! Try again. 🧩";
+            msgBox.innerText = "Not quite! Look for the Checkmate. 🧩";
             msgBox.style.color = "var(--yellow)";
-            setTimeout(initPuzzle, 1200); // Auto-reset after a mistake
+            
+            // Undo the move because it's wrong!
+            game.undo();
+            board.position(game.fen());
+            
+            setTimeout(() => {
+                msgBox.innerText = "Find the Checkmate!";
+                msgBox.style.color = 'white';
+            }, 1500);
         }
-        board.position(game.fen());
     }
 
     function loadNextPuzzle() {
@@ -290,19 +284,17 @@
         initPuzzle(); 
     }
 
-    // Initialize Board
+    // Start Board
     board = Chessboard('board', {
-        position: puzzles[0].f,
+        position: 'start',
         pieceTheme: pieceTheme,
         draggable: false
     });
 
-    // Handle clicks for mobile and desktop
     $('#board').on('click', '.square-55d63', function() {
         onSquareClick($(this).data('square'));
     });
 
-    // Start Game
     initPuzzle();
 </script>
 </body>
