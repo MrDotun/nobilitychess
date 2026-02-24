@@ -1,177 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Grandmaster Tactics Trainer</title>
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<div style="
+    max-width: 500px; 
+    margin: 20px auto; 
+    background-color: #000080; /* Navy Blue */
+    border: 5px solid #800020; /* Wine / Burgundy */
+    border-radius: 15px; 
+    padding: 20px; 
+    text-align: center; 
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
+    font-family: 'Georgia', serif;">
 
-    <style>
-        :root {
-            --navy: #001f3f;
-            --wine: #722f37;
-            --yellow: #f1c40f;
-            --white: #ecf0f1;
-        }
-        body {
-            background-color: var(--navy);
-            color: var(--white);
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: linear-gradient(135deg, #001830 0%, #002b55 100%);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-            text-align: center;
-            border-top: 6px solid var(--wine);
-        }
-        #board {
-            width: 450px;
-            margin: 20px auto;
-            border: 4px solid var(--yellow);
-        }
-        h2 { color: var(--yellow); margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; }
-        .status-msg {
-            font-size: 1.2em;
-            font-weight: bold;
-            height: 30px;
-            margin-bottom: 10px;
-        }
-        .correct { color: #2ecc71; }
-        .wrong { color: #e74c3c; }
-        .puzzle-meta { color: var(--yellow); margin-bottom: 15px; font-size: 0.9em; }
-        .btn-row { margin-top: 20px; }
-        button {
-            background: var(--wine);
-            color: var(--yellow);
-            border: 2px solid var(--yellow);
-            padding: 10px 25px;
+    <h2 style="color: #FFD700; margin-top: 0;">🏆 Nobility Chess Puzzles 🏆</h2>
+    <p style="color: white; font-style: italic;">Train like a King. No login required!</p>
+
+    <div style="background: white; padding: 10px; border-radius: 8px; display: inline-block;">
+        <div id="csoDpCon"></div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button onclick="window.location.reload();" style="
+            background-color: #FFD700; /* Yellow/Gold */
+            color: #800020; /* Wine text */
+            border: none; 
+            padding: 10px 20px; 
+            font-weight: bold; 
+            border-radius: 5px; 
             cursor: pointer;
-            font-weight: bold;
-            border-radius: 50px;
-            transition: 0.3s;
-        }
-        button:hover { background: var(--yellow); color: var(--wine); }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>Tactics Vault</h2>
-    <div id="status" class="status-msg">Your move...</div>
-    <div class="puzzle-meta" id="side-to-move">Loading...</div>
-    <div id="board"></div>
-    <div class="puzzle-meta" id="counter">Puzzle 1 of 30</div>
-    <div class="btn-row">
-        <button onclick="skipPuzzle()">SKIP PUZZLE</button>
+            text-transform: uppercase;">
+            Get New Puzzle
+        </button>
     </div>
 </div>
 
-<script>
-    let board = null;
-    let game = new Chess();
-    let currentIdx = 0;
-
-    // 30 Verified Puzzles { fen, move }
-    const puzzles = [
-        { fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1', move: 'Rd8#' },
-        { fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1', move: 'Qxf7#' },
-        { fen: 'rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', move: 'Qxf7#' },
-        { fen: 'r1b1k1nr/p2p1ppp/n7/1p1N1q2/1b2P3/1P6/P1P2PPP/R1BQKBNR w KQkq - 0 1', move: 'Nxb4' },
-        { fen: '3q1rk1/5ppp/8/8/8/8/5PPP/3Q1RK1 w - - 0 1', move: 'Qxd8' },
-        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P3/2N2N2/PPPP1KPP/R1BQ3R b kq - 0 6', move: 'Nf6' },
-        { fen: 'rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3', move: 'Nf3' },
-        { fen: '4r1k1/5pp1/p6p/1p6/1P2r3/P1R5/5KPP/5R2 b - - 1 32', move: 'Re2+' },
-        { fen: '2r3k1/1p3ppp/p7/3p4/3P4/1P3P2/P5PP/2R3K1 w - - 0 25', move: 'Rxc8#' },
-        { fen: 'r4rk1/pp1n1pp1/2p1p2p/q7/2PP4/2P2Q2/P3BPPP/R4RK1 w - - 3 15', move: 'd5' },
-        { fen: 'rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 0 1', move: 'e3' },
-        { fen: 'r3k2r/pppq1ppp/2np1n2/2b1p1B1/2B1P1b1/2NP1N2/PPPQ1PPP/R3K2R w KQkq - 4 8', move: 'Bxf6' },
-        { fen: '3r2k1/1p3ppp/2p5/p7/P7/1PP5/5PPP/3R2K1 w - - 0 24', move: 'Rxd8#' },
-        { fen: '2k5/pp3ppp/2p5/8/8/2P5/PP3PPP/2K5 w - - 0 21', move: 'Kd2' },
-        { fen: 'rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3', move: 'f4' },
-        { fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 4', move: 'd4' },
-        { fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/3PP3/2N2N2/PPP2PPP/R1BQKB1R b KQkq d3 0 4', move: 'exd4' },
-        { fen: 'r1b1kb1r/pppp1ppp/2n2n2/q3p3/3PP3/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 1 5', move: 'Bd2' },
-        { fen: 'r1b1kb1r/pppp1ppp/2n2n2/q3p3/3PP3/P1N2N2/1PP2PPP/R1BQKB1R b KQkq - 0 5', move: 'exd4' },
-        { fen: 'r1b1k2r/ppppqppp/2n2n2/4p3/3PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 1 6', move: 'dxe5' },
-        { fen: 'r1b1k2r/ppppqppp/2n2n2/4p3/2BPP3/P1N2N2/1PP2PPP/R1BQK2R b KQkq - 2 6', move: 'exd4' },
-        { fen: 'r1b2rk1/ppppqppp/2n2n2/4p3/2BPP3/P1N2N2/1PP2PPP/R1BQK2R w KQ - 3 7', move: 'd5' },
-        { fen: '2kr3r/pppq1ppp/2np1n2/4p1B1/2B1P1b1/2NP1N2/PPPQ1PPP/R3K2R w KQ - 5 9', move: 'Bxf6' },
-        { fen: '2kr3r/pppq1ppp/2np1n2/4p1B1/2B1P1b1/2NP1N2/PPPQ1PPP/2KR3R w - - 6 9', move: 'Bxf6' },
-        { fen: 'r2qk2r/ppp2ppp/2np1n2/2b1p1B1/2B1P1b1/2NP1N2/PPPQ1PPP/R3K2R w KQkq - 4 8', move: 'Nd5' },
-        { fen: 'r2q1rk1/ppp2ppp/2np1n2/2b1p1B1/2B1P1b1/2NP1N2/PPPQ1PPP/R4RK1 w - - 6 9', move: 'Nd5' },
-        { fen: '1r3rk1/1ppq1ppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PPQ1PPP/R4RK1 w - - 2 11', move: 'Bxf6' },
-        { fen: '1r3rk1/1ppq1ppp/p1np1n2/4p1B1/2B1P1b1/P1NP1N1P/1PPQ1PP1/R4RK1 b - - 0 11', move: 'Bxf3' },
-        { fen: '1r3rk1/1ppq1ppp/p1np1n2/4p3/2B1P1b1/P1NP1N1P/1PPQ1PP1/R4RK1 w - - 0 12', move: 'hxg4' },
-        { fen: '5rk1/ppq2p1p/2n1p1pQ/3p4/8/2PR4/PP3PPP/5RK1 w - - 2 22', move: 'Rh3' }
-    ];
-
-    function updateStatus() {
-        let turn = game.turn() === 'w' ? 'White' : 'Black';
-        $('#side-to-move').text(`${turn} to move`);
-    }
-
-    function onDragStart (source, piece) {
-        if (game.game_over()) return false;
-        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-            return false;
-        }
-    }
-
-    function onDrop (source, target) {
-        let move = game.move({ from: source, to: target, promotion: 'q' });
-        if (move === null) return 'snapback';
-
-        if (move.san === puzzles[currentIdx].move || (source + target) === puzzles[currentIdx].move) {
-            $('#status').html('<span class="correct">EXCELLENT!</span>');
-            setTimeout(nextPuzzle, 1000);
-        } else {
-            $('#status').html('<span class="wrong">TRY AGAIN...</span>');
-            game.undo();
-            return 'snapback';
-        }
-    }
-
-    function nextPuzzle() {
-        currentIdx++;
-        if (currentIdx >= puzzles.length) {
-            alert("Congratulations! You've finished the vault.");
-            currentIdx = 0;
-        }
-        loadPuzzle();
-    }
-
-    function skipPuzzle() {
-        nextPuzzle();
-    }
-
-    function loadPuzzle() {
-        const p = puzzles[currentIdx];
-        game.load(p.fen);
-        board.orientation(game.turn() === 'w' ? 'white' : 'black');
-        board.position(p.fen);
-        $('#status').text('Your move...');
-        $('#counter').text(`Puzzle ${currentIdx + 1} of 30`);
-        updateStatus();
-    }
-
-    board = Chessboard('board', {
-        draggable: true,
-        onDragStart: onDragStart,
-        onDrop: onDrop,
-        position: 'start'
+<script type="text/javascript" src="https://www.chessstrategyonline.com/js/widgets.min.js"></script>
+<script type="text/javascript">
+    csoDailyPuzzle({
+        boardStyle: "blue", // Matches your Navy theme
+        pieceStyle: "uscf", 
+        showCoordinates: true,
+        width: 350
     });
-
-    loadPuzzle();
 </script>
-</body>
-</html>
