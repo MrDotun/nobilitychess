@@ -88,6 +88,11 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
+        /* Click-to-move highlight */
+        .highlight-square {
+            box-shadow: inset 0 0 3px 3px var(--yellow);
+        }
+
         /* Info Panel */
         .info-panel {
             flex: 1;
@@ -205,6 +210,7 @@
     var $status = $('#status-text');
     var $pgn = $('#pgn-display');
     var $meter = $('#meter-text');
+    var sourceSquare = null;
 
     function onDragStart (source, piece, position, orientation) {
         if (game.game_over()) return false;
@@ -215,6 +221,7 @@
     }
 
     function onDrop (source, target) {
+        $('.square-55d63').removeClass('highlight-square');
         var move = game.move({
             from: source,
             to: target,
@@ -222,13 +229,52 @@
         });
 
         if (move === null) return 'snapback';
-
+        sourceSquare = null;
         updatePage();
     }
 
     function onSnapEnd () {
         board.position(game.fen());
     }
+
+    // Click to move logic
+    $('#myBoard').on('click', '.square-55d63', function() {
+        var square = $(this).attr('data-square');
+
+        if (sourceSquare === null) {
+            var piece = game.get(square);
+            if (piece && piece.color === game.turn()) {
+                sourceSquare = square;
+                $(this).addClass('highlight-square');
+            }
+        } else {
+            var move = game.move({
+                from: sourceSquare,
+                to: square,
+                promotion: 'q'
+            });
+
+            if (move === null) {
+                // If invalid move, but clicked another own piece, switch selection
+                var piece = game.get(square);
+                if (piece && piece.color === game.turn()) {
+                    $('.square-55d63').removeClass('highlight-square');
+                    sourceSquare = square;
+                    $(this).addClass('highlight-square');
+                } else {
+                    // Clicked empty or enemy square (invalid move)
+                    $('.square-55d63').removeClass('highlight-square');
+                    sourceSquare = null;
+                }
+            } else {
+                // Valid click move
+                $('.square-55d63').removeClass('highlight-square');
+                sourceSquare = null;
+                board.position(game.fen());
+                updatePage();
+            }
+        }
+    });
 
     function updatePage() {
         var status = '';
@@ -261,13 +307,11 @@
             });
         });
 
-        // Update the visual Eval Bar
-        var barHeight = 50 + (score * 4); // 1 pawn = 4% shift
+        var barHeight = 50 + (score * 4); 
         if (barHeight > 95) barHeight = 95;
         if (barHeight < 5) barHeight = 5;
         $('#eval-fill').css('height', barHeight + '%');
 
-        // Text Advice
         if (score > 3) $meter.text("White is winning! 🏆");
         else if (score < -3) $meter.text("Black is winning! 🏆");
         else $meter.text("The game is equal! ⚖️");
@@ -276,12 +320,16 @@
     function resetBoard() {
         game.reset();
         board.start();
+        sourceSquare = null;
+        $('.square-55d63').removeClass('highlight-square');
         updatePage();
     }
 
     function undoMove() {
         game.undo();
         board.position(game.fen());
+        sourceSquare = null;
+        $('.square-55d63').removeClass('highlight-square');
         updatePage();
     }
 
@@ -289,6 +337,8 @@
         var fString = $('#fen-input').val();
         if (game.load(fString)) {
             board.position(fString);
+            sourceSquare = null;
+            $('.square-55d63').removeClass('highlight-square');
             updatePage();
         } else {
             alert("Oops! That code isn't working. Try copying it again.");
