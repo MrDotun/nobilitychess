@@ -3,187 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Academy Puzzles</title>
+    <title>50 Chess Puzzles for Kids</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
     <style>
-        :root { --wine: #5c1a23; --navy: #001f3f; --yellow: #ffdc00; --white: #ffffff; }
-        body { background-color: var(--navy); color: var(--white); font-family: 'Comic Sans MS', cursive, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .nav-header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: var(--yellow); color: var(--navy); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; border: 2px solid transparent; transition: 0.3s; }
-        .back-btn:hover { background: transparent; color: var(--yellow); border-color: var(--yellow); }
-        #game-box { background: var(--wine); padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); width: 90%; max-width: 450px; border: 4px solid var(--yellow); }
-        #board { width: 100%; border-radius: 5px; overflow: hidden; margin: 15px 0; }
-        .status-bar { display: flex; justify-content: space-between; font-size: 1.2rem; margin-bottom: 10px; border-bottom: 2px solid rgba(255,220,0,0.3); padding-bottom: 10px; }
-        #feedback { text-align: center; font-size: 1.3rem; min-height: 1.5em; margin: 10px 0; color: var(--yellow); }
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 10px; cursor: pointer; border: none; transition: 0.2s; }
-        .next-btn { background: var(--yellow); color: var(--navy); }
-        .next-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
+        :root { --wine: #722f37; --navy: #000080; --yellow: #f1c40f; }
+        body { background-color: var(--navy); color: white; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .back-link { color: var(--yellow); text-decoration: none; font-weight: bold; border: 2px solid var(--yellow); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; transition: 0.3s; }
+        .back-link:hover { background: var(--yellow); color: var(--navy); }
+        #puzzle-card { background: var(--wine); padding: 20px; border-radius: 15px; border: 4px solid var(--yellow); width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .header { display: flex; justify-content: space-between; font-weight: bold; color: var(--yellow); margin-bottom: 10px; }
+        #board { width: 100%; margin: 10px 0; border: 2px solid #fff; }
+        .instruction { text-align: center; min-height: 40px; margin: 10px 0; font-style: italic; }
+        .controls { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        #next-btn { background: var(--yellow); color: var(--navy); }
+        #next-btn:disabled { background: #666; cursor: not-allowed; }
         .retry-btn { background: #fff; color: var(--wine); }
-        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-<div class="nav-header">
-    <a href="index.html" class="back-btn">🏠 Back to Academy</a>
-    <div style="text-align: right">
-        <div style="font-size: 0.8rem">LEVEL: ROOKIE</div>
-    </div>
-</div>
+<a href="index.html" class="back-link">← Back to Academy</a>
 
-<div id="game-box">
-    <div class="status-bar">
-        <span>Score: <b id="score">0</b>/50</span>
-        <span>Puzzle #<b id="p-num">1</b></span>
+<div id="puzzle-card">
+    <div class="header">
+        <span>Score: <span id="score">0</span>/50</span>
+        <span>Puzzle <span id="current-num">1</span></span>
     </div>
-
-    <div id="feedback">Can you find the best move?</div>
-    
+    <div class="instruction" id="msg">Loading puzzle...</div>
     <div id="board"></div>
-
-    <div class="btn-row">
-        <button class="retry-btn" onclick="initPuzzle()">Reset</button>
-        <button id="next-btn" class="next-btn" onclick="advancePuzzle()" disabled>Next Puzzle →</button>
+    <div class="controls">
+        <button class="retry-btn" onclick="resetCurrent()">Reset</button>
+        <button id="next-btn" onclick="nextPuzzle()" disabled>Next Puzzle</button>
     </div>
 </div>
 
 <script>
-const puzzleData = [
-    { f: "4k3/4r3/8/8/8/8/4R3/4K3 w - - 0 1", m: "xe7", t: "Take the Rook!" },
-    { f: "R5k1/5ppp/8/8/8/8/8/4K3 w - - 0 1", m: "a8", t: "Back Rank Mate!" },
-    { f: "6k1/5ppp/8/8/8/8/6PP/R5K1 w - - 0 1", m: "a8", t: "Look for the checkmate!" },
-    { f: "k7/8/1K6/8/8/8/8/R7 w - - 0 1", m: "a7", t: "Corner the King!" },
-    { f: "2r3k1/5ppp/8/8/8/8/2R3PP/6K1 w - - 0 1", m: "xc8", t: "Take the undefended Rook!" },
-    { f: "7k/5Q2/6K1/8/8/8/8/8 w - - 0 1", m: "g7", t: "Queen Kiss Mate!" },
-    { f: "4k3/R7/4K3/8/8/8/8/8 w - - 0 1", m: "a8", t: "Checkmate on the back row!" },
-    { f: "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1", m: "xf7", t: "Scholar's Mate!" },
-    { f: "6k1/3R4/5K2/8/8/8/8/8 w - - 0 1", m: "d8", t: "Drive him to the edge!" },
-    { f: "1k6/8/2K5/Q7/8/8/8/8 w - - 0 1", m: "c7", t: "Queen delivery!" },
-    { f: "8/8/8/8/8/2k5/1p6/1K6 b - - 0 1", m: "b1", t: "Promote your pawn!" },
-    { f: "3k4/3P4/3K4/8/8/8/8/8 w - - 0 1", m: "d7", t: "Push for the win!" },
-    { f: "rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 1", m: "h4", t: "Fool's Mate!" },
-    { f: "2k5/8/2K5/8/8/8/8/R7 w - - 0 1", m: "a8", t: "Elevator Mate!" },
-    { f: "6k1/8/6K1/8/8/8/7P/R7 w - - 0 1", m: "a8", t: "Rook Checkmate!" },
-    { f: "1rb1kbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1", m: "xf7", t: "The F7 Weakness!" },
-    { f: "5k2/8/5K2/8/8/8/8/Q7 w - - 0 1", m: "a8", t: "Long distance mate!" },
-    { f: "3k4/8/3K4/8/8/8/8/3R4 w - - 0 1", m: "d8", t: "Straight to the King!" },
-    { f: "k7/P7/1K6/8/8/8/8/8 w - - 0 1", m: "a7", t: "Stalemate? No, checkmate!" },
-    { f: "8/k7/2K5/1Q6/8/8/8/8 w - - 0 1", m: "b7", t: "Don't let him escape!" },
-    { f: "r4rk1/5ppp/8/8/8/8/5PPP/R4RK1 w - - 0 1", m: "xa8", t: "Snap up the Rook!" },
-    { f: "3k4/8/8/8/8/8/3P4/3K4 w - - 0 1", m: "d4", t: "Step forward!" },
-    { f: "q5k1/5ppp/8/8/8/8/5PPP/Q5K1 w - - 0 1", m: "xa8", t: "Queen Trade!" },
-    { f: "4k3/R7/R7/8/8/8/8/4K3 w - - 0 1", m: "6a7", t: "Double Rooks!" },
-    { f: "8/8/8/8/8/k7/1p6/Q1K5 b - - 0 1", m: "xa1", t: "Take the Queen!" },
-    { f: "6k1/8/5KP1/8/8/8/8/8 w - - 0 1", m: "g7", t: "Pawn Power!" },
-    { f: "2k5/8/8/8/8/2N5/8/2K5 w - - 0 1", m: "xd5", t: "Knight Hop!" },
-    { f: "1k6/8/8/8/Q7/8/8/1K6 w - - 0 1", m: "xb4", t: "Target Practice!" },
-    { f: "4k3/4p3/8/8/8/8/4P3/4K3 w - - 0 1", m: "xe7", t: "Pawn Grab!" },
-    { f: "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 0 1", m: "f2", t: "Wait, black wins!" },
-    { f: "7k/8/7K/8/8/8/8/R7 w - - 0 1", m: "a8", t: "The Last Rank!" },
-    { f: "8/2k5/2P5/2K5/8/8/8/8 w - - 0 1", m: "c7", t: "Closer..." },
-    { f: "1k6/1p6/1K6/8/8/8/8/Q7 w - - 0 1", m: "a8", t: "Back corner mate!" },
-    { f: "8/k7/8/8/1N6/8/8/1K6 w - - 0 1", m: "xc6", t: "Knight captures!" },
-    { f: "8/3k4/3P4/8/8/8/8/3K4 w - - 0 1", m: "d7", t: "Promote me!" },
-    { f: "k7/8/K7/1B6/8/8/8/8 w - - 0 1", m: "c6", t: "Bishop Power!" },
-    { f: "3k4/8/3K4/8/8/1B6/8/8 w - - 0 1", m: "f7", t: "Diagonals!" },
-    { f: "6k1/5ppp/8/8/8/8/1B4PP/6K1 w - - 0 1", m: "xg7", t: "Sniper Bishop!" },
-    { f: "k7/8/K7/8/8/8/6N1/8 w - - 0 1", m: "f4", t: "Gallop!" },
-    { f: "8/8/8/2k5/2p5/2K5/8/8 b - - 0 1", m: "d4", t: "Opposition!" },
-    { f: "3k4/8/Q2K4/8/8/8/8/8 w - - 0 1", m: "a8", t: "Rank Mate!" },
-    { f: "8/8/k7/8/2Q5/8/8/1K6 w - - 0 1", m: "xa6", t: "Chomp!" },
-    { f: "1k6/8/K7/8/8/8/8/R7 w - - 0 1", m: "a7", t: "Trap him!" },
-    { f: "8/8/8/8/k7/p7/P1K5/8 b - - 0 1", m: "xb2", t: "Pawn duel!" },
-    { f: "rnbqkbnr/1ppppppp/8/p7/P7/8/1PPPPPPP/RNBQKBNR w KQkq - 0 1", m: "xa5", t: "Take the side pawn!" },
-    { f: "3k4/3P4/8/3K4/8/8/8/8 w - - 0 1", m: "xd7", t: "Pushing onwards!" },
-    { f: "k7/1P6/K7/8/8/8/8/8 w - - 0 1", m: "b8", t: "Promotion time!" },
-    { f: "2k5/2P5/2K5/8/8/8/8/8 w - - 0 1", m: "c7", t: "One more step!" },
-    { f: "5k2/5P2/5K2/8/8/8/8/8 w - - 0 1", m: "f7", t: "Victory approach!" },
-    { f: "k7/5R2/K7/8/8/8/8/8 w - - 0 1", m: "f8", t: "The Final Mate!" }
+// 50 UNIQUE FEN POSITIONS
+const puzzles = [
+    {f: '4k3/4r3/8/8/8/8/4R3/4K3 w - - 0 1', m: 'xe7', t: 'Trade the Rooks!'},
+    {f: 'R5k1/5ppp/8/8/8/8/8/4K3 w - - 0 1', m: 'a8', t: 'Back Rank Checkmate!'},
+    {f: '6k1/5ppp/8/8/8/8/6PP/R5K1 w - - 0 1', m: 'a8', t: 'Find the hallway mate!'},
+    {f: 'k7/8/1K6/8/8/8/8/R7 w - - 0 1', m: 'a7', t: 'Corner the King!'},
+    {f: '7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', m: 'g7', t: 'The Queen Kiss mate!'},
+    {f: '4k3/R7/4K3/8/8/8/8/8 w - - 0 1', m: 'a8', t: 'Drive him to the edge!'},
+    {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', m: 'xf7', t: "Scholar's Mate!"},
+    {f: '6k1/3R4/5K2/8/8/8/8/8 w - - 0 1', m: 'd8', t: 'Last row victory!'},
+    {f: '1k6/8/2K5/Q7/8/8/8/8 w - - 0 1', m: 'c7', t: 'Queen delivery!'},
+    {f: '2k5/8/2K5/8/8/8/8/R7 w - - 0 1', m: 'a8', t: 'The Elevator Checkmate!'},
+    {f: 'rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 1', m: 'h4', t: "Black wins in 1 move!"},
+    {f: '4k3/Q7/4K3/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Checkmate the King!'},
+    {f: '8/8/8/8/8/2k5/1p6/1K6 b - - 0 1', m: 'b1', t: 'Turn your pawn into a Queen!'},
+    {f: '3k4/3P4/3K4/8/8/8/8/8 w - - 0 1', m: 'd7', t: 'Push to the end!'},
+    {f: '6k1/8/6K1/8/8/8/7P/R7 w - - 0 1', m: 'a8', t: 'Rook to the rescue!'},
+    {f: '1rb1kbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', m: 'xf7', t: 'Attack the f7 square!'},
+    {f: '5k2/8/5K2/8/8/8/8/Q7 w - - 0 1', m: 'a8', t: 'Long distance checkmate!'},
+    {f: '3k4/8/3K4/8/8/8/8/3R4 w - - 0 1', m: 'd8', t: 'Straight up the middle!'},
+    {f: '8/k7/2K5/1Q6/8/8/8/8 w - - 0 1', m: 'b7', t: 'The Queen lands!'},
+    {f: 'r4rk1/5ppp/8/8/8/8/5PPP/R4RK1 w - - 0 1', m: 'xa8', t: 'Capture the Rook!'},
+    {f: 'q5k1/5ppp/8/8/8/8/5PPP/Q5K1 w - - 0 1', m: 'xa8', t: 'Trade Queens!'},
+    {f: '8/8/8/8/8/k7/1p6/Q1K5 b - - 0 1', m: 'xa1', t: 'Take the big Queen!'},
+    {f: '6k1/8/5KP1/8/8/8/8/8 w - - 0 1', m: 'g7', t: 'Pawn power!'},
+    {f: '2k5/8/8/8/8/2N5/8/2K5 w - - 0 1', m: 'xd5', t: 'Knight jump!'},
+    {f: '1k6/8/8/8/Q7/8/8/1K6 w - - 0 1', m: 'xb4', t: 'Take the free piece!'},
+    {f: '4k3/4p3/8/8/8/8/4P3/4K3 w - - 0 1', m: 'xe7', t: 'Pawn grab!'},
+    {f: '7k/8/7K/8/8/8/8/R7 w - - 0 1', m: 'a8', t: 'One move to win!'},
+    {f: '8/2k5/2P5/2K5/8/8/8/8 w - - 0 1', m: 'c7', t: 'Pawn march!'},
+    {f: '1k6/1p6/1K6/8/8/8/8/Q7 w - - 0 1', m: 'a8', t: 'Corner mate!'},
+    {f: '8/k7/8/8/1N6/8/8/1K6 w - - 0 1', m: 'xc6', t: 'Knight attack!'},
+    {f: 'k7/8/K7/1B6/8/8/8/8 w - - 0 1', m: 'c6', t: 'Bishop check!'},
+    {f: '3k4/8/3K4/8/8/1B6/8/8 w - - 0 1', m: 'f7', t: 'Diagonal win!'},
+    {f: '6k1/5ppp/8/8/8/8/1B4PP/6K1 w - - 0 1', m: 'xg7', t: 'Sniper Bishop!'},
+    {f: 'k7/8/K7/8/8/8/6N1/8 w - - 0 1', m: 'f4', t: 'Knight move!'},
+    {f: '3k4/8/Q2K4/8/8/8/8/8 w - - 0 1', m: 'a8', t: 'Top rank mate!'},
+    {f: '8/8/k7/8/2Q5/8/8/1K6 w - - 0 1', m: 'xa6', t: 'Take the pawn!'},
+    {f: '1k6/8/K7/8/8/8/8/R7 w - - 0 1', m: 'a7', t: 'Trap the King!'},
+    {f: 'rnbqkbnr/1ppppppp/8/p7/P7/8/1PPPPPPP/RNBQKBNR w KQkq - 0 1', m: 'xa5', t: 'Edge pawn capture!'},
+    {f: 'k7/1P6/K7/8/8/8/8/8 w - - 0 1', m: 'b8', t: 'Promote to win!'},
+    {f: '2k5/2P5/2K5/8/8/8/8/8 w - - 0 1', m: 'c7', t: 'One more step!'},
+    {f: '5k2/5P2/5K2/8/8/8/8/8 w - - 0 1', m: 'f7', t: 'Victory push!'},
+    {f: 'k7/5R2/K7/8/8/8/8/8 w - - 0 1', m: 'f8', t: 'The final checkmate!'},
+    {f: '8/8/8/k7/8/8/1R6/1K6 w - - 0 1', m: 'xb2', t: 'Rook capture!'},
+    {f: '4k3/Q7/5K2/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Queen delivery!'},
+    {f: '6k1/Q4ppp/8/8/8/8/5PPP/6K1 w - - 0 1', m: 'a8', t: 'Hallway checkmate!'},
+    {f: '2r3k1/5ppp/8/8/8/8/2R3PP/6K1 b - - 0 1', m: 'xc2', t: 'Take their Rook!'},
+    {f: '3k4/1Q6/3K4/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Queen kiss!'},
+    {f: 'k7/P7/1K6/8/8/8/8/8 b - - 0 1', m: 'xb7', t: 'Eat the pawn!'},
+    {f: 'r1bqkbnr/pppp1ppp/2n5/4N3/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1', m: 'xe5', t: 'Knight trade!'},
+    {f: '8/8/5k2/5P2/5K2/8/8/8 w - - 0 1', m: 'f6', t: 'Pawn push!'}
 ];
 
 let currentIdx = 0;
 let score = 0;
 let game = new Chess();
 let board = null;
-let selectedSquare = null;
+let sourceSquare = null;
 
-function initPuzzle() {
-    const p = puzzleData[currentIdx];
-    game.load(p.f);
-    board.position(p.f);
-    selectedSquare = null;
-    removeHighlights();
-    document.getElementById('feedback').innerText = p.t;
-    document.getElementById('feedback').style.color = 'var(--yellow)';
-    document.getElementById('next-btn').disabled = true;
-    document.getElementById('p-num').innerText = currentIdx + 1;
+function pieceTheme(piece) {
+    return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
 }
 
-function removeHighlights() {
-    $('#board .square-55d63').css('background', '');
+function initPuzzle() {
+    const p = puzzles[currentIdx];
+    game.load(p.f);
+    board.position(p.f);
+    sourceSquare = null;
+    $('.square-55d63').css('background', '');
+    document.getElementById('msg').innerText = p.t;
+    document.getElementById('msg').style.color = "white";
+    document.getElementById('next-btn').disabled = true;
+    document.getElementById('current-num').innerText = currentIdx + 1;
 }
 
 function onSquareClick(square) {
-    if (document.getElementById('next-btn').disabled === false) return;
+    if (!document.getElementById('next-btn').disabled && currentIdx < puzzles.length - 1) return;
 
-    if (selectedSquare === null) {
+    if (sourceSquare === null) {
         if (game.get(square)) {
-            selectedSquare = square;
-            $(`#board .square-${square}`).css('background', 'rgba(255, 220, 0, 0.6)');
+            sourceSquare = square;
+            $('.square-' + square).css('background', 'rgba(241, 196, 15, 0.7)');
         }
     } else {
-        const move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
-        
+        const move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
         if (move) {
-            const correctMove = puzzleData[currentIdx].m;
-            // Check if the move's 'to' or SAN matches our simplified target
-            if (move.san.includes(correctMove) || move.to === correctMove) {
-                document.getElementById('feedback').innerText = "BRILLIANT! 🌟";
-                document.getElementById('feedback').style.color = "#2ecc71";
+            const correct = puzzles[currentIdx].m;
+            if (move.san.includes(correct) || move.to === correct) {
+                document.getElementById('msg').innerText = "EXCELLENT! 🌟";
+                document.getElementById('msg').style.color = "#2ecc71";
                 score++;
                 document.getElementById('score').innerText = score;
                 document.getElementById('next-btn').disabled = false;
-                board.position(game.fen());
             } else {
-                document.getElementById('feedback').innerText = "Try again! 😮";
-                document.getElementById('feedback').style.color = "#ff4136";
-                setTimeout(initPuzzle, 800);
+                document.getElementById('msg').innerText = "Try again! 🧩";
+                document.getElementById('msg').style.color = "var(--yellow)";
+                setTimeout(initPuzzle, 1000);
             }
+            board.position(game.fen());
         }
-        selectedSquare = null;
-        removeHighlights();
+        sourceSquare = null;
+        $('.square-55d63').not('.square-' + square).css('background', '');
     }
 }
 
-function advancePuzzle() {
+function nextPuzzle() {
     currentIdx++;
-    if (currentIdx < puzzleData.length) {
+    if (currentIdx < puzzles.length) {
         initPuzzle();
     } else {
-        document.getElementById('feedback').innerText = "🏆 GRANDMASTER STATUS ACHIEVED!";
+        document.getElementById('msg').innerText = "🏆 MASTER! You finished all 50!";
         document.getElementById('next-btn').style.display = 'none';
     }
 }
 
+function resetCurrent() { initPuzzle(); }
+
 board = Chessboard('board', {
-    position: 'start',
-    showNotation: true,
+    position: puzzles[0].f,
+    pieceTheme: pieceTheme,
     draggable: false
 });
 
-// Bind clicks to squares
 $('#board').on('click', '.square-55d63', function() {
     onSquareClick($(this).data('square'));
 });
 
-// Start game
 initPuzzle();
 </script>
-
 </body>
 </html>
