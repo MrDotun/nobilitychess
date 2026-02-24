@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Adekunle Busayo's Chess Corner</title>
     <style>
-        /* Theme: Navy Blue (#001f3f), Yellow (#FFD700), Wine (#722f37) */
+        /* Your Original Theme: Navy Blue (#001f3f), Yellow (#FFD700), Wine (#722f37) */
         body { 
             background-color: #f4f4f4; 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -45,13 +45,13 @@
             margin: 10px 0; 
             font-size: 1.4em; 
             text-transform: uppercase; 
+            min-height: 1.5em;
         }
 
-        /* Fixed Board Container */
         .board-wrapper {
             position: relative;
             width: 100%;
-            padding-bottom: 110%; /* Maintains aspect ratio */
+            padding-bottom: 110%; 
             background: white;
             border: 5px solid #722f37;
             border-radius: 15px;
@@ -140,7 +140,7 @@
     <div class="board-wrapper">
         <iframe 
             id="chess-board" 
-            src="https://lichess.org/training/frame/61343?theme=green&bg=light" 
+            src="" 
             sandbox="allow-scripts allow-same-origin allow-forms"
             allowtransparency="true">
         </iframe>
@@ -162,22 +162,39 @@
 </div>
 
 <script>
-    // Just a few examples for the list - add your full list here!
     const puzzles = [
         { id: "61343", title: "The Back Rank Mate", hint: "Check the last row! The King is trapped behind his own pawns." },
-        { id: "vS1Nl", title: "Sneaky Knight Fork", hint: "Use your Knight to attack the King and Queen together!" },
-        { id: "q8z4O", title: "The Skewer", hint: "Attack the King. When he moves, take the piece behind him!" },
-        { id: "61444", title: "Scholar's Mate", hint: "Focus your attack on the weak f7 square!" }
+        { id: "61444", title: "Scholar's Mate", hint: "The f7 square is the weakest point. Strike there!" },
+        { id: "61250", title: "Smothered Mate", hint: "The King is trapped by his own pieces. Use the Knight!" },
+        { id: "vS1Nl", title: "Knight Fork", hint: "Attack the King and Queen at the same time!" },
+        { id: "61262", title: "The Pin", hint: "Freeze a piece in place to hit the target behind it." },
+        { id: "61218", title: "Discovered Attack", hint: "Move one piece to 'unmask' an attack from another." },
+        { id: "61233", title: "Deflection", hint: "Lure a defending piece away from its job." },
+        { id: "61280", title: "Remove the Guard", hint: "Take the piece that is protecting the target." },
+        { id: "61312", title: "Queen Sacrifice", hint: "Lose the Queen to win the game!" },
+        { id: "61330", title: "Double Attack", hint: "One move, two different threats!" },
+        { id: "61365", title: "X-Ray Attack", hint: "Your piece is looking 'through' an enemy piece." },
+        { id: "61400", title: "The Skewer", hint: "The King is in front; take the piece behind him!" },
+        { id: "61450", title: "Windmill Attack", hint: "A series of checks that sweeps the board." },
+        { id: "61510", title: "Greek Gift", hint: "Sacrifice on h7 to open the King's door." },
+        { id: "61555", title: "Trapped Piece", hint: "The piece has nowhere to run!" },
+        { id: "61601", title: "Pawn Promotion", hint: "Get that pawn to the end of the board." },
+        { id: "61688", title: "Double Check", hint: "When two pieces check at once, the King MUST move." },
+        { id: "63045", title: "Anastasia's Mate", hint: "Rook and Knight trapping the King on the edge." },
+        { id: "63092", title: "Boden's Mate", hint: "Criss-crossing Bishops!" },
+        { id: "61211", title: "The Spear", hint: "Use your long-range pieces to pierce the defense." }
     ];
 
-    let currentIdx = 0;
+    let currentIdx = Math.floor(Math.random() * puzzles.length);
     let score = parseInt(localStorage.getItem('chessScore')) || 0;
 
     function updateGame() {
         const p = puzzles[currentIdx];
         document.getElementById('puzzle-title').innerText = p.title.toUpperCase();
-        // Updated URL string for maximum compatibility
-        document.getElementById('chess-board').src = "https://lichess.org/training/frame/" + p.id + "?theme=green&bg=light";
+        
+        // This is the specific fix for the 404 issue:
+        document.getElementById('chess-board').src = "https://lichess.org/training/embed/" + p.id + "?theme=green&bg=light";
+        
         document.getElementById('score-val').innerText = score;
         document.getElementById('level-val').innerText = Math.floor(score / 5) + 1;
     }
@@ -188,13 +205,15 @@
         
         const btn = document.getElementById('solved-btn');
         btn.innerText = "COACH IS PROUD! 🏅";
-        btn.style.background = "#white";
+        btn.style.backgroundColor = "white"; 
+        btn.style.color = "#001f3f";
         
         setTimeout(() => {
             btn.innerText = "I SOLVED IT! ✨";
-            btn.style.background = "#FFD700";
+            btn.style.backgroundColor = "#FFD700";
+            btn.style.color = "#001f3f";
             changePuzzle(1);
-        }, 1000);
+        }, 1200);
     }
 
     function getCoachHint() {
@@ -206,7 +225,7 @@
         updateGame();
     }
 
-    // Initialize the first puzzle
+    // Start the game
     updateGame();
 </script>
 
