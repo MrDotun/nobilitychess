@@ -1,42 +1,84 @@
-<div style="
-    max-width: 500px; 
-    margin: 20px auto; 
-    background-color: #000080; /* Navy Blue */
-    border: 5px solid #800020; /* Wine / Burgundy */
-    border-radius: 15px; 
-    padding: 20px; 
-    text-align: center; 
-    box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
-    font-family: 'Georgia', serif;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nobility Chess Puzzles</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000033; /* Dark Navy Background */
+            font-family: 'Georgia', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    <h2 style="color: #FFD700; margin-top: 0;">🏆 Nobility Chess Puzzles 🏆</h2>
-    <p style="color: white; font-style: italic;">Train like a King. No login required!</p>
+        /* The "Nobility" Header */
+        .header {
+            background-color: #800020; /* Wine */
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            border-bottom: 4px solid #FFD700; /* Yellow */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
 
-    <div style="background: white; padding: 10px; border-radius: 8px; display: inline-block;">
-        <div id="csoDpCon"></div>
+        h1 {
+            color: #FFD700; /* Yellow */
+            margin: 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Responsive Puzzle Container */
+        .puzzle-wrapper {
+            flex: 1;
+            width: 95%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 8px solid #800020; /* Wine Border */
+            border-radius: 12px;
+            background: white;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        }
+
+        /* Force the puzzle to fit the screen height */
+        iframe {
+            width: 100%;
+            height: 80vh; /* Takes up 80% of screen height */
+            border: none;
+        }
+
+        .footer-note {
+            color: #FFD700; /* Yellow */
+            margin: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Nobility Chess Puzzles</h1>
     </div>
 
-    <div style="margin-top: 20px;">
-        <button onclick="window.location.reload();" style="
-            background-color: #FFD700; /* Yellow/Gold */
-            color: #800020; /* Wine text */
-            border: none; 
-            padding: 10px 20px; 
-            font-weight: bold; 
-            border-radius: 5px; 
-            cursor: pointer;
-            text-transform: uppercase;">
-            Get New Puzzle
-        </button>
-    </div>
-</div>
+    <p class="footer-note">Click the pieces to move. No Login Needed!</p>
 
-<script type="text/javascript" src="https://www.chessstrategyonline.com/js/widgets.min.js"></script>
-<script type="text/javascript">
-    csoDailyPuzzle({
-        boardStyle: "blue", // Matches your Navy theme
-        pieceStyle: "uscf", 
-        showCoordinates: true,
-        width: 350
-    });
-</script>
+    <div class="puzzle-wrapper">
+        <iframe 
+            src="https://lichess.org/training/frame?theme=burgundy&bg=dark" 
+            allowtransparency="true">
+        </iframe>
+    </div>
+
+</body>
+</html>
