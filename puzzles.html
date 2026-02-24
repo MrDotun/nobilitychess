@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Adekunle's Chess Corner</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cm-chessboard@2.8.4/assets/chessboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    
     <style>
         body { 
             background-color: #f4f4f4; 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex; 
             justify-content: center; 
-            padding: 10px; 
+            align-items: center;
+            min-height: 100vh;
             margin: 0; 
         }
         #chess-game-zone { 
-            max-width: 500px; 
-            width: 100%; 
+            max-width: 400px; 
+            width: 95%; 
             text-align: center; 
             border: 6px solid #FFD700; 
             padding: 20px; 
@@ -24,7 +29,6 @@
             background-color: #001f3f; 
             color: white; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.3); 
-            box-sizing: border-box;
         }
         .stats-bar { 
             display: flex; 
@@ -39,17 +43,16 @@
         }
         #board { 
             width: 100%; 
-            aspect-ratio: 1; 
-            border: 5px solid #722f37; 
-            border-radius: 10px; 
-            background-color: #dee3e6; 
-            touch-action: none; /* Prevents scrolling while playing */
+            margin: 0 auto;
+            border: 4px solid #722f37; 
+            border-radius: 5px;
         }
         #puzzle-title { 
             color: #FFD700; 
             text-transform: uppercase; 
             margin: 15px 0; 
-            font-size: 1.2em; 
+            font-size: 1.1em;
+            letter-spacing: 1px;
         }
         .action-btns { 
             margin-top: 20px; 
@@ -64,33 +67,38 @@
             font-weight: bold; 
             text-transform: uppercase; 
             border-radius: 50px; 
-            padding: 15px; 
-            width: 90%; 
+            transition: transform 0.2s, opacity 0.2s;
         }
+        button:active { transform: scale(0.95); }
+
         #hint-btn { 
             background-color: #722f37; 
             color: white; 
-            width: 70%; 
-            padding: 10px; 
-            font-size: 0.8em; 
+            width: 80%; 
+            padding: 12px; 
+            font-size: 0.9em; 
         }
         .nav-btns { 
             margin-top: 20px; 
             display: flex; 
             justify-content: space-between; 
+            width: 100%;
         }
         .nav-btn { 
-            background: #555; 
+            background: #444; 
             color: white; 
-            padding: 8px 15px; 
+            padding: 10px; 
             width: 45%; 
         }
         .coach-footer { 
-            font-size: 0.8em; 
-            color: #aaa; 
-            margin-top: 15px; 
+            font-size: 0.85em; 
+            color: #bdc3c7; 
+            margin-top: 20px; 
             font-style: italic; 
         }
+        /* Custom board square colors to match theme */
+        .white-1e1d7 { background-color: #dee3e6; }
+        .black-3c85d { background-color: #8ca2ad; }
     </style>
 </head>
 <body>
@@ -101,93 +109,89 @@
         <div>🎖️ Level: <span id="level-val">1</span></div>
     </div>
 
-    <h2 id="puzzle-title">LOADING...</h2>
+    <h2 id="puzzle-title">Solving...</h2>
+    
     <div id="board"></div>
 
     <div class="action-btns">
-        <button id="hint-btn" onclick="getCoachHint()">COACH'S HINT 💡</button>
+        <button id="hint-btn" onclick="showHint()">COACH'S HINT 💡</button>
     </div>
 
     <div class="nav-btns">
-        <button class="nav-btn" onclick="changePuzzle(-1)">⬅️ PREV</button>
-        <button class="nav-btn" onclick="changePuzzle(1)" style="background:#722f37;">SKIP ➡️</button>
+        <button class="nav-btn" onclick="prevPuzzle()">⬅️ PREV</button>
+        <button class="nav-btn" onclick="nextPuzzle()" style="background:#722f37;">SKIP ➡️</button>
     </div>
 
     <div class="coach-footer">Training by <b>Coach Adekunle Busayo</b></div>
 </div>
 
-<script type="module">
-    import {Chessboard, COLOR, INPUT_EVENT_TYPE} from "https://cdn.jsdelivr.net/npm/cm-chessboard@2.8.4/src/cm-chessboard/Chessboard.js";
-
+<script>
     const puzzles = [
-        { title: "Back Rank Mate", fen: "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1", hint: "The back rank is weak!", solution: {from: "d1", to: "d8"} },
-        { title: "Scholar's Mate", fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1", hint: "Target the f7 pawn!", solution: {from: "h5", to: "f7"} },
-        { title: "Knight Fork", fen: "r3k2r/ppp1qppp/2n5/3p4/3P4/2N1PN2/PP3PPP/R1BQK2R w KQkq - 0 1", hint: "The d5 square is juicy!", solution: {from: "c3", to: "d5"} },
-        { title: "Smothered Mate", fen: "6rk/5Npp/8/8/8/8/8/7K w - - 0 1", hint: "The King has no move!", solution: {from: "f7", to: "h6"} },
-        { title: "Absolute Pin", fen: "4k3/8/8/8/8/8/4r3/4K1R1 w - - 0 1", hint: "Freeze that Rook!", solution: {from: "g1", to: "e1"} },
-        { title: "Queen Fork", fen: "rnb1kbnr/pp3ppp/8/2ppq3/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 1", hint: "Knight to d5!", solution: {from: "c3", to: "d5"} },
-        { title: "Rook Skewer", fen: "4k3/8/8/8/8/8/r7/3K3R w - - 0 1", hint: "Check on h8!", solution: {from: "h1", to: "h8"} },
-        { title: "Fool's Mate", fen: "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 1", hint: "Queen to h4!", solution: {from: "d8", to: "h4"} },
-        { title: "Bishop Pin", fen: "4k3/8/8/3q4/8/8/1B6/4K3 w - - 0 1", hint: "Pin the Queen to the King.", solution: {from: "b2", to: "d4"} },
-        { title: "Deflection", fen: "2r3k1/5ppp/8/8/8/8/5PPP/2R3K1 w - - 0 1", hint: "Force the Rook to leave the defense.", solution: {from: "c1", to: "c8"} },
-        { title: "Greek Gift", fen: "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2NBPN2/PP3PPP/R2QK2R w KQ - 0 1", hint: "Sacrifice on h7.", solution: {from: "d3", to: "h7"} },
-        { title: "Pawn Promotion", fen: "8/4P3/8/k7/8/8/8/K7 w - - 0 1", hint: "Push the pawn!", solution: {from: "e7", to: "e8"} },
-        { title: "X-Ray Attack", fen: "4r1k1/5ppp/8/8/8/8/4R3/4R1K1 w - - 0 1", hint: "Double the pressure.", solution: {from: "e2", to: "e8"} },
-        { title: "Zwischenzug", fen: "r1bqk2r/pppp1ppp/2n2n2/4p3/1b1PP3/2N2N2/PPP2PPP/R1BQKB1R w KQkq - 0 1", hint: "The in-between move.", solution: {from: "d4", to: "e5"} },
-        { title: "Remove Defender", fen: "2r1k2r/ppp1qppp/2n5/3p4/1b1P4/2N1PN2/PP3PPP/R1BQK2R w KQkq - 0 1", hint: "Take the defender of d5.", solution: {from: "c3", to: "d5"} },
-        { title: "Double Check", fen: "r1bq1rk1/pp1nbppp/2p1pn2/3p2B1/2PP4/2NBPN2/PP3PPP/R2QK2R w KQ - 0 1", hint: "Discover a check.", solution: {from: "d3", to: "h7"} },
-        { title: "Windmill", fen: "5rk1/5ppp/b7/8/8/1R6/2R1BPPP/6K1 w - - 0 1", hint: "Discover attack on the Bishop.", solution: {from: "e2", to: "a6"} },
-        { title: "Anastasia's Mate", fen: "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1", hint: "Trap the King on the edge.", solution: {from: "d1", to: "d8"} },
-        { title: "Boden's Mate", fen: "r1bqk2r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 1", hint: "The criss-crossing Bishops.", solution: {from: "e5", to: "f7"} },
-        { title: "Legal's Mate", fen: "r1bqk2r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 1", hint: "Jump in with the Knight!", solution: {from: "e5", to: "f7"} }
+        { title: "Back Rank Mate", fen: "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1", hint: "The back rank is weak!", move: {from: 'd1', to: 'd8'} },
+        { title: "Scholar's Mate", fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1", hint: "Target the f7 pawn!", move: {from: 'h5', to: 'f7'} },
+        { title: "Knight Fork", fen: "r3k2r/ppp1qppp/2n5/3p4/3P4/2N1PN2/PP3PPP/R1BQK2R w KQkq - 0 1", hint: "Attack the Queen and King simultaneously!", move: {from: 'c3', to: 'd5'} },
+        { title: "Smothered Mate", fen: "6rk/5Npp/8/8/8/8/8/7K w - - 0 1", hint: "The King is trapped by its own pieces!", move: {from: 'f7', to: 'h6'} }
     ];
 
     let currentIdx = 0;
-    let score = parseInt(localStorage.getItem('chessScore')) || 0;
+    let score = 0;
+    let board = null;
+    let game = new Chess();
 
-    // Initialize Board with CLICK SUPPORT
-    const board = new Chessboard(document.getElementById("board"), {
-        position: puzzles[currentIdx].fen,
-        sprite: {url: "https://cdn.jsdelivr.net/npm/cm-chessboard@2.8.4/assets/images/chessboard-sprite-chess.com.svg"},
-        orientation: COLOR.white,
-        responsive: true
-    });
-
-    function updateUI() {
-        const p = puzzles[currentIdx];
-        document.getElementById('puzzle-title').innerText = p.title;
-        document.getElementById('score-val').innerText = score;
-        document.getElementById('level-val').innerText = Math.floor(score / 5) + 1;
-        board.setPosition(p.fen);
+    function onDrop(source, target) {
+        const solution = puzzles[currentIdx].move;
+        
+        // Check if the move matches the solution
+        if (source === solution.from && target === solution.to) {
+            score += 1;
+            document.getElementById('score-val').innerText = score;
+            document.getElementById('level-val').innerText = Math.floor(score / 3) + 1;
+            
+            setTimeout(() => {
+                alert("COACH IS PROUD! 🏅 Perfect Move.");
+                nextPuzzle();
+            }, 250);
+        } else {
+            alert("Not quite! Coach says: Try a different approach.");
+            return 'snapback';
+        }
     }
 
-    // CLICK-TO-MOVE LOGIC
-    board.enableMoveInput((event) => {
-        if (event.type === INPUT_EVENT_TYPE.moveDone) {
-            const sol = puzzles[currentIdx].solution;
-            if (event.squareFrom === sol.from && event.squareTo === sol.to) {
-                score++;
-                localStorage.setItem('chessScore', score);
-                alert("COACH IS PROUD! 🏅");
-                currentIdx = (currentIdx + 1) % puzzles.length;
-                updateUI();
-                return true; 
-            } else {
-                alert("Not quite! Try again.");
-                board.setPosition(puzzles[currentIdx].fen);
-                return false;
-            }
-        }
-        return true;
-    });
+    function updateBoard() {
+        const p = puzzles[currentIdx];
+        document.getElementById('puzzle-title').innerText = p.title;
+        game.load(p.fen);
+        board.position(p.fen);
+    }
 
-    window.getCoachHint = () => alert("👨‍🏫 COACH SAYS: " + puzzles[currentIdx].hint);
-    window.changePuzzle = (step) => {
-        currentIdx = (currentIdx + step + puzzles.length) % puzzles.length;
-        updateUI();
+    function showHint() {
+        alert("👨‍🏫 COACH SAYS: " + puzzles[currentIdx].hint);
+    }
+
+    function nextPuzzle() {
+        currentIdx = (currentIdx + 1) % puzzles.length;
+        updateBoard();
+    }
+
+    function prevPuzzle() {
+        currentIdx = (currentIdx - 1 + puzzles.length) % puzzles.length;
+        updateBoard();
+    }
+
+    // Initialize Board
+    const config = {
+        draggable: true,
+        position: 'start',
+        onDrop: onDrop,
+        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     };
+    
+    board = Chessboard('board', config);
+    updateBoard();
 
-    updateUI();
+    // Handle window resize
+    $(window).resize(board.resize);
 </script>
+
 </body>
 </html>
