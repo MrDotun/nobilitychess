@@ -57,19 +57,19 @@
         .eval-container {
             width: 30px;
             height: 450px;
-            background: #444; /* Black advantage color */
+            background: #444; 
             border: 4px solid var(--navy);
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            display: none; /* Hidden on very small screens */
+            display: none; 
         }
         @media (min-width: 600px) { .eval-container { display: block; } }
 
         #eval-fill {
             width: 100%;
             height: 50%;
-            background: white; /* White advantage color */
+            background: white; 
             position: absolute;
             bottom: 0;
             transition: height 0.6s ease-in-out;
@@ -212,42 +212,26 @@
     var $meter = $('#meter-text');
     var sourceSquare = null;
 
-    function onDragStart (source, piece, position, orientation) {
-        if (game.game_over()) return false;
-        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-            return false;
-        }
-    }
-
-    function onDrop (source, target) {
-        $('.square-55d63').removeClass('highlight-square');
-        var move = game.move({
-            from: source,
-            to: target,
-            promotion: 'q' 
-        });
-
-        if (move === null) return 'snapback';
-        sourceSquare = null;
-        updatePage();
-    }
-
-    function onSnapEnd () {
-        board.position(game.fen());
+    // Remove highlighting function
+    function removeHighlights() {
+        $('#myBoard .square-55d63').removeClass('highlight-square');
     }
 
     // Click to move logic
     $('#myBoard').on('click', '.square-55d63', function() {
         var square = $(this).attr('data-square');
 
+        // Step 1: Selecting a piece
         if (sourceSquare === null) {
             var piece = game.get(square);
+            // Only allow selecting a piece of the current turn's color
             if (piece && piece.color === game.turn()) {
                 sourceSquare = square;
                 $(this).addClass('highlight-square');
             }
-        } else {
+        } 
+        // Step 2: Attempting a move or switching selection
+        else {
             var move = game.move({
                 from: sourceSquare,
                 to: square,
@@ -255,20 +239,20 @@
             });
 
             if (move === null) {
-                // If invalid move, but clicked another own piece, switch selection
+                // If invalid move, check if user clicked another of their own pieces to switch selection
                 var piece = game.get(square);
                 if (piece && piece.color === game.turn()) {
-                    $('.square-55d63').removeClass('highlight-square');
+                    removeHighlights();
                     sourceSquare = square;
                     $(this).addClass('highlight-square');
                 } else {
-                    // Clicked empty or enemy square (invalid move)
-                    $('.square-55d63').removeClass('highlight-square');
+                    // Clicked empty or enemy square (invalid move), deselect everything
+                    removeHighlights();
                     sourceSquare = null;
                 }
             } else {
-                // Valid click move
-                $('.square-55d63').removeClass('highlight-square');
+                // Valid move made
+                removeHighlights();
                 sourceSquare = null;
                 board.position(game.fen());
                 updatePage();
@@ -321,7 +305,7 @@
         game.reset();
         board.start();
         sourceSquare = null;
-        $('.square-55d63').removeClass('highlight-square');
+        removeHighlights();
         updatePage();
     }
 
@@ -329,7 +313,7 @@
         game.undo();
         board.position(game.fen());
         sourceSquare = null;
-        $('.square-55d63').removeClass('highlight-square');
+        removeHighlights();
         updatePage();
     }
 
@@ -338,7 +322,7 @@
         if (game.load(fString)) {
             board.position(fString);
             sourceSquare = null;
-            $('.square-55d63').removeClass('highlight-square');
+            removeHighlights();
             updatePage();
         } else {
             alert("Oops! That code isn't working. Try copying it again.");
@@ -346,11 +330,8 @@
     }
 
     var config = {
-        draggable: true,
+        draggable: false, // Disabled dragging
         position: 'start',
-        onDragStart: onDragStart,
-        onDrop: onDrop,
-        onSnapEnd: onSnapEnd,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     };
     board = Chessboard('myBoard', config);
