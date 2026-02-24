@@ -1,1 +1,388 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessments | Nobility Chess Academy</title>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    
+    <style>
+        :root {
+            --navy: #001f3f;
+            --wine: #722f37;
+            --yellow: #FFD700;
+            --white: #ffffff;
+            --sky-blue: #e3f2fd;
+            --grass-green: #4caf50;
+        }
+
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            margin: 0;
+            background-color: var(--sky-blue);
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--navy), var(--wine));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 8px solid var(--yellow);
+            border-radius: 0 0 20px 20px;
+        }
+
+        header h1 { margin: 0; letter-spacing: 2px; text-transform: uppercase; font-size: 2rem; }
+        header p { color: var(--yellow); margin: 8px 0 0; font-style: italic; font-size: 1.1rem; }
+
+        nav {
+            background: var(--wine);
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        
+        nav a:hover { background: var(--yellow); color: var(--navy); }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 30px;
+            padding: 0 15px;
+        }
+
+        @media (min-width: 900px) {
+            .main-layout { flex-direction: row; align-items: flex-start; }
+        }
+
+        /* Menu Section */
+        #topic-menu {
+            flex: 1;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .chapter-title {
+            background: var(--grass-green);
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            box-shadow: 0 4px 0 #388e3c;
+        }
+
+        .topic-btn {
+            width: 100%;
+            background: var(--white);
+            color: var(--navy);
+            padding: 15px;
+            text-align: left;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .topic-btn:hover, .topic-btn.active { 
+            border-color: var(--wine); 
+            background-color: #fff9c4; 
+            transform: scale(1.02); 
+        }
+
+        /* Quiz Section */
+        #quiz-section {
+            flex: 2;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border: 4px solid var(--navy);
+            display: none; /* Hidden until topic selected */
+        }
+
+        #quiz-title {
+            color: var(--wine);
+            font-size: 1.8rem;
+            margin-top: 0;
+            border-bottom: 3px dashed var(--yellow);
+            padding-bottom: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--navy);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--navy);
+        }
+
+        .option-label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px;
+            background: var(--white);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option-label:hover { background: var(--sky-blue); }
+        .option-label input { margin-right: 10px; }
+
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
+        .incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+
+        .btn-tool {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px var(--wine);
+            transition: 0.2s;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .btn-tool:active { transform: translateY(3px); box-shadow: 0 1px var(--wine); }
+
+        .btn-submit {
+            background: var(--grass-green);
+            box-shadow: 0 4px #388e3c;
+        }
+        .btn-submit:active { box-shadow: 0 1px #388e3c; }
+
+        #results-area {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid var(--yellow);
+        }
+
+        #score-display { font-size: 1.5rem; font-weight: bold; color: var(--navy); margin-bottom: 15px; }
+
+        footer { text-align: center; padding: 40px; color: var(--navy); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Nobility Interactive Hall</h1>
+    <p>Academy of Mr. Adekunle Busayo</p>
+</header>
+
+<nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="classroom.html">🏫 Classroom</a>
+    <a href="puzzles.html">🧩 Puzzles</a>
+</nav>
+
+<div class="main-layout">
+    <section id="topic-menu">
+        <div class="chapter-title">🛡️ Select a Quiz</div>
+        <button class="topic-btn" onclick="loadQuiz('Development', this)">Development</button>
+        <button class="topic-btn" onclick="loadQuiz('Castling', this)">Castling</button>
+        <button class="topic-btn" onclick="loadQuiz('Endgame', this)">Endgame Planning</button>
+        <button class="topic-btn" onclick="loadQuiz('Center', this)">Center Control</button>
+        <button class="topic-btn" onclick="loadQuiz('Pins', this)">Pins</button>
+        <button class="topic-btn" onclick="loadQuiz('Forks', this)">Forks</button>
+        </section>
+
+    <section id="quiz-section">
+        <h2 id="quiz-title">Quiz Title</h2>
+        <div id="questions-container"></div>
+        
+        <button class="btn-tool" id="grade-btn" onclick="gradeQuiz()">📝 Grade My Quiz!</button>
+        
+        <div id="results-area">
+            <div id="score-display"></div>
+            <p>Ready to send your score to Mr. Adekunle Busayo?</p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSekiG39AhkScM8UWkqzZF9o3RhGLK-ehF6td-NoZuA3D5wWFw/viewform?usp=pp_url" target="_blank" class="btn-tool btn-submit">✅ Submit Score</a>
+        </div>
+    </section>
+</div>
+
+<footer>
+    &copy; 2026 Nobility Chess Academy | Instructor: Mr. Adekunle Busayo
+</footer>
+
+<script>
+    // Quiz Database (5 Questions per topic)
+    const quizData = {
+        "Development": [
+            { q: "What does 'Development' mean in chess?", options: ["Hiding your King", "Bringing pieces out from the back row", "Sacrificing your Queen", "Moving only Pawns"], a: 1 },
+            { q: "Which pieces should you usually develop first?", options: ["Rooks and Queen", "Knights and Bishops", "King and Pawns", "Only the Queen"], a: 1 },
+            { q: "Why is it bad to bring your Queen out too early?", options: ["She can be attacked easily by smaller pieces", "She gets tired", "It is against the rules", "She moves too slowly"], a: 0 },
+            { q: "How many times should you ideally move a piece in the opening?", options: ["As many as possible", "Three times", "Once, until all pieces are developed", "Never"], a: 2 },
+            { q: "What is a 'sleeping' piece?", options: ["A piece that has been captured", "A piece still on its starting square", "A piece defending the King", "A Pawn"], a: 1 }
+        ],
+        "Castling": [
+            { q: "Which two pieces are involved in Castling?", options: ["King and Queen", "Queen and Rook", "King and Rook", "King and Bishop"], a: 2 },
+            { q: "What is the main purpose of Castling?", options: ["To attack the enemy Queen", "To keep the King safe and activate the Rook", "To trade pieces", "To checkmate"], a: 1 },
+            { q: "Can you castle if your King has already moved?", options: ["Yes, always", "Only on the Queenside", "No, never", "Only if you move him back"], a: 2 },
+            { q: "Can you castle if you are in Check?", options: ["Yes", "No", "Only if it blocks the check", "Only if it is early in the game"], a: 1 },
+            { q: "How many squares does the King move when Castling?", options: ["One square", "Two squares", "Three squares", "Four squares"], a: 1 }
+        ],
+        "Endgame": [
+            { q: "In the endgame, what role does the King play?", options: ["He stays hidden", "He becomes an active attacker", "He must be captured", "He cannot move"], a: 1 },
+            { q: "What is the primary goal for Pawns in the endgame?", options: ["To capture the enemy King", "To promote to a Queen", "To stay on the 2nd rank", "To block their own pieces"], a: 1 },
+            { q: "What is 'Stalemate'?", options: ["A win for White", "A win for Black", "A draw where a player has no legal moves but is not in check", "A checkmate"], a: 2 },
+            { q: "Which piece is usually the most important to promote a pawn?", options: ["The King helping the Pawn advance", "A Rook staying behind", "A Knight jumping around", "A Bishop on the opposite color"], a: 0 },
+            { q: "What does 'Zugzwang' mean in the endgame?", options: ["A powerful attack", "Being forced to make a bad move", "A draw offer", "Promoting a pawn"], a: 1 }
+        ],
+        "Center": [
+            { q: "Which squares make up the center of the board?", options: ["a1, h1, a8, h8", "e4, d4, e5, d5", "f2, g2, h2, e2", "a4, a5, h4, h5"], a: 1 },
+            { q: "Why is controlling the center important?", options: ["It looks nice", "It gives your pieces more mobility and space", "It guarantees a win immediately", "It hides your King"], a: 1 },
+            { q: "Which piece naturally controls the center best from the start?", options: ["The Rook", "The Knight on f3 or c3", "The King", "The a-pawn"], a: 1 },
+            { q: "If you don't control the center, what usually happens?", options: ["Your pieces get cramped", "You automatically win", "You get an extra turn", "The board flips"], a: 0 },
+            { q: "What is the 'Hypermodern' way to control the center?", options: ["With Pawns directly", "From a distance using Bishops and Knights", "By sacrificing the Queen", "By not moving at all"], a: 1 }
+        ],
+        "Pins": [
+            { q: "What is a Pin in chess?", options: ["Attacking a piece that cannot move without exposing a more valuable piece", "Forcing the King to move", "Trading two Knights", "A special Pawn move"], a: 0 },
+            { q: "Which pieces can create a Pin?", options: ["Knights and Pawns", "Queens, Rooks, and Bishops", "Kings only", "Only Rooks"], a: 1 },
+            { q: "What is an 'Absolute Pin'?", options: ["When a piece is pinned to the Queen", "When a piece is pinned to the King and legally cannot move", "When a Rook pins a Knight", "A pin that can be broken easily"], a: 1 },
+            { q: "What is a 'Relative Pin'?", options: ["A pin against the King", "A pin against a piece other than the King (like a Queen)", "A pin involving relatives", "A broken pin"], a: 1 },
+            { q: "How do you usually exploit a pinned piece?", options: ["Leave it alone", "Attack it again with another piece", "Trade your Queen for it", "Move your King towards it"], a: 1 }
+        ],
+        "Forks": [
+            { q: "What is a Fork?", options: ["Eating food while playing", "One piece attacking two or more enemy pieces at the same time", "Moving two pieces at once", "A type of draw"], a: 1 },
+            { q: "Which piece is most famous for its tricky Forks?", options: ["The King", "The Knight", "The Rook", "The Pawn"], a: 1 },
+            { q: "Can a Pawn execute a Fork?", options: ["No, never", "Yes, by attacking diagonally in two directions", "Only on the 8th rank", "Only if it captures first"], a: 1 },
+            { q: "What makes a 'Royal Fork' so special?", options: ["It is done by the King", "It attacks the King and the Queen at the same time", "It involves Castling", "It happens on the first move"], a: 1 },
+            { q: "How can you defend against a Fork?", options: ["Move the most valuable piece away", "Counter-attack with check", "Capture the attacking piece", "All of the above"], a: 3 }
+        ]
+    };
+
+    let currentTopic = "";
+
+    function loadQuiz(topic, btnElement) {
+        currentTopic = topic;
+        
+        // UI Updates for buttons
+        $('.topic-btn').removeClass('active');
+        $(btnElement).addClass('active');
+
+        // Show section and set title
+        $('#quiz-section').show();
+        $('#quiz-title').html(`📝 ${$(btnElement).text()} Quiz`);
+        $('#results-area').hide();
+        $('#grade-btn').show();
+
+        const container = $('#questions-container');
+        container.empty();
+
+        const questions = quizData[topic];
+
+        // Generate HTML for each question
+        questions.forEach((item, qIndex) => {
+            let optionsHtml = '';
+            item.options.forEach((opt, oIndex) => {
+                optionsHtml += `
+                    <label class="option-label" id="label-${qIndex}-${oIndex}">
+                        <input type="radio" name="q${qIndex}" value="${oIndex}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            container.append(`
+                <div class="question-block" id="block-${qIndex}">
+                    <div class="question-text">${qIndex + 1}. ${item.q}</div>
+                    ${optionsHtml}
+                </div>
+            `);
+        });
+
+        // Scroll to quiz on mobile
+        if (window.innerWidth < 900) {
+            window.scrollTo({top: document.getElementById('quiz-section').offsetTop - 20, behavior: 'smooth'});
+        }
+    }
+
+    function gradeQuiz() {
+        if (!currentTopic) return;
+
+        const questions = quizData[currentTopic];
+        let score = 0;
+        let allAnswered = true;
+
+        questions.forEach((item, qIndex) => {
+            const selectedOpt = $(`input[name="q${qIndex}"]:checked`).val();
+            
+            if (selectedOpt === undefined) {
+                allAnswered = false;
+            } else {
+                const selectedInt = parseInt(selectedOpt);
+                // Reset colors for this block
+                $(`#block-${qIndex} .option-label`).removeClass('correct incorrect');
+
+                // Color correct answer green
+                $(`#label-${qIndex}-${item.a}`).addClass('correct');
+
+                // Check if user was right
+                if (selectedInt === item.a) {
+                    score++;
+                } else {
+                    // Color wrong answer red
+                    $(`#label-${qIndex}-${selectedInt}`).addClass('incorrect');
+                }
+            }
+        });
+
+        if (!allAnswered) {
+            alert("A Noble player completes their mission! Please answer all 5 questions before grading.");
+            return;
+        }
+
+        // Hide grade button and show results
+        $('#grade-btn').hide();
+        $('#results-area').show();
+        
+        // Display kid-friendly score messages
+        let message = "";
+        if (score === 5) message = "Perfect Score! You are a Grandmaster! 🏆";
+        else if (score >= 3) message = "Great Job! You have a Noble mind! 🌟";
+        else message = "Good try! Keep studying the board! ♟️";
+
+        $('#score-display').html(`You scored: ${score} / 5<br><span style="font-size: 1.1rem; font-weight: normal; color: #555;">${message}</span>`);
+    }
+</script>
+
+</body>
+</html>
