@@ -5,73 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Adekunle Busayo's Chess Corner</title>
     <style>
-        /* Theme Colors: Navy Blue (#001f3f), Yellow (#FFD700), Wine (#722f37) */
-        body { background-color: #f4f4f4; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; padding: 20px; }
+        /* Theme: Navy Blue (#001f3f), Yellow (#FFD700), Wine (#722f37) */
+        body { 
+            background-color: #f4f4f4; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            padding: 10px; 
+            margin: 0;
+        }
         
         #chess-game-zone { 
-            max-width: 550px; width: 100%; text-align: center; 
-            border: 6px solid #FFD700; padding: 25px; border-radius: 30px; 
-            background-color: #001f3f; /* Navy Blue Background */
+            max-width: 500px; 
+            width: 100%; 
+            text-align: center; 
+            border: 6px solid #FFD700; 
+            padding: 20px; 
+            border-radius: 30px; 
+            background-color: #001f3f; 
             color: white;
             box-shadow: 0 15px 40px rgba(0,0,0,0.3); 
+            box-sizing: border-box;
         }
 
         .stats-bar { 
-            display: flex; justify-content: space-around; margin-bottom: 20px; 
-            background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 50px; 
-            border: 2px solid #FFD700; color: #FFD700; font-weight: bold; font-size: 1.1em;
+            display: flex; 
+            justify-content: space-around; 
+            margin-bottom: 15px; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 10px; 
+            border-radius: 50px; 
+            border: 2px solid #FFD700; 
+            color: #FFD700; 
+            font-weight: bold;
         }
 
-        #puzzle-title { color: #FFD700; margin: 15px 0; font-size: 1.6em; text-transform: uppercase; letter-spacing: 1px; }
+        #puzzle-title { 
+            color: #FFD700; 
+            margin: 10px 0; 
+            font-size: 1.4em; 
+            text-transform: uppercase; 
+        }
 
-        iframe { border: 5px solid #722f37; border-radius: 15px; width: 100%; max-width: 400px; height: 440px; background: white; }
+        /* Fixed Board Container */
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 110%; /* Maintains aspect ratio */
+            background: white;
+            border: 5px solid #722f37;
+            border-radius: 15px;
+            overflow: hidden;
+        }
 
-        .action-btns { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        iframe { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-        button { cursor: pointer; border: none; transition: all 0.2s; font-weight: bold; text-transform: uppercase; }
-        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .action-btns { 
+            margin-top: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            align-items: center; 
+        }
+
+        button { 
+            cursor: pointer; 
+            border: none; 
+            transition: all 0.2s; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+        }
 
         #solved-btn { 
-            background-color: #FFD700; color: #001f3f; width: 80%;
-            padding: 18px; border-radius: 50px; font-size: 1.3em; 
-            box-shadow: 0 6px #b8860b; 
+            background-color: #FFD700; 
+            color: #001f3f; 
+            width: 90%;
+            padding: 15px; 
+            border-radius: 50px; 
+            font-size: 1.2em; 
+            box-shadow: 0 5px #b8860b; 
         }
 
         #hint-btn { 
-            background-color: #722f37; color: white; width: 60%;
-            padding: 12px; border-radius: 50px; font-size: 1em; 
-            box-shadow: 0 5px #4a1e24; 
+            background-color: #722f37; 
+            color: white; 
+            width: 70%;
+            padding: 10px; 
+            border-radius: 50px; 
+            font-size: 0.9em; 
+            box-shadow: 0 4px #4a1e24; 
         }
 
-        .nav-btns { margin-top: 30px; display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; }
-        .nav-btn { background: #555; color: white; padding: 10px 20px; border-radius: 10px; font-size: 0.9em; }
-        .next-btn { background: #722f37; color: white; }
-
-        #hall-of-fame { 
-            display: none; margin-bottom: 20px; background: #FFD700; 
-            color: #001f3f; border-radius: 15px; padding: 15px; 
+        .nav-btns { 
+            margin-top: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            border-top: 1px solid rgba(255,255,255,0.2); 
+            padding-top: 15px; 
         }
 
-        .coach-footer { font-size: 0.85em; color: #aaa; margin-top: 20px; font-style: italic; }
+        .nav-btn { 
+            background: #555; 
+            color: white; 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            font-size: 0.8em; 
+        }
+
+        .coach-footer { 
+            font-size: 0.8em; 
+            color: #aaa; 
+            margin-top: 15px; 
+            font-style: italic; 
+        }
     </style>
 </head>
 <body>
 
 <div id="chess-game-zone">
-    <div id="hall-of-fame">
-        <h3 style="margin:0;">🏆 HALL OF FAME 🏆</h3>
-        <div id="champ-name" style="font-size: 1.5em; font-weight: bold; margin: 10px 0;"></div>
-        <button onclick="printCert()" style="background:#001f3f; color:white; padding:5px 15px; border-radius:5px; font-size: 0.8em;">Print Official Certificate 🎓</button>
-    </div>
-
     <div class="stats-bar">
         <div>🌟 Stars: <span id="score-val">0</span>/50</div>
         <div>🎖️ Level: <span id="level-val">1</span></div>
     </div>
 
-    <h2 id="puzzle-title">Mate in 1</h2>
+    <h2 id="puzzle-title">THE BACK RANK MATE</h2>
 
-    <iframe id="chess-board" src="" frameborder="0"></iframe>
+    <div class="board-wrapper">
+        <iframe 
+            id="chess-board" 
+            src="https://lichess.org/training/frame/61343?theme=green&bg=light" 
+            sandbox="allow-scripts allow-same-origin allow-forms"
+            allowtransparency="true">
+        </iframe>
+    </div>
 
     <div class="action-btns">
         <button id="solved-btn" onclick="markSolved()">I SOLVED IT! ✨</button>
@@ -79,62 +152,49 @@
     </div>
 
     <div class="nav-btns">
-        <button class="nav-btn" onclick="changePuzzle(-1)">⬅️ PREVIOUS</button>
-        <button class="nav-btn next-btn" onclick="changePuzzle(1)">SKIP NEXT ➡️</button>
+        <button class="nav-btn" onclick="changePuzzle(-1)">⬅️ PREV</button>
+        <button class="nav-btn" onclick="changePuzzle(1)" style="background:#722f37;">SKIP ➡️</button>
     </div>
 
     <div class="coach-footer">
-        Training curated by <b>Coach Adekunle Busayo</b>
+        Training by <b>Coach Adekunle Busayo</b>
     </div>
 </div>
 
 <script>
+    // Just a few examples for the list - add your full list here!
     const puzzles = [
-        // (The full list of 50 IDs should be here as provided in previous steps)
-        { id: "61343", title: "The Back Rank Mate", hint: "The King is stuck! Use your Rook on the last row." },
-        { id: "vS1Nl", title: "Sneaky Knight Fork", hint: "Can your Knight attack the King and Queen at the same time?" },
-        { id: "q8z4O", title: "The Skewer", hint: "Attack the King. When he moves, grab the piece behind him!" },
-        { id: "61444", title: "Scholar's Mate", hint: "Look at that weak f7 pawn next to the King!" }
-        // ... (Keep adding the other IDs into this array)
+        { id: "61343", title: "The Back Rank Mate", hint: "Check the last row! The King is trapped behind his own pawns." },
+        { id: "vS1Nl", title: "Sneaky Knight Fork", hint: "Use your Knight to attack the King and Queen together!" },
+        { id: "q8z4O", title: "The Skewer", hint: "Attack the King. When he moves, take the piece behind him!" },
+        { id: "61444", title: "Scholar's Mate", hint: "Focus your attack on the weak f7 square!" }
     ];
 
     let currentIdx = 0;
-    let score = localStorage.getItem('chessScore') ? parseInt(localStorage.getItem('chessScore')) : 0;
+    let score = parseInt(localStorage.getItem('chessScore')) || 0;
 
     function updateGame() {
         const p = puzzles[currentIdx];
-        document.getElementById('puzzle-title').innerText = p.title;
-        document.getElementById('chess-board').src = `https://lichess.org/training/frame/${p.id}?theme=green&bg=light`;
+        document.getElementById('puzzle-title').innerText = p.title.toUpperCase();
+        // Updated URL string for maximum compatibility
+        document.getElementById('chess-board').src = "https://lichess.org/training/frame/" + p.id + "?theme=green&bg=light";
         document.getElementById('score-val').innerText = score;
         document.getElementById('level-val').innerText = Math.floor(score / 5) + 1;
-        
-        if (score >= 50) {
-            const name = localStorage.getItem('chessChampName');
-            if (name) {
-                document.getElementById('hall-of-fame').style.display = 'block';
-                document.getElementById('champ-name').innerText = name;
-            }
-        }
     }
 
     function markSolved() {
         score++;
         localStorage.setItem('chessScore', score);
         
-        if (score === 50) {
-            const n = prompt("AMAZING! You reached 50 Stars! Enter your name for the Hall of Fame:");
-            if (n) localStorage.setItem('chessChampName', n);
-        }
-
         const btn = document.getElementById('solved-btn');
         btn.innerText = "COACH IS PROUD! 🏅";
-        btn.style.background = "#fff";
+        btn.style.background = "#white";
         
         setTimeout(() => {
             btn.innerText = "I SOLVED IT! ✨";
             btn.style.background = "#FFD700";
             changePuzzle(1);
-        }, 1200);
+        }, 1000);
     }
 
     function getCoachHint() {
@@ -146,23 +206,9 @@
         updateGame();
     }
 
-    function printCert() {
-        const name = localStorage.getItem('chessChampName') || "Chess Hero";
-        const w = window.open('', '_blank');
-        w.document.write(`
-            <body style="text-align:center; border:20px solid #001f3f; padding:50px; font-family:serif; background:#FFFBE6;">
-                <h1 style="color:#722f37; font-size:40px;">CERTIFICATE OF ACHIEVEMENT</h1>
-                <p>This award is proudly presented to</p>
-                <h2 style="font-size:50px; border-bottom: 2px solid #FFD700; display:inline-block;">${name}</h2>
-                <p style="font-size:20px;">For mastering 50 Chess Puzzles under the guidance of</p>
-                <h3>COACH ADEKUNLE BUSAYO</h3>
-                <div style="font-size:50px;">🏆♟️🌟</div>
-            </body>
-        `);
-        w.print();
-    }
-
+    // Initialize the first puzzle
     updateGame();
 </script>
+
 </body>
 </html>
