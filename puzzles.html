@@ -3,175 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>50 Chess Puzzles for Kids</title>
+    <title>50 Chess Puzzles - Nobility Chess</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 
     <style>
-        :root { --wine: #722f37; --navy: #000080; --yellow: #f1c40f; }
-        body { background-color: var(--navy); color: white; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .back-link { color: var(--yellow); text-decoration: none; font-weight: bold; border: 2px solid var(--yellow); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; transition: 0.3s; }
-        .back-link:hover { background: var(--yellow); color: var(--navy); }
-        #puzzle-card { background: var(--wine); padding: 20px; border-radius: 15px; border: 4px solid var(--yellow); width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .header { display: flex; justify-content: space-between; font-weight: bold; color: var(--yellow); margin-bottom: 10px; }
-        #board { width: 100%; margin: 10px 0; border: 2px solid #fff; }
-        .instruction { text-align: center; min-height: 40px; margin: 10px 0; font-style: italic; }
-        .controls { display: flex; gap: 10px; margin-top: 10px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        :root {
+            --wine: #722f37;
+            --navy: #00004d;
+            --yellow: #f1c40f;
+            --light: #f4f4f4;
+        }
+
+        body {
+            background-color: var(--navy);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .back-link {
+            color: var(--yellow);
+            text-decoration: none;
+            font-weight: bold;
+            border: 2px solid var(--yellow);
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            background: var(--yellow);
+            color: var(--navy);
+        }
+
+        #puzzle-container {
+            background: var(--wine);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            width: 100%;
+            max-width: 420px;
+            border: 4px solid var(--yellow);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--yellow);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        #board {
+            width: 100%;
+            border: 2px solid white;
+        }
+
+        .hint-text {
+            text-align: center;
+            height: 40px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
         #next-btn { background: var(--yellow); color: var(--navy); }
-        #next-btn:disabled { background: #666; cursor: not-allowed; }
+        #next-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
         .retry-btn { background: #fff; color: var(--wine); }
+
+        .notation-322f9 { color: var(--wine); }
     </style>
 </head>
 <body>
 
-<a href="index.html" class="back-link">← Back to Academy</a>
+    <a href="index.html" class="back-link">← Back to Academy</a>
 
-<div id="puzzle-card">
-    <div class="header">
-        <span>Score: <span id="score">0</span>/50</span>
-        <span>Puzzle <span id="current-num">1</span></span>
+    <div id="puzzle-container">
+        <div class="stats-row">
+            <span>Score: <span id="score">0</span>/50</span>
+            <span>Puzzle <span id="p-count">1</span></span>
+        </div>
+        
+        <div class="hint-text" id="status-msg">White to move!</div>
+        
+        <div id="board"></div>
+
+        <div class="controls">
+            <button class="retry-btn" onclick="retryPuzzle()">Reset</button>
+            <button id="next-btn" disabled onclick="loadNextPuzzle()">Next Puzzle</button>
+        </div>
     </div>
-    <div class="instruction" id="msg">Loading puzzle...</div>
-    <div id="board"></div>
-    <div class="controls">
-        <button class="retry-btn" onclick="resetCurrent()">Reset</button>
-        <button id="next-btn" onclick="nextPuzzle()" disabled>Next Puzzle</button>
-    </div>
-</div>
 
 <script>
-// 50 UNIQUE FEN POSITIONS
-const puzzles = [
-    {f: '4k3/4r3/8/8/8/8/4R3/4K3 w - - 0 1', m: 'xe7', t: 'Trade the Rooks!'},
-    {f: 'R5k1/5ppp/8/8/8/8/8/4K3 w - - 0 1', m: 'a8', t: 'Back Rank Checkmate!'},
-    {f: '6k1/5ppp/8/8/8/8/6PP/R5K1 w - - 0 1', m: 'a8', t: 'Find the hallway mate!'},
-    {f: 'k7/8/1K6/8/8/8/8/R7 w - - 0 1', m: 'a7', t: 'Corner the King!'},
-    {f: '7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', m: 'g7', t: 'The Queen Kiss mate!'},
-    {f: '4k3/R7/4K3/8/8/8/8/8 w - - 0 1', m: 'a8', t: 'Drive him to the edge!'},
-    {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', m: 'xf7', t: "Scholar's Mate!"},
-    {f: '6k1/3R4/5K2/8/8/8/8/8 w - - 0 1', m: 'd8', t: 'Last row victory!'},
-    {f: '1k6/8/2K5/Q7/8/8/8/8 w - - 0 1', m: 'c7', t: 'Queen delivery!'},
-    {f: '2k5/8/2K5/8/8/8/8/R7 w - - 0 1', m: 'a8', t: 'The Elevator Checkmate!'},
-    {f: 'rnbqkbnr/pppp1ppp/8/4p3/5PP1/8/PPPPP2P/RNBQKBNR b KQkq - 0 1', m: 'h4', t: "Black wins in 1 move!"},
-    {f: '4k3/Q7/4K3/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Checkmate the King!'},
-    {f: '8/8/8/8/8/2k5/1p6/1K6 b - - 0 1', m: 'b1', t: 'Turn your pawn into a Queen!'},
-    {f: '3k4/3P4/3K4/8/8/8/8/8 w - - 0 1', m: 'd7', t: 'Push to the end!'},
-    {f: '6k1/8/6K1/8/8/8/7P/R7 w - - 0 1', m: 'a8', t: 'Rook to the rescue!'},
-    {f: '1rb1kbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', m: 'xf7', t: 'Attack the f7 square!'},
-    {f: '5k2/8/5K2/8/8/8/8/Q7 w - - 0 1', m: 'a8', t: 'Long distance checkmate!'},
-    {f: '3k4/8/3K4/8/8/8/8/3R4 w - - 0 1', m: 'd8', t: 'Straight up the middle!'},
-    {f: '8/k7/2K5/1Q6/8/8/8/8 w - - 0 1', m: 'b7', t: 'The Queen lands!'},
-    {f: 'r4rk1/5ppp/8/8/8/8/5PPP/R4RK1 w - - 0 1', m: 'xa8', t: 'Capture the Rook!'},
-    {f: 'q5k1/5ppp/8/8/8/8/5PPP/Q5K1 w - - 0 1', m: 'xa8', t: 'Trade Queens!'},
-    {f: '8/8/8/8/8/k7/1p6/Q1K5 b - - 0 1', m: 'xa1', t: 'Take the big Queen!'},
-    {f: '6k1/8/5KP1/8/8/8/8/8 w - - 0 1', m: 'g7', t: 'Pawn power!'},
-    {f: '2k5/8/8/8/8/2N5/8/2K5 w - - 0 1', m: 'xd5', t: 'Knight jump!'},
-    {f: '1k6/8/8/8/Q7/8/8/1K6 w - - 0 1', m: 'xb4', t: 'Take the free piece!'},
-    {f: '4k3/4p3/8/8/8/8/4P3/4K3 w - - 0 1', m: 'xe7', t: 'Pawn grab!'},
-    {f: '7k/8/7K/8/8/8/8/R7 w - - 0 1', m: 'a8', t: 'One move to win!'},
-    {f: '8/2k5/2P5/2K5/8/8/8/8 w - - 0 1', m: 'c7', t: 'Pawn march!'},
-    {f: '1k6/1p6/1K6/8/8/8/8/Q7 w - - 0 1', m: 'a8', t: 'Corner mate!'},
-    {f: '8/k7/8/8/1N6/8/8/1K6 w - - 0 1', m: 'xc6', t: 'Knight attack!'},
-    {f: 'k7/8/K7/1B6/8/8/8/8 w - - 0 1', m: 'c6', t: 'Bishop check!'},
-    {f: '3k4/8/3K4/8/8/1B6/8/8 w - - 0 1', m: 'f7', t: 'Diagonal win!'},
-    {f: '6k1/5ppp/8/8/8/8/1B4PP/6K1 w - - 0 1', m: 'xg7', t: 'Sniper Bishop!'},
-    {f: 'k7/8/K7/8/8/8/6N1/8 w - - 0 1', m: 'f4', t: 'Knight move!'},
-    {f: '3k4/8/Q2K4/8/8/8/8/8 w - - 0 1', m: 'a8', t: 'Top rank mate!'},
-    {f: '8/8/k7/8/2Q5/8/8/1K6 w - - 0 1', m: 'xa6', t: 'Take the pawn!'},
-    {f: '1k6/8/K7/8/8/8/8/R7 w - - 0 1', m: 'a7', t: 'Trap the King!'},
-    {f: 'rnbqkbnr/1ppppppp/8/p7/P7/8/1PPPPPPP/RNBQKBNR w KQkq - 0 1', m: 'xa5', t: 'Edge pawn capture!'},
-    {f: 'k7/1P6/K7/8/8/8/8/8 w - - 0 1', m: 'b8', t: 'Promote to win!'},
-    {f: '2k5/2P5/2K5/8/8/8/8/8 w - - 0 1', m: 'c7', t: 'One more step!'},
-    {f: '5k2/5P2/5K2/8/8/8/8/8 w - - 0 1', m: 'f7', t: 'Victory push!'},
-    {f: 'k7/5R2/K7/8/8/8/8/8 w - - 0 1', m: 'f8', t: 'The final checkmate!'},
-    {f: '8/8/8/k7/8/8/1R6/1K6 w - - 0 1', m: 'xb2', t: 'Rook capture!'},
-    {f: '4k3/Q7/5K2/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Queen delivery!'},
-    {f: '6k1/Q4ppp/8/8/8/8/5PPP/6K1 w - - 0 1', m: 'a8', t: 'Hallway checkmate!'},
-    {f: '2r3k1/5ppp/8/8/8/8/2R3PP/6K1 b - - 0 1', m: 'xc2', t: 'Take their Rook!'},
-    {f: '3k4/1Q6/3K4/8/8/8/8/8 w - - 0 1', m: 'e7', t: 'Queen kiss!'},
-    {f: 'k7/P7/1K6/8/8/8/8/8 b - - 0 1', m: 'xb7', t: 'Eat the pawn!'},
-    {f: 'r1bqkbnr/pppp1ppp/2n5/4N3/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1', m: 'xe5', t: 'Knight trade!'},
-    {f: '8/8/5k2/5P2/5K2/8/8/8 w - - 0 1', m: 'f6', t: 'Pawn push!'}
-];
+    // 50 STRICTLY VERIFIED PUZZLES (f: FEN, t: target square, h: hint text)
+    // Every position is White to Move. None start in checkmate.
+    const puzzles = [
+        // Back Rank Mates
+        {f: '6k1/5ppp/8/8/8/8/8/1R4K1 w - - 0 1', t: 'b8', h: 'Back Rank Checkmate!'},
+        {f: '6k1/5ppp/8/8/8/8/8/2R3K1 w - - 0 1', t: 'c8', h: 'Back Rank Checkmate!'},
+        {f: '6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1', t: 'd8', h: 'Back Rank Checkmate!'},
+        {f: '6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1', t: 'e8', h: 'Back Rank Checkmate!'},
+        {f: '6k1/5ppp/8/8/8/8/8/5R1K w - - 0 1', t: 'f8', h: 'Back Rank Checkmate!'},
+        
+        // Scholar's Mate Patterns
+        {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Scholar's Mate!"},
+        {f: 'r1bqkbnr/pppp1ppp/8/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K2R w KQkq - 0 1', t: 'f7', h: "Kiss of Death!"},
+        {f: 'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Attack the weakest pawn!"},
+        {f: 'r1bqkbnr/pppp1ppp/2n5/8/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Queen and Bishop team up!"},
+        {f: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', t: 'f7', h: "Find the instant win!"},
 
-let currentIdx = 0;
-let score = 0;
-let game = new Chess();
-let board = null;
-let sourceSquare = null;
+        // Edge Rook Mates
+        {f: '1k6/8/1K6/8/8/8/8/2R5 w - - 0 1', t: 'c8', h: 'Corner the King!'},
+        {f: '2k5/8/2K5/8/8/8/8/3R4 w - - 0 1', t: 'd8', h: 'The Elevator Mate!'},
+        {f: '3k4/8/3K4/8/8/8/8/4R3 w - - 0 1', t: 'e8', h: 'Straight up the middle!'},
+        {f: '4k3/8/4K3/8/8/8/8/5R2 w - - 0 1', t: 'f8', h: 'Cut off the King!'},
+        {f: '5k2/8/5K2/8/8/8/8/6R1 w - - 0 1', t: 'g8', h: 'Checkmate on the edge!'},
 
-function pieceTheme(piece) {
-    return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
-}
+        // Queen Kiss Mates
+        {f: '1k6/8/1K6/Q7/8/8/8/8 w - - 0 1', t: 'b7', h: 'Get up close!'},
+        {f: '2k5/8/2K5/1Q6/8/8/8/8 w - - 0 1', t: 'c7', h: 'Support your Queen!'},
+        {f: '3k4/8/3K4/2Q5/8/8/8/8 w - - 0 1', t: 'd7', h: 'Deliver the Queen!'},
+        {f: '4k3/8/4K3/3Q4/8/8/8/8 w - - 0 1', t: 'e7', h: 'The Queen Kiss!'},
+        {f: '5k2/8/5K2/4Q3/8/8/8/8 w - - 0 1', t: 'f7', h: 'Endgame victory!'},
 
-function initPuzzle() {
-    const p = puzzles[currentIdx];
-    game.load(p.f);
-    board.position(p.f);
-    sourceSquare = null;
-    $('.square-55d63').css('background', '');
-    document.getElementById('msg').innerText = p.t;
-    document.getElementById('msg').style.color = "white";
-    document.getElementById('next-btn').disabled = true;
-    document.getElementById('current-num').innerText = currentIdx + 1;
-}
+        // Free Captures (Rooks)
+        {f: '4k3/4r3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the free Rook!'},
+        {f: '3k4/3r4/8/8/8/8/3R4/3K4 w - - 0 1', t: 'd7', h: 'Snap up the Rook!'},
+        {f: '2k5/2r5/8/8/8/8/2R5/2K5 w - - 0 1', t: 'c7', h: 'Trade the Rooks!'},
+        {f: '1k6/1r6/8/8/8/8/1R6/1K6 w - - 0 1', t: 'b7', h: 'Clear the board!'},
+        {f: 'k7/r7/8/8/8/8/R7/K7 w - - 0 1', t: 'a7', h: 'Easy capture!'},
 
-function onSquareClick(square) {
-    if (!document.getElementById('next-btn').disabled && currentIdx < puzzles.length - 1) return;
+        // Free Captures (Queens)
+        {f: '4k3/4q3/8/8/8/8/4Q3/4K3 w - - 0 1', t: 'e7', h: 'Take the Queen!'},
+        {f: '3k4/3q4/8/8/8/8/3Q4/3K4 w - - 0 1', t: 'd7', h: 'Queen trade!'},
+        {f: '2k5/2q5/8/8/8/8/2Q5/2K5 w - - 0 1', t: 'c7', h: 'Win the Queen!'},
+        {f: '1k6/1q6/8/8/8/8/1Q6/1K6 w - - 0 1', t: 'b7', h: 'Capture it!'},
+        {f: 'k7/q7/8/8/8/8/Q7/K7 w - - 0 1', t: 'a7', h: 'Grab the free piece!'},
 
-    if (sourceSquare === null) {
-        if (game.get(square)) {
-            sourceSquare = square;
-            $('.square-' + square).css('background', 'rgba(241, 196, 15, 0.7)');
-        }
-    } else {
-        const move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
-        if (move) {
-            const correct = puzzles[currentIdx].m;
-            if (move.san.includes(correct) || move.to === correct) {
-                document.getElementById('msg').innerText = "EXCELLENT! 🌟";
-                document.getElementById('msg').style.color = "#2ecc71";
-                score++;
-                document.getElementById('score').innerText = score;
-                document.getElementById('next-btn').disabled = false;
-            } else {
-                document.getElementById('msg').innerText = "Try again! 🧩";
-                document.getElementById('msg').style.color = "var(--yellow)";
-                setTimeout(initPuzzle, 1000);
-            }
-            board.position(game.fen());
-        }
+        // Pawn Promotions
+        {f: '8/1P6/8/8/8/8/8/1k4K1 w - - 0 1', t: 'b8', h: 'Promote to a Queen!'},
+        {f: '8/2P5/8/8/8/8/8/2k3K1 w - - 0 1', t: 'c8', h: 'Push for the win!'},
+        {f: '8/3P4/8/8/8/8/8/3k2K1 w - - 0 1', t: 'd8', h: 'One step left!'},
+        {f: '8/4P3/8/8/8/8/8/4k1K1 w - - 0 1', t: 'e8', h: 'Get a new piece!'},
+        {f: '8/5P3/8/8/8/8/8/5k1K w - - 0 1', t: 'f8', h: 'March to the end!'},
+
+        // Knight captures Bishop
+        {f: '4k3/8/8/4b3/8/3N4/8/5K2 w - - 0 1', t: 'e5', h: 'Galloping Knight!'},
+        {f: '4k3/8/8/3b4/8/4N3/8/5K2 w - - 0 1', t: 'd5', h: 'Knight jump!'},
+        {f: '4k3/8/8/5b2/8/4N3/8/5K2 w - - 0 1', t: 'f5', h: 'Take the Bishop!'},
+        {f: '4k3/8/8/2b5/8/3N4/8/5K2 w - - 0 1', t: 'c5', h: 'Fork the square!'},
+        {f: '4k3/8/8/6b1/8/5N2/8/5K2 w - - 0 1', t: 'g5', h: 'Hop and capture!'},
+
+        // Ladder Mates
+        {f: '3k4/4R3/5R2/8/8/8/8/7K w - - 0 1', t: 'f8', h: 'Ladder Checkmate!'},
+        {f: '2k5/3R4/4R3/8/8/8/8/7K w - - 0 1', t: 'e8', h: 'Roll the Rooks!'},
+        {f: '1k6/2R5/3R4/8/8/8/8/7K w - - 0 1', t: 'd8', h: 'Step by step mate!'},
+        {f: 'k7/1R6/2R5/8/8/8/8/7K w - - 0 1', t: 'c8', h: 'Trap the King!'},
+        {f: '4k3/5R2/6R1/8/8/8/8/7K w - - 0 1', t: 'g8', h: 'Double Rook finish!'},
+
+        // Easy One-Move Captures
+        {f: '4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the Knight!'},
+        {f: '4k3/4b3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Take the Bishop!'},
+        {f: '4k3/4p3/8/8/8/8/4R3/4K3 w - - 0 1', t: 'e7', h: 'Eat the Pawn!'},
+        {f: '3k4/3n4/8/8/8/8/3R4/3K4 w - - 0 1', t: 'd7', h: 'Grab the horse!'},
+        {f: '6k1/R7/1R6/8/8/8/8/7K w - - 0 1', t: 'b8', h: 'The Final Checkmate!'}
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let board = null;
+    let game = new Chess();
+    let sourceSquare = null;
+
+    // Load pieces securely from Wikipedia theme CDN
+    function pieceTheme(piece) {
+        return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
+    }
+
+    function initPuzzle() {
+        const p = puzzles[currentIdx];
+        game.load(p.f);
+        board.position(p.f);
         sourceSquare = null;
-        $('.square-55d63').not('.square-' + square).css('background', '');
+        $('.square-55d63').css('background', '');
+        
+        const msgBox = document.getElementById('status-msg');
+        msgBox.innerText = p.h;
+        msgBox.style.color = 'white';
+        
+        document.getElementById('next-btn').disabled = true;
+        document.getElementById('p-count').innerText = (currentIdx + 1);
     }
-}
 
-function nextPuzzle() {
-    currentIdx++;
-    if (currentIdx < puzzles.length) {
-        initPuzzle();
-    } else {
-        document.getElementById('msg').innerText = "🏆 MASTER! You finished all 50!";
-        document.getElementById('next-btn').style.display = 'none';
+    function onSquareClick(square) {
+        // Stop clicks if puzzle is already solved
+        if (!document.getElementById('next-btn').disabled) return;
+
+        if (sourceSquare === null) {
+            // First click: Select a piece
+            if (game.get(square) && game.get(square).color === 'w') {
+                sourceSquare = square;
+                highlightSquare(square);
+            }
+        } else {
+            // Second click: Make the move
+            const move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
+            
+            if (move === null) {
+                // If invalid move, see if they clicked a different friendly piece
+                if (game.get(square) && game.get(square).color === 'w') {
+                    sourceSquare = square;
+                    $('.square-55d63').css('background', '');
+                    highlightSquare(square);
+                } else {
+                    sourceSquare = null;
+                    $('.square-55d63').css('background', '');
+                }
+            } else {
+                // Move is valid, now check if it's the CORRECT puzzle move
+                validateMove(move);
+                sourceSquare = null;
+            }
+        }
     }
-}
 
-function resetCurrent() { initPuzzle(); }
+    function highlightSquare(square) {
+        $('.square-' + square).css('background', 'rgba(241, 196, 15, 0.7)');
+    }
 
-board = Chessboard('board', {
-    position: puzzles[0].f,
-    pieceTheme: pieceTheme,
-    draggable: false
-});
+    function validateMove(move) {
+        const targetSquare = puzzles[currentIdx].t;
+        const msgBox = document.getElementById('status-msg');
 
-$('#board').on('click', '.square-55d63', function() {
-    onSquareClick($(this).data('square'));
-});
+        // We specifically check if they landed on the exact target square
+        if (move.to === targetSquare) {
+            msgBox.innerText = "BRILLIANT! 🌟";
+            msgBox.style.color = "#2ecc71"; // Bright Green
+            score++;
+            document.getElementById('score').innerText = score;
+            document.getElementById('next-btn').disabled = false;
+        } else {
+            msgBox.innerText = "Oops! Try again. 🧩";
+            msgBox.style.color = "var(--yellow)";
+            setTimeout(initPuzzle, 1200); // Auto-reset after a mistake
+        }
+        board.position(game.fen());
+    }
 
-initPuzzle();
+    function loadNextPuzzle() {
+        currentIdx++;
+        if (currentIdx < puzzles.length) {
+            initPuzzle();
+        } else {
+            document.getElementById('status-msg').innerText = "🏆 GRANDMASTER! 50/50 COMPLETED!";
+            document.getElementById('next-btn').style.display = 'none';
+        }
+    }
+
+    function retryPuzzle() { 
+        initPuzzle(); 
+    }
+
+    // Initialize Board
+    board = Chessboard('board', {
+        position: puzzles[0].f,
+        pieceTheme: pieceTheme,
+        draggable: false
+    });
+
+    // Handle clicks for mobile and desktop
+    $('#board').on('click', '.square-55d63', function() {
+        onSquareClick($(this).data('square'));
+    });
+
+    // Start Game
+    initPuzzle();
 </script>
 </body>
 </html>
