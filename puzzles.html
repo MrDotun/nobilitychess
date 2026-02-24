@@ -7,50 +7,58 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
         body { 
-            background-color: #121212; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #0f172a; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; margin: 0; color: white;
         }
         #chess-game-zone { 
             max-width: 450px; width: 95%; text-align: center; 
-            border: 5px solid #FFD700; padding: 20px; border-radius: 20px; 
-            background-color: #1a1a1a; box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            border: 4px solid #f59e0b; padding: 20px; border-radius: 24px; 
+            background-color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
         }
         .stats-bar { 
             display: flex; justify-content: space-around; margin-bottom: 15px; 
-            background: #2c3e50; padding: 12px; border-radius: 10px; 
-            border: 1px solid #FFD700; color: #FFD700; font-size: 1.1em;
+            background: #334155; padding: 12px; border-radius: 12px; 
+            border: 1px solid #f59e0b; color: #fbbf24; font-weight: bold;
         }
-        #board { width: 100%; margin: 10px auto; border: 2px solid #444; }
-        #puzzle-title { color: #FFD700; margin: 10px 0; font-size: 1.2em; min-height: 1.5em; }
+        #board { width: 100%; margin: 10px auto; border: 4px solid #475569; border-radius: 4px; overflow: hidden; }
+        #puzzle-title { color: #fbbf24; margin: 10px 0; font-size: 1.4em; font-weight: 800; }
+        #feedback { min-height: 1.5em; margin: 10px 0; color: #94a3b8; font-weight: 500; }
         .action-btns { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         button { 
             cursor: pointer; border: none; font-weight: bold; 
-            border-radius: 8px; transition: 0.2s; padding: 12px;
+            border-radius: 12px; transition: all 0.2s; padding: 14px;
+            font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em;
         }
-        #hint-btn { background-color: #e67e22; color: white; width: 100%; }
-        #hint-btn:hover { background-color: #d35400; }
+        #hint-btn { background-color: #f59e0b; color: #1e293b; width: 100%; }
+        #hint-btn:hover { background-color: #fbbf24; transform: translateY(-2px); }
         .nav-btns { display: flex; justify-content: space-between; gap: 10px; }
-        .nav-btn { background: #34495e; color: white; flex: 1; }
-        .nav-btn:hover { background: #2c3e50; }
-        .highlight-square { box-shadow: inset 0 0 3px 3px #f1c40f; }
-        .coach-footer { font-size: 0.8em; color: #7f8c8d; margin-top: 15px; }
+        .nav-btn { background: #475569; color: white; flex: 1; }
+        .nav-btn:hover { background: #64748b; }
+        
+        /* Custom Highlighting */
+        .highlight-square { box-shadow: inset 0 0 3px 3px #fbbf24; }
+        .coach-footer { font-size: 0.85em; color: #64748b; margin-top: 20px; border-top: 1px solid #334155; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="chess-game-zone">
     <div class="stats-bar">
-        <div>🌟 Stars: <span id="score-val">0</span></div>
-        <div>🎖️ Rank: <span id="level-val">Novice</span></div>
+        <div>⭐ Stars: <span id="score-val">0</span></div>
+        <div>🏆 <span id="level-val">Novice</span></div>
     </div>
+    
     <h2 id="puzzle-title">Loading...</h2>
+    <div id="feedback">Analyze the board carefully...</div>
+    
     <div id="board"></div>
+    
     <div class="action-btns">
         <button id="hint-btn" onclick="showHint()">💡 GET COACH'S HINT</button>
         <div class="nav-btns">
-            <button class="nav-btn" onclick="prevPuzzle()">⬅️ BACK</button>
+            <button class="nav-btn" onclick="prevPuzzle()">⬅️ PREV</button>
             <button class="nav-btn" onclick="nextPuzzle()">SKIP ➡️</button>
         </div>
     </div>
@@ -62,57 +70,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
 <script>
+    // --- CORRECTED PUZZLE DATABASE ---
     const puzzles = [
-        { title: "Back Rank Mate", fen: "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1", hint: "The King is trapped behind his own pawns!", move: "d1d8" },
-        { title: "The Scholar's Sting", fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1", hint: "Target the weak f7 square.", move: "h5f7" },
-        { title: "Knight Fork", fen: "r3k2r/ppp1qppp/2n5/3p4/3P4/2N1PN2/PP3PPP/R1BQK2R w KQkq - 0 1", hint: "Place your knight where it hits the Queen and a central pawn.", move: "c3d5" },
-        { title: "Fool's Mate Refuted", fen: "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 1", hint: "The diagonal to the White king is wide open.", move: "d8h4" },
-        { title: "Smothered Mate Prep", fen: "6rk/5Npp/8/8/8/8/8/7K w - - 0 1", hint: "This position is already mate! Just click the knight.", move: "f7h6" }, // Corrected logic below allows this
-        { title: "The Rook Skewer", fen: "4k3/8/8/8/8/8/r7/Q3K3 w - - 0 1", hint: "Line up with the enemy king and rook.", move: "a1a2" },
-        { title: "Remove the Guard", fen: "1r4k1/5ppp/8/8/8/8/1R6/Q5K1 w - - 0 1", hint: "The Rook on b8 is only defended by the King.", move: "b2b8" },
-        { title: "Queen Trap", fen: "rnb1kbnr/pppp1ppp/8/4p3/4P2q/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1", hint: "Attack the Queen with your developed piece.", move: "f3h4" },
-        { title: "Anastasia's Mate", fen: "r4rk1/pp3ppp/2p5/N7/8/8/5PPP/R4RK1 w - - 0 1", hint: "Capture the pawn to open lines.", move: "a5b7" },
-        { title: "Promotion Race", fen: "8/P7/8/8/k7/8/8/7K w - - 0 1", hint: "Push the pawn to the final rank.", move: "a7a8q" },
-        { title: "Discovery Check", fen: "rnbqk2r/pppp1ppp/5n2/4p3/1b2P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 1", hint: "Move the knight to open the Bishop's path.", move: "c3d5" },
-        { title: "Ladder Mate", fen: "8/8/8/8/8/r7/1r6/k6K b - - 0 1", hint: "Rooks work together to trap the king.", move: "a3a1" },
-        { title: "Deadly Pin", fen: "4r1k1/5ppp/8/8/8/8/4R1PP/4Q1K1 w - - 0 1", hint: "The Rook cannot move because it protects the King.", move: "e2e8" },
-        { title: "Corner Trap", fen: "7k/5K1p/8/8/8/8/8/R7 w - - 0 1", hint: "The King has no escape on the edge.", move: "a1a8" },
-        { title: "Boden's Bishop Mate", fen: "2kr4/ppp2ppp/8/8/8/8/2B5/B2K4 w - - 0 1", hint: "Use the light-squared Bishop.", move: "c2f5" },
-        { title: "Back Rank Guard", fen: "6k1/R4ppp/8/8/8/8/8/4R1K1 w - - 0 1", hint: "Rook to the end!", move: "e1e8" },
-        { title: "Greek Gift", fen: "r1bq1rk1/ppp2ppp/2n1pn2/3p4/2PP4/2NBPN2/PP3PPP/R1BQK2R w KQ - 0 1", hint: "The classic Bishop sacrifice on h7.", move: "d3h7" },
+        { title: "Back Rank Mate", fen: "6k1/5ppp/8/8/8/8/8/3R2K1 w - - 0 1", hint: "The enemy King is trapped behind his own pawns!", move: "d1d8" },
+        { title: "Scholar's Mate", fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4", hint: "Target the f7 square with the Queen.", move: "h5f7" },
+        { title: "The Knight Fork", fen: "r3k2r/ppp1qppp/2n5/3p4/3P4/2N1PN2/PP3PPP/R1BQK2R w KQkq - 0 1", hint: "Centralize the knight to attack the Queen and Pawn.", move: "c3d5" },
+        { title: "Fool's Mate Rebuked", fen: "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 1", hint: "The White King's diagonal is wide open!", move: "d8h4" },
+        { title: "Smothered Mate", fen: "6rk/5Npp/8/8/8/8/8/7K w - - 0 1", hint: "The king is suffocated. Deliver the final blow with the knight.", move: "f7h6" },
+        { title: "The Rook Skewer", fen: "4k3/8/8/8/8/8/r7/Q3K3 w - - 0 1", hint: "The Queen can line up the King and the undefended Rook.", move: "a1a2" },
+        { title: "Remove the Guard", fen: "1r4k1/5ppp/8/8/8/8/1R6/Q5K1 w - - 0 1", hint: "The enemy Rook is only protected by the back-rank threat.", move: "a1b8" },
+        { title: "Bishop Sniper", fen: "1r4k1/5ppp/8/8/8/8/8/B5K1 w - - 0 1", hint: "The long diagonal is yours. Take the Rook.", move: "a1b8" },
+        { title: "The X-Ray", fen: "4r1k1/5ppp/8/8/8/8/4R1PP/Q5K1 w - - 0 1", hint: "Your Queen supports your Rook through the enemy Rook.", move: "a1e8" },
+        { title: "Anastasia's Mate", fen: "5rk1/pp3ppp/2p5/N7/8/8/5PPP/R4RK1 w - - 0 1", hint: "Use the Knight to check and force the King into the corner.", move: "a5c6" },
+        { title: "Promotion Race", fen: "8/P7/8/8/k7/8/8/7K w - - 0 1", hint: "Push the pawn to the end to get a Queen.", move: "a7a8q" },
+        { title: "Discovery Check", fen: "r1bqk2r/pppp1ppp/2n2n2/4p3/1b2P3/2NP4/PPP1BPPP/R1BQK1NR w KQkq - 0 1", hint: "Move the knight to reveal an attack from your Bishop.", move: "c3d5" },
+        { title: "Ladder Mate", fen: "8/8/8/8/8/r7/1r6/k6K b - - 0 1", hint: "Step by step to the edge of the board.", move: "a3a1" },
+        { title: "Corner Trap", fen: "7k/5K1p/8/8/8/8/8/R7 w - - 0 1", hint: "One check on the back rank is all you need.", move: "a1a8" },
+        { title: "Boden's Mate", fen: "2kr4/ppp2ppp/8/8/8/8/2B5/B2K4 w - - 0 1", hint: "Cross-fire with your Bishops.", move: "c2f5" },
+        { title: "Queen Trap", fen: "rnb1kbnr/pppp1ppp/8/4p3/4P2q/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1", hint: "Develop your Knight and attack the Queen simultaneously.", move: "f3h4" },
         { title: "Double Attack", fen: "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1", hint: "Win the central pawn.", move: "e4d5" },
-        { title: "The X-Ray Attack", fen: "4r1k1/5ppp/8/8/8/8/4R1PP/Q5K1 w - - 0 1", hint: "Your Queen supports the Rook through the enemy.", move: "a1e8" },
-        { title: "Pawn Fork", fen: "8/8/3p1p2/4P3/8/8/8/K6k w - - 0 1", hint: "One pawn attacks two pieces.", move: "e5f6" },
-        { title: "Trapped King", fen: "k7/pp6/N7/8/8/8/8/7K w - - 0 1", hint: "Deliver check with the Knight.", move: "n6c7" }, // Note: Corrected move string in logic later
-        { title: "Long Distance Check", fen: "7k/8/8/8/8/8/8/Q6K w - - 0 1", hint: "Use the full range of the Queen.", move: "a1a8" },
-        { title: "Simple Skewer", fen: "4k3/8/8/8/8/8/R7/Q3K3 w - - 0 1", hint: "Take the undefended Rook.", move: "a1a2" },
-        { title: "Bishop Sniper", fen: "k7/pp6/8/8/8/8/8/B6K w - - 0 1", hint: "Control the long diagonal.", move: "a1e5" },
-        { title: "Safety First", fen: "8/8/8/8/8/2k5/8/K7 w - - 0 1", hint: "Move the King to a safer square.", move: "a1b1" },
-        { title: "Passed Pawn Push", fen: "8/4P3/8/8/k7/8/8/7K w - - 0 1", hint: "Nearly a Queen!", move: "e7e8q" },
-        { title: "Knight Checkmate", fen: "8/8/8/4N3/8/k7/8/7K w - - 0 1", hint: "Jump to c4!", move: "e5c4" },
-        { title: "Queen's Command", fen: "3r4/3P4/8/8/2B2Q2/k7/8/7K w - - 0 1", hint: "Check the King on the diagonal.", move: "f4d6" },
-        { title: "Escape the Check", fen: "8/8/8/8/8/1k6/1q6/K7 w - - 0 1", hint: "Eliminate the threat.", move: "a1b2" },
-        { title: "Rook Battery", fen: "6k1/5ppp/8/8/8/Q7/1Q6/K7 w - - 0 1", hint: "Stack the power on the 'a' file.", move: "a3a8" },
-        { title: "Center Strike", fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", hint: "Claim the center.", move: "e2e4" },
-        { title: "Defend and Attack", fen: "rnbqk2r/pppp1ppp/5n2/4p3/1b2P3/3P4/PPPN1PPP/R1BQKBNR w KQkq - 0 1", hint: "Kick the Bishop.", move: "c2c3" },
-        { title: "Diagonal Guard", fen: "k7/1p6/8/8/8/8/1B6/7K w - - 0 1", hint: "Control the flight square.", move: "b2e5" },
-        { title: "Knight Development", fen: "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 1", hint: "Develop toward the center.", move: "g1f3" },
-        { title: "Pawn Duel", fen: "8/8/8/4p3/3P4/8/8/8 w - - 0 1", hint: "Take the pawn.", move: "d4e5" },
-        { title: "Checkmate in 1", fen: "k7/P7/1K6/8/8/8/8/8 w - - 0 1", hint: "Promote to Queen.", move: "a7a8q" },
-        { title: "The Hook", fen: "5rk1/5ppp/2N5/8/8/8/8/4R1K1 w - - 0 1", hint: "Checkmate on the back rank.", move: "e1e8" },
-        { title: "Winning the Exchange", fen: "r6r/8/8/8/8/8/8/R3K2R w KQ - 0 1", hint: "Snatch the rook.", move: "h1h8" },
-        { title: "Knight Fork 2", fen: "8/8/3n4/8/2P1P3/2K1k3/8/8 b - - 0 1", hint: "Black knight forks King and Pawn.", move: "d6e4" },
-        { title: "Queen Defense", fen: "8/Q7/8/1k6/8/8/8/2K5 w - - 0 1", hint: "Check to reposition.", move: "a7b7" },
-        { title: "Bishop Pair Power", fen: "8/8/8/8/8/k7/2B2B2/7K w - - 0 1", hint: "Check from the distance.", move: "f2c5" },
-        { title: "Rapid Promotion", fen: "8/P7/8/8/8/8/p7/k6K w - - 0 1", hint: "White promotes first.", move: "a7a8q" },
-        { title: "Rook Lift", fen: "8/8/8/8/8/8/R7/1K6 w - - 0 1", hint: "Simple development.", move: "a2a4" },
-        { title: "Pawn Wall Strike", fen: "k7/pp6/8/8/8/8/8/B6K w - - 0 1", hint: "Bishop check.", move: "a1e5" },
-        { title: "King Move", fen: "8/8/8/8/8/2k5/8/K7 w - - 0 1", hint: "Move the king up.", move: "a1b1" },
-        { title: "Final Strike", fen: "7k/R7/k7/1p6/8/8/8/7K w - - 0 1", hint: "The Rook delivers check.", move: "a7a8" },
-        { title: "Basic Fork", fen: "4k3/8/3p1p2/4P3/8/8/8/K7 w - - 0 1", hint: "Push to e6.", move: "e5e6" },
-        { title: "Mating Net", fen: "k7/P7/1K6/8/8/8/8/Q7 w - - 0 1", hint: "Queen to a6.", move: "q7a6" }, // Note: Logic handles case-insensitive
-        { title: "Bishop Check", fen: "8/8/8/k7/8/8/2B5/7K w - - 0 1", hint: "Check from the diagonal.", move: "c2e4" },
-        { title: "Knight Guard", fen: "8/8/8/k7/3N4/8/8/7K w - - 0 1", hint: "Check the king.", move: "d4b3" }
+        { title: "Pawn Fork", fen: "8/8/3p1p2/4P3/8/8/8/K6k w - - 0 1", hint: "One pawn, two targets.", move: "e5f6" },
+        { title: "Trapped King", fen: "k7/pp6/N7/8/8/8/8/7K w - - 0 1", hint: "Deliver check with the Knight.", move: "a6c7" },
+        { title: "Defense First", fen: "8/8/8/8/8/1k6/1q6/K7 w - - 0 1", hint: "You are in check! Take the attacker.", move: "a1b2" }
     ];
 
     let currentIdx = 0;
@@ -121,28 +100,47 @@
     let game = new Chess();
     let sourceSquare = null;
 
-    const rankNames = ["Novice", "Pawn Crusher", "Knight Errant", "Bishop's Guard", "Rook Master", "Queen's Strategist", "Grandmaster"];
+    const rankNames = ["Novice", "Pawn Crusher", "Knight Errant", "Rook Master", "Grandmaster"];
+
+    function updateFeedback(msg, isError = false) {
+        const f = document.getElementById('feedback');
+        f.innerText = msg;
+        f.style.color = isError ? "#f87171" : "#94a3b8";
+    }
 
     function onSquareClick(square) {
+        const piece = game.get(square);
+
+        // 1. If we haven't selected a piece yet
         if (sourceSquare === null) {
-            const piece = game.get(square);
-            if (piece) {
+            if (piece && piece.color === game.turn()) {
                 sourceSquare = square;
                 highlightSquare(square);
             }
-        } else {
-            const moveAttempt = { from: sourceSquare, to: square, promotion: 'q' };
+        } 
+        // 2. If we are clicking the same square again, deselect
+        else if (sourceSquare === square) {
+            sourceSquare = null;
+            removeHighlights();
+        } 
+        // 3. If we click another of our own pieces, switch selection
+        else if (piece && piece.color === game.turn()) {
+            removeHighlights();
+            sourceSquare = square;
+            highlightSquare(square);
+        } 
+        // 4. Attempt a move
+        else {
+            const moveAttempt = {
+                from: sourceSquare,
+                to: square,
+                promotion: 'q'
+            };
+
             const move = game.move(moveAttempt);
 
             if (move === null) {
-                removeHighlights();
-                const piece = game.get(square);
-                if (piece) {
-                    sourceSquare = square;
-                    highlightSquare(square);
-                } else {
-                    sourceSquare = null;
-                }
+                updateFeedback("Illegal move! Try again.", true);
             } else {
                 checkSolution(sourceSquare + square);
                 sourceSquare = null;
@@ -156,28 +154,35 @@
     }
 
     function removeHighlights() {
-        $('.square-55d63').removeClass('highlight-square');
+        $('#board .square-55d63').removeClass('highlight-square');
     }
 
     function checkSolution(userMove) {
         const solution = puzzles[currentIdx].move.toLowerCase();
-        // Check if user move matches solution (stripping 'q' if necessary for comparison)
-        if (userMove.toLowerCase() === solution || (userMove.toLowerCase() + 'q') === solution) {
+        
+        // Handle cases where solution is short like "d8" vs "d1d8"
+        if (userMove.toLowerCase() === solution || 
+            (userMove.toLowerCase() + 'q') === solution ||
+            (sourceSquare + userMove).toLowerCase() === solution) {
+            
             stars += 1;
             updateStats();
+            updateFeedback("🏆 EXCELLENT! Coach Adekunle is impressed.");
+            
             setTimeout(() => {
-                alert("🏆 COACH ADEKUNLE: Correct! You are getting sharper.");
                 nextPuzzle();
-            }, 200);
+            }, 1200);
         } else {
-            alert("❌ COACH ADEKUNLE: Not quite. Look for the most forcing move!");
-            updateBoard(); 
+            updateFeedback("❌ Not the best move. Coach says: Think deeper!", true);
+            setTimeout(() => {
+                updateBoard(); 
+            }, 1000);
         }
     }
 
     function updateStats() {
         document.getElementById('score-val').innerText = stars;
-        const rankIdx = Math.min(Math.floor(stars / 5), rankNames.length - 1);
+        const rankIdx = Math.min(Math.floor(stars / 4), rankNames.length - 1);
         document.getElementById('level-val').innerText = rankNames[rankIdx];
     }
 
@@ -188,10 +193,11 @@
         board.position(p.fen);
         sourceSquare = null;
         removeHighlights();
+        updateFeedback("Your turn. Find the best move!");
     }
 
     function showHint() {
-        alert("👨‍🏫 COACH'S HINT: " + puzzles[currentIdx].hint);
+        updateFeedback("💡 HINT: " + puzzles[currentIdx].hint);
     }
 
     function nextPuzzle() {
@@ -205,14 +211,8 @@
     }
 
     const config = {
-        draggable: true,
+        draggable: false, // Set to false to prioritize click-to-move
         position: 'start',
-        onDrop: (source, target) => {
-            const move = game.move({ from: source, to: target, promotion: 'q' });
-            if (move === null) return 'snapback';
-            checkSolution(source + target);
-        },
-        onSnapEnd: () => board.position(game.fen()),
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     };
     
@@ -224,6 +224,7 @@
         onSquareClick(square);
     });
 
+    // Initialize
     updateBoard();
     $(window).resize(board.resize);
 </script>
