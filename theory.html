@@ -57,7 +57,6 @@
             padding: 0 15px;
         }
 
-        /* Board Section */
         #board-section {
             flex: 1.2;
             min-width: 350px;
@@ -90,7 +89,6 @@
             font-weight: bold;
         }
 
-        /* Lesson Menu Section */
         #lesson-menu {
             flex: 1;
             min-width: 350px;
@@ -132,7 +130,7 @@
 
         .inner-text { padding: 15px; line-height: 1.6; font-size: 0.95rem; }
 
-        .active-content { max-height: 200px; margin-bottom: 10px; }
+        .active-content { max-height: 400px; margin-bottom: 10px; overflow-y: auto; }
 
         footer { text-align: center; padding: 40px; color: var(--navy); }
     </style>
@@ -161,59 +159,57 @@
     </section>
 
     <section id="lesson-menu">
-        
         <div class="chapter-title">Chapter 1: The Foundations</div>
         
         <button class="topic-btn" onclick="loadPos('start', 'Development', this)">Development <span>+</span></button>
-        <div class="content"><div class="inner-text">Focus on bringing your Knights and Bishops out to control the game.</div></div>
+        <div class="content"><div class="inner-text">Think of Chess as a race! Development means bringing your pieces out from the back row into the action. If you leave your Knights and Bishops sleeping, your army is too weak to win. <strong>Tip:</strong> Try to move every piece at least once before moving the same piece twice!</div></div>
 
         <button class="topic-btn" onclick="loadPos('r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', 'Castling', this)">Castling <span>+</span></button>
-        <div class="content"><div class="inner-text">Safety first! Move your King to the corner and bring your Rook to the fight.</div></div>
+        <div class="content"><div class="inner-text">Every King needs a castle! Castling protects your King by tucking him safely in the corner and brings your Rook into the center to fight. You can only do this if the King and Rook haven't moved yet and the path is clear.</div></div>
 
         <button class="topic-btn" onclick="loadPos('4k3/8/8/8/8/8/4P3/4K3 w - - 0 1', 'Endgame Planning', this)">Endgame Planning <span>+</span></button>
-        <div class="content"><div class="inner-text">When pieces are few, the King becomes a powerful attacking piece.</div></div>
+        <div class="content"><div class="inner-text">When most pieces are gone, your King stops hiding! In the Endgame, the King becomes a hero that helps his Pawns reach the other side. Your main goal is to turn a Pawn into a Queen to deliver the final checkmate.</div></div>
 
         <button class="topic-btn" onclick="loadPos('r1bqk2r/pp2bppp/2n1pn2/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R w KQkq - 0 1', 'Trading/Exchanges', this)">Trading <span>+</span></button>
-        <div class="content"><div class="inner-text">Only exchange pieces if it improves your position or weakens the enemy.</div></div>
+        <div class="content"><div class="inner-text">Trading is like an equal swap. If you take a Knight and the opponent takes yours, that is a trade. A Noble player only trades when it helps them. Never trade your best attacking piece for an opponent's piece that isn't doing anything!</div></div>
 
         <button class="topic-btn" onclick="loadPos('8/8/8/2pP4/8/8/8/8 w - c6 0 1', 'En Passant', this)">En Passant <span>+</span></button>
-        <div class="content"><div class="inner-text">The special "Ghost Capture" that happens only immediately after a 2-square pawn jump.</div></div>
+        <div class="content"><div class="inner-text">This is a secret "Ghost Move." If an enemy pawn jumps two squares to land right next to yours, you can capture it as if it only moved one square. But be careful—you must do it <strong>immediately</strong> on the next turn, or the ghost vanishes!</div></div>
 
         <button class="topic-btn" onclick="loadPos('k7/7P/8/8/8/8/8/K7 w - - 0 1', 'Promotion', this)">Promotion <span>+</span></button>
-        <div class="content"><div class="inner-text">Guide your pawn to the end to transform it into a Queen.</div></div>
+        <div class="content"><div class="inner-text">The Pawn is a tiny soldier with a big dream. If he makes it all the way to the 8th rank, he levels up! You can turn him into a Queen, Rook, Bishop, or Knight. Most players choose the Queen because she is the most powerful.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('8/P7/8/8/8/2k5/8/q1K5 w - - 0 1', 'Underpromotion', this)">Underpromotion <span>+</span></button>
-        <div class="content"><div class="inner-text">Choosing a Knight or Rook to win without causing a stalemate.</div></div>
+        <button class="topic-btn" onclick="loadPos('8/P7/8/8/8/2k5/8/2K5 w - - 0 1', 'Underpromotion', this)">Underpromotion <span>+</span></button>
+        <div class="content"><div class="inner-text">Sometimes, a Queen is <i>too</i> powerful and causes a stalemate (a draw). In this lesson, we promote to a <strong>Knight</strong> instead to give a check and win the game. It’s all about being smart, not just strong!</div></div>
 
         <button class="topic-btn" onclick="loadPos('r4rk1/pb2bp1p/1p2p1p1/2p1P3/3P4/2PB1N2/P4PPP/R2R2K1 w - - 0 1', 'Prophylaxis', this)">Prophylaxis <span>+</span></button>
-        <div class="content"><div class="inner-text">The art of stopping your opponent's plan before they execute it.</div></div>
+        <div class="content"><div class="inner-text">This is the "Mind Reading" move. Instead of just making your own plan, you ask: "What is my opponent planning to do to me?" Prophylaxis is a move that stops their best idea before they even get to try it.</div></div>
 
         <div class="chapter-title">Chapter 2: Tactics & Strategy</div>
 
         <button class="topic-btn" onclick="loadPos('8/8/p7/kp6/p7/K7/8/8 w - - 0 1', 'Zugzwang', this)">Zugzwang <span>+</span></button>
-        <div class="content"><div class="inner-text">When any move made by a player will make their position worse.</div></div>
+        <div class="content"><div class="inner-text">In Chess, you MUST move when it is your turn. Zugzwang is a trap where every possible move you can make is a bad one. It’s like being forced to step into a hole because you aren't allowed to stay still!</div></div>
 
         <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppppppp/2n5/4P3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 1', 'Center Control', this)">Center Control <span>+</span></button>
-        <div class="content"><div class="inner-text">Owning the middle squares allows your pieces to dominate the board.</div></div>
+        <div class="content"><div class="inner-text">The middle of the board (e4, d4, e5, d5) is the "High Ground." If you control the center, your pieces can jump to any side of the board much faster. Own the center, own the game!</div></div>
 
         <button class="topic-btn" onclick="loadPos('rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', 'Pawn Structures', this)">Pawn Structures <span>+</span></button>
-        <div class="content"><div class="inner-text">Understanding pawn chains and weaknesses like isolated pawns.</div></div>
+        <div class="content"><div class="inner-text">Pawns are like the walls of a castle. When they stand together in a chain, they are strong. When they are alone (Isolated), they are weak targets. Learn to build your walls so your bigger pieces can hide behind them.</div></div>
 
         <button class="topic-btn" onclick="loadPos('4k3/8/4r3/8/8/4R3/4Q3/4K3 w - - 0 1', 'Pins', this)">Pins <span>+</span></button>
-        <div class="content"><div class="inner-text">Freezing a piece because a more valuable piece is behind it.</div></div>
+        <div class="content"><div class="inner-text">A Pin is when you attack a piece that cannot move because a more important piece (like the King) is behind it. It's like putting a thumbtack through two pieces at once! The piece in front is "pinned" to the board.</div></div>
 
-        <button class="topic-btn" onclick="loadPos('2q1k3/8/8/4B3/8/8/8/4K3 w - - 0 1', 'Skewers', this)">Skewers <span>+</span></button>
-        <div class="content"><div class="inner-text">The valuable piece is in front and must move, exposing the piece behind.</div></div>
+        <button class="topic-btn" onclick="loadPos('1q6/2k5/8/4B3/8/8/8/4K3 w - - 0 1', 'Skewers', this)">Skewers <span>+</span></button>
+        <div class="content"><div class="inner-text">A Skewer is like a "Reverse Pin." You attack a big piece (like a King), and when he runs away, you take the piece that was hiding behind him. It's named after a kebab stick because it goes right through them!</div></div>
 
-        <button class="topic-btn" onclick="loadPos('r3k3/8/3N4/8/1q6/8/8/4K3 w - - 0 1', 'Forks', this)">Forks <span>+</span></button>
-        <div class="content"><div class="inner-text">When one piece attacks two or more targets at once.</div></div>
+        <button class="topic-btn" onclick="loadPos('r3k3/8/3N4/8/2q5/8/8/4K3 w - - 0 1', 'Forks', this)">Forks <span>+</span></button>
+        <div class="content"><div class="inner-text">A Fork is when one piece attacks two or more enemies at the same time. Knights are the kings of forks! In this position, the White Knight is attacking the King, the Queen, AND the Rook all at once.</div></div>
 
         <button class="topic-btn" onclick="loadPos('r1bqkb1r/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', 'Scholar Mate', this)">Scholar's Mate <span>+</span></button>
-        <div class="content"><div class="inner-text">The 4-move attack targeting f7. A Noble player always knows how to block it.</div></div>
+        <div class="content"><div class="inner-text">This is the famous 4-move checkmate! It tries to catch the weak f7 square. Every Noble player must learn how it works so they can block it and make the opponent's Queen regret coming out too early.</div></div>
 
         <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1', 'Openings', this)">Openings <span>+</span></button>
-        <div class="content"><div class="inner-text">Mastering the names and ideas of the Ruy Lopez, Sicilian, and others.</div></div>
-
+        <div class="content"><div class="inner-text">Every great player has a favorite way to start. Whether it is the <strong>Ruy Lopez</strong> (shown here), the <strong>Sicilian Defense</strong>, or the <strong>Italian Game</strong>, learning the names helps you remember the best plans!</div></div>
     </section>
 </div>
 
