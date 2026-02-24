@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Classroom | Nobility Chess</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    
+    <style>
+        :root { --navy: #001f3f; --wine: #722f37; --yellow: #FFD700; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding-bottom: 50px; }
+        
+        header { background: var(--navy); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--wine); }
+        
+        .main-layout { display: flex; flex-wrap: wrap; max-width: 1100px; margin: 20px auto; gap: 20px; padding: 10px; }
+        
+        /* The Board Container */
+        #board-section { flex: 1; min-width: 350px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        #myBoard { width: 100%; max-width: 450px; margin: auto; }
+
+        /* The Lessons Accordion */
+        #lesson-menu { flex: 1; min-width: 350px; }
+        .topic-btn {
+            width: 100%; background: var(--wine); color: white; padding: 15px;
+            text-align: left; border: none; border-bottom: 1px solid var(--yellow);
+            cursor: pointer; font-size: 1.1rem; font-weight: bold; transition: 0.3s;
+        }
+        .topic-btn:hover { background: var(--navy); color: var(--yellow); }
+        
+        .content { 
+            background: white; max-height: 0; overflow: hidden; 
+            transition: max-height 0.3s ease-out; border-left: 4px solid var(--navy);
+        }
+        .inner-text { padding: 15px; font-size: 0.95rem; line-height: 1.5; }
+        
+        .active-topic { border-left: 8px solid var(--yellow) !important; max-height: 300px !important; }
+        
+        .controls { text-align: center; margin-top: 10px; }
+        .btn-small { background: var(--navy); color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Nobility Interactive Hall</h1>
+    <p>Select a Topic to Study the Board</p>
+</header>
+
+<div class="main-layout">
+    <section id="board-section">
+        <div id="myBoard"></div>
+        <div class="controls">
+            <button class="btn-small" onclick="board.start()">Reset Board</button>
+            <button class="btn-small" onclick="board.flip()">Flip Board</button>
+        </div>
+        <div id="status" style="margin-top:10px; font-weight:bold; color:var(--wine); text-align:center;">
+            Mode: Free Play / Click to Move
+        </div>
+    </section>
+
+    <section id="lesson-menu">
+        <button class="topic-btn" onclick="loadPosition('start')">1. Development</button>
+        <div class="content">
+            <div class="inner-text">
+                <strong>The Race:</strong> Get your Knights and Bishops out! 
+                <em>Mr. Busayo says:</em> Don't attack until your army is ready.
+            </div>
+        </div>
+
+        <button class="topic-btn" onclick="loadPosition('r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1')">2. Castling</button>
+        <div class="content">
+            <div class="inner-text">
+                Move the King two squares toward the Rook. This protects your King and activates your Rook!
+            </div>
+        </div>
+
+        <button class="topic-btn" onclick="loadPosition('8/4k3/8/8/8/4K3/4P3/8 w - - 0 1')">3. Endgame Planning</button>
+        <div class="content">
+            <div class="inner-text">
+                With few pieces left, your <strong>King</strong> must become an attacker. Push your pawns to promote!
+            </div>
+        </div>
+
+        <button class="topic-btn" onclick="loadPosition('r1bqk2r/pp2bppp/2n1pn2/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R w KQkq - 0 1')">4. En Passant</button>
+        <div class="content">
+            <div class="inner-text">
+                The "Ghost Move." If a pawn jumps two squares past yours, you can take it as if it only moved one!
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Initialize Board
+    var board = Chessboard('myBoard', {
+        draggable: true,
+        dropOffBoard: 'snapback',
+        position: 'start'
+    });
+
+    // Function to load specific lesson positions (FEN strings)
+    function loadPosition(fen) {
+        board.position(fen);
+        
+        // Handle Accordion Visuals
+        var acc = document.getElementsByClassName("topic-btn");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].nextElementSibling.classList.remove("active-topic");
+        }
+        event.currentTarget.nextElementSibling.classList.add("active-topic");
+    }
+
+    // Auto-resize board on window change
+    $(window).resize(board.resize);
+</script>
+
+</body>
+</html>
