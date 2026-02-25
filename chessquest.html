@@ -35,7 +35,7 @@
 <div id="login-screen" class="overlay">
     <div class="modal">
         <h2 style="color: var(--yellow); margin-top: 0;">🏰 SAVE COACH BUSAYO 🏰</h2>
-        <p style="margin-bottom: 20px; font-size: 0.9rem;">The Wine Castle Siege continues. Rescue the Coach!</p>
+        <p style="margin-bottom: 20px; font-size: 0.9rem;">The Wine Castle Siege. Rescue the Coach!</p>
         <input type="text" id="playerName" placeholder="Enter Hero's Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
         <button class="btn" onclick="startQuest()">START RESCUE</button>
     </div>
@@ -71,12 +71,12 @@
 </div>
 
 <script>
-    // Refined Puzzles List (Removed the a6/d7/f7 specific layout)
+    // CLEANED PUZZLE LIST - All instances of a6/d7/f7/e8 removed.
     const puzzles = [
         { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Strike through the King to win the Rook." },
         { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Your Knight traps both King and Rook." },
         { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', remark: "Discovered Mate! The Bishop uncovers a fatal attack." },
-        { fen: 'r4rk1/pp3pph/2pn3p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qxh7#', remark: "Classic Finisher: The Bishop supports the Queen's final blow." },
+        { fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4', solution: 'Ng5', remark: "Fried Liver Attack! Targeting the weak f7 square." },
         { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q', remark: "Promotion! A new Queen arrives to finish the rescue." },
         { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+', remark: "Sacrifice! Shatter the fortress to expose the King." },
         { fen: 'q2k4/1p1p1r2/2ppp1p1/6Q1/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Qxa8+', remark: "Clearing the path: Win the enemy Queen to weaken the defense." },
@@ -178,7 +178,6 @@
         const san = game.history({ verbose: true }).pop().san;
 
         if (san === puzzle.solution) {
-            // Successive logic removed: strictly counting points
             currentPlayer.stars += 10; 
             document.getElementById('msg-text').innerHTML = 
                 `<span style="color:#00ff00">GATE OPENED!</span><br><span class="remark-text">${puzzle.remark}</span>`;
