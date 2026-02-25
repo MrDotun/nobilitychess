@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,19 +143,28 @@
             color: var(--navy);
         }
 
+        /* Label Styling for Click-to-Move */
         .option-label {
             display: block;
             margin: 8px 0;
-            padding: 10px;
+            padding: 12px;
             background: var(--white);
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.2s;
+            user-select: none;
         }
 
-        .option-label:hover { background: var(--sky-blue); }
-        .option-label input { margin-right: 10px; }
+        .option-label:hover { background: var(--sky-blue); border-color: var(--navy); }
+        .option-label input { margin-right: 12px; pointer-events: none; }
+
+        /* Highlight the selected option box */
+        .option-label.selected-box {
+            border-color: var(--navy);
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
 
         .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
         .incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; }
@@ -222,7 +230,7 @@
         <button class="topic-btn" onclick="loadQuiz('Center', this)">Center Control</button>
         <button class="topic-btn" onclick="loadQuiz('Pins', this)">Pins</button>
         <button class="topic-btn" onclick="loadQuiz('Forks', this)">Forks</button>
-        </section>
+    </section>
 
     <section id="quiz-section">
         <h2 id="quiz-title">Quiz Title</h2>
@@ -243,7 +251,6 @@
 </footer>
 
 <script>
-    // Quiz Database (5 Questions per topic)
     const quizData = {
         "Development": [
             { q: "What does 'Development' mean in chess?", options: ["Hiding your King", "Bringing pieces out from the back row", "Sacrificing your Queen", "Moving only Pawns"], a: 1 },
@@ -293,12 +300,9 @@
 
     function loadQuiz(topic, btnElement) {
         currentTopic = topic;
-        
-        // UI Updates for buttons
         $('.topic-btn').removeClass('active');
         $(btnElement).addClass('active');
 
-        // Show section and set title
         $('#quiz-section').show();
         $('#quiz-title').html(`📝 ${$(btnElement).text()} Quiz`);
         $('#results-area').hide();
@@ -309,12 +313,11 @@
 
         const questions = quizData[topic];
 
-        // Generate HTML for each question
         questions.forEach((item, qIndex) => {
             let optionsHtml = '';
             item.options.forEach((opt, oIndex) => {
                 optionsHtml += `
-                    <label class="option-label" id="label-${qIndex}-${oIndex}">
+                    <label class="option-label" id="label-${qIndex}-${oIndex}" onclick="handleOptionClick(${qIndex}, ${oIndex})">
                         <input type="radio" name="q${qIndex}" value="${oIndex}">
                         ${opt}
                     </label>
@@ -329,10 +332,19 @@
             `);
         });
 
-        // Scroll to quiz on mobile
         if (window.innerWidth < 900) {
             window.scrollTo({top: document.getElementById('quiz-section').offsetTop - 20, behavior: 'smooth'});
         }
+    }
+
+    // New function to handle clicking the box
+    function handleOptionClick(qIndex, oIndex) {
+        // Find the specific radio inside this label and check it
+        $(`input[name="q${qIndex}"][value="${oIndex}"]`).prop('checked', true);
+        
+        // Visual feedback: remove selection from others in the same question and add to this one
+        $(`#block-${qIndex} .option-label`).removeClass('selected-box');
+        $(`#label-${qIndex}-${oIndex}`).addClass('selected-box');
     }
 
     function gradeQuiz() {
@@ -349,17 +361,12 @@
                 allAnswered = false;
             } else {
                 const selectedInt = parseInt(selectedOpt);
-                // Reset colors for this block
-                $(`#block-${qIndex} .option-label`).removeClass('correct incorrect');
-
-                // Color correct answer green
+                $(`#block-${qIndex} .option-label`).removeClass('correct incorrect selected-box');
                 $(`#label-${qIndex}-${item.a}`).addClass('correct');
 
-                // Check if user was right
                 if (selectedInt === item.a) {
                     score++;
                 } else {
-                    // Color wrong answer red
                     $(`#label-${qIndex}-${selectedInt}`).addClass('incorrect');
                 }
             }
@@ -370,11 +377,9 @@
             return;
         }
 
-        // Hide grade button and show results
         $('#grade-btn').hide();
         $('#results-area').show();
         
-        // Display kid-friendly score messages
         let message = "";
         if (score === 5) message = "Perfect Score! You are a Grandmaster! 🏆";
         else if (score >= 3) message = "Great Job! You have a Noble mind! 🌟";
