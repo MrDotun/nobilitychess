@@ -6,19 +6,18 @@
     <title>Nobility Chess Academy</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        /* Restored original blue + added Wine and Yellow */
+        /* Two Main Colors: Wine and Yellow */
         :root { 
             --yellow: #FFD700; 
             --wine: #5d1823; 
             --dark: #0b0c10; 
-            --noble-blue: #0a192f; 
         }
         
         body { margin: 0; background: var(--dark); color: #c5c6c7; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
         #splash {
             position: fixed; inset: 0; 
-            background: radial-gradient(circle, #1a3a5f 0%, var(--dark) 100%);
+            background: radial-gradient(circle, var(--wine) 0%, var(--dark) 100%);
             display: flex; flex-direction: column; justify-content: center;
             align-items: center; z-index: 2000; transition: 0.5s;
         }
@@ -28,7 +27,7 @@
             background: transparent;
             border: 4px solid var(--yellow); border-radius: 20% 20% 45% 45%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(93, 24, 35, 0.5); 
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); 
             padding: 10px;
             overflow: hidden;
         }
@@ -46,7 +45,7 @@
         .proceed-btn {
             margin-top: 40px;
             background: var(--yellow);
-            color: var(--dark);
+            color: var(--wine);
             border: 2px solid var(--yellow);
             padding: 18px 60px;
             font-family: 'Cinzel';
@@ -68,13 +67,13 @@
         .proceed-btn:hover {
             background: var(--wine);
             color: var(--yellow);
-            border-color: var(--wine);
+            border-color: var(--yellow);
         }
 
         nav {
             position: fixed; top: 0; width: 100%; padding: 10px 20px;
             display: none; align-items: center; justify-content: space-between;
-            background: rgba(10, 25, 47, 0.95); z-index: 1000; border-bottom: 2px solid var(--wine);
+            background: rgba(93, 24, 35, 0.95); z-index: 1000; border-bottom: 2px solid var(--yellow);
             box-sizing: border-box;
         }
         .nav-brand { display: flex; align-items: center; gap: 10px; }
@@ -110,9 +109,9 @@
             max-width: 440px;
             margin: 10px auto;
             padding: 15px 20px;
-            background: rgba(10, 25, 47, 0.7);
-            border-left: 4px solid var(--wine);
-            border-right: 4px solid var(--wine);
+            background: rgba(93, 24, 35, 0.3);
+            border-left: 4px solid var(--yellow);
+            border-right: 4px solid var(--yellow);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
@@ -123,7 +122,6 @@
             text-align: justify;
         }
 
-        /* CONTACT LINK STYLE */
         .ceo-contact {
             margin-top: 15px;
             display: flex;
@@ -146,7 +144,6 @@
             background: var(--yellow);
             color: var(--wine);
         }
-        .contact-pill i { margin-right: 8px; font-size: 1.1rem; }
 
         .slide-btn {
             background: var(--wine); color: var(--yellow); padding: 22px 60px;
@@ -165,11 +162,10 @@
             100% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0.4); }
         }
 
-        /* SIDE POP-UP STYLES */
         #side-popup {
             position: fixed;
             bottom: 30px;
-            right: -300px; /* Hidden initially */
+            right: -300px;
             background: var(--yellow);
             color: var(--wine);
             padding: 15px 25px;
@@ -186,37 +182,49 @@
             gap: 10px;
         }
 
-        #side-popup.visible {
-            right: 0;
-        }
+        #side-popup.visible { right: 0; }
+        #side-popup:hover { background: white; }
 
-        #side-popup:hover {
-            background: white;
-        }
+        #academy { background: linear-gradient(180deg, var(--dark) 0%, var(--wine) 100%); }
 
-        /* NEW ACADEMY STYLES FOR KIDS */
-        #academy {
-            background: linear-gradient(180deg, var(--noble-blue) 0%, var(--wine) 100%);
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            padding: 15px; 
+            max-width: 400px; 
+            margin: 0 auto; 
         }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; max-width: 400px; margin: 0 auto; }
         
         .box { 
-            background: rgba(255, 255, 255, 0.05); 
+            background: rgba(93, 24, 35, 0.6); 
             border: 3px solid var(--yellow); 
             padding: 25px 10px; 
             border-radius: 25px; 
             text-decoration: none; 
             color: white; 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 0 var(--wine); 
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.3); 
             position: relative;
-            display: block; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: floatBlock 4s ease-in-out infinite;
+        }
+
+        /* Staggered floating effect for blocks */
+        .box:nth-child(even) { animation-delay: 0.5s; }
+        .box:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes floatBlock {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         .box:active {
             transform: translateY(4px);
-            box-shadow: 0 4px 0 var(--wine);
+            box-shadow: 0 2px 0 var(--wine);
         }
 
         .box span { 
@@ -224,12 +232,6 @@
             display: block; 
             margin-bottom: 10px; 
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-            animation: bounceIcon 2s infinite ease-in-out;
-        }
-
-        @keyframes bounceIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
         }
 
         .box h3 { font-size: 0.9rem; margin: 0; font-family: 'Cinzel'; color: var(--yellow); letter-spacing: 1px; }
@@ -239,18 +241,17 @@
             background: var(--yellow) !important;
             border-color: #fff !important;
             box-shadow: 0 8px 0 #b8860b !important;
+            animation: floatBlock 5s ease-in-out infinite;
         }
 
-        .box-special h3, .box-special span {
-            color: var(--wine) !important;
-        }
+        .box-special h3, .box-special span { color: var(--wine) !important; }
     </style>
 </head>
 <body>
 
 <div id="splash">
     <div class="shield">
-        <img src="Screenshot_20260223-215614.jpg">
+        <img src="Screenshot_20260223-215614.jpg" alt="Logo">
     </div>
     <div class="logo-text">Welcome to Nobility Chess</div>
     <button class="proceed-btn" onclick="startApp()">PROCEED</button>
@@ -262,7 +263,7 @@
 
 <nav id="main-nav">
     <div class="nav-brand">
-        <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">NOBILITY CHESS</span>
+        <img src="Screenshot_20260223-215614.jpg" class="nav-logo" alt="Logo"> <span class="nav-title">NOBILITY CHESS</span>
     </div>
     <div style="font-size: 11px; font-weight: 900; cursor: pointer; color: var(--yellow); letter-spacing: 1px;" onclick="show('home')">HOME</div>
 </nav>
@@ -282,7 +283,7 @@
             Meet <b>Mr. Adekunle Busayo</b>, the visionary CEO of <b>Nobility Chess</b>. Under his leadership, the academy has become a powerhouse of intellect, providing elite chess instruction to over <b>28 prestigious schools</b> across Nigeria. <br><br>
             A multifaceted entrepreneur, he is also the founder of 
             <a href="stores.html" style="text-decoration: none;">
-                <span style="background: var(--yellow); color: var(--dark); padding: 0 5px; border-radius: 4px; font-weight: 900;">Khusky Enterprise</span> 
+                <span style="background: var(--yellow); color: var(--wine); padding: 0 5px; border-radius: 4px; font-weight: 900;">Khusky Enterprise</span> 
             </a>
             —a premier hub for <b>professional video gaming installations and high-end console sales</b>.
         </div>
@@ -300,12 +301,12 @@
     <h2 style="font-size: 1.8rem; color: var(--yellow); font-family: 'Cinzel'; margin-bottom: 25px; text-shadow: 2px 2px var(--wine);">ACADEMIC CURRICULUM</h2>
     <div class="grid">
         <a href="theory.html" class="box"><span>📖</span><h3>Theory</h3></a>
-        <a href="puzzles.html" class="box"><span>🧠</span><h3>Tactics</h3></a>
+        <a href="puzzles.html" class="box"><span>🧠</span><h3>Puzzles</h3></a>
         <a href="assessment.html" class="box"><span>📝</span><h3>Assessment</h3></a>
         <a href="analysis.html" class="box"><span>🏛️</span><h3>Analysis</h3></a>
         
-        <a href="chessquest.html" class="box" style="border-color: #00d4ff; box-shadow: 0 8px 0 #005f73;">
-            <span>⚔️</span><h3 style="color: #00d4ff;">CHESS QUEST</h3>
+        <a href="chessquest.html" class="box" style="border-color: var(--yellow);">
+            <span>⚔️</span><h3>CHESS QUEST</h3>
         </a>
 
         <a href="https://lichess.org" target="_blank" class="box box-special">
@@ -328,7 +329,6 @@
             document.getElementById('splash').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
             
-            // Start the 5-second countdown after the splash disappears
             setTimeout(() => {
                 document.getElementById('side-popup').classList.add('visible');
             }, 5000);
