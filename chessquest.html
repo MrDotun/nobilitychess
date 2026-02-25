@@ -10,66 +10,27 @@
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     
     <style>
-        /* THEME: Wine and Yellow */
-        body { 
-            background-color: #4a0404; /* Wine Background */
-            color: #ffd700; /* Yellow Text */
-            font-family: 'Georgia', serif; 
-            display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; 
-        }
-        
-        h2 { margin: 15px 0; color: #ffd700; text-shadow: 2px 2px 4px #000; }
-
-        /* Board Squares */
-        .white-1e1d7 { background-color: #ffd700 !important; } /* Yellow Squares */
-        .black-3c85d { background-color: #720b0b !important; } /* Wine Squares */
-        
-        #myBoard { 
-            width: 95vw !important; max-width: 450px; 
-            border: 5px solid #ffd700; border-radius: 4px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .ui-panel { 
-            width: 95%; max-width: 450px; 
-            background: #ffd700; /* Yellow Panel */
-            color: #4a0404; /* Wine Text */
-            border: 2px solid #ffffff; padding: 15px; 
-            border-radius: 8px; box-sizing: border-box; margin-top: 10px; 
-        }
-
-        .tutor-bubble { 
-            background: #4a0404; /* Wine Bubble */
-            color: #ffd700; /* Yellow Text */
-            padding: 12px; border-radius: 6px; 
-            font-weight: bold; border-left: 5px solid #ffffff; 
-            min-height: 50px; line-height: 1.4;
-        }
-
+        body { background-color: #4a0404; color: #ffd700; font-family: 'Georgia', serif; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; min-height: 100vh; }
+        h2 { margin: 15px 0; color: #ffd700; text-shadow: 2px 2px 4px #000; text-align: center; }
+        .white-1e1d7 { background-color: #ffffff !important; } 
+        .black-3c85d { background-color: #4ca154 !important; } 
+        #myBoard { width: 95vw !important; max-width: 450px; border: 6px solid #ffd700; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .ui-panel { width: 95%; max-width: 450px; background: #ffd700; color: #4a0404; border: 2px solid #ffffff; padding: 15px; border-radius: 8px; box-sizing: border-box; margin-top: 10px; }
+        .tutor-bubble { background: #4a0404; color: #ffd700; padding: 12px; border-radius: 6px; font-weight: bold; border-left: 5px solid #ffffff; min-height: 60px; line-height: 1.4; display: flex; align-items: center; }
         .controls { display: flex; width: 95%; max-width: 450px; gap: 8px; margin: 10px 0; }
-        
-        button { 
-            flex: 1; background: #ffd700; border: 2px solid #ffffff; 
-            padding: 15px; cursor: pointer; font-weight: bold; 
-            border-radius: 6px; color: #4a0404; transition: 0.2s; 
-        }
-        
-        button:active { background: #ffffff; transform: scale(0.98); }
+        button { flex: 1; background: #ffd700; border: 2px solid #ffffff; padding: 15px; cursor: pointer; font-weight: bold; border-radius: 6px; color: #4a0404; }
     </style>
 </head>
 <body>
 
     <h2>Tutor Busayo's Royal Academy</h2>
-    
     <div id="myBoard"></div>
-
     <div class="controls">
         <button onclick="undoMove()">Undo Move</button>
-        <button onclick="location.reload()" style="background: #ffffff;">Reset Lesson</button>
+        <button onclick="location.reload()" style="background: #ffffff;">Reset Board</button>
     </div>
-
     <div class="ui-panel">
-        <div id="tutor-comment" class="tutor-bubble">"Welcome to the Royal Academy. Protect your King, for the wine is deep and the board is unforgiving."</div>
+        <div id="tutor-comment" class="tutor-bubble">"Welcome, student. Let the 64 squares teach you life."</div>
     </div>
 
 <script>
@@ -77,32 +38,72 @@ var board = null;
 var game = new Chess();
 var sourceSquare = null;
 
-const PIECE_VALUES = { p: 10, n: 30, b: 35, r: 50, q: 90, k: 900 };
-
-// Positional bonuses to improve AI strength
-const boardWeights = {
-    p: [ [0,0,0,0,0,0,0,0], [50,50,50,50,50,50,50,50], [10,10,20,30,30,20,10,10], [5,5,10,25,25,10,5,5], [0,0,0,20,20,0,0,0], [5,-5,-10,0,0,-10,-5,5], [5,10,10,-20,-20,10,10,5], [0,0,0,0,0,0,0,0] ],
-    n: [ [-50,-40,-30,-30,-30,-30,-40,-50], [-40,-20,0,0,0,0,-20,-40], [-30,0,10,15,15,10,0,-30], [-30,5,15,20,20,15,5,-30], [-30,0,15,20,20,15,0,-30], [-30,5,10,15,15,10,5,-30], [-40,-20,0,5,5,0,-20,-40], [-50,-40,-30,-30,-30,-30,-40,-50] ]
+const REMARKS = {
+    opening: [
+        "The opening is about harmony, not just moving pieces.",
+        "Don't move the same piece twice in the opening.",
+        "A Knight on the rim is dim. Keep them central!",
+        "Control the center, control the world.",
+        "Development is a race. Are you winning it?",
+        "Your King is crying for a castle. Listen to him.",
+        "Connect your rooks; let them talk to each other.",
+        "A pawn is the most humble, yet most important piece.",
+        "Don't bring your Queen out too early, she'll be chased.",
+        "Scholar's Mate only works on those who don't focus."
+    ],
+    tactical: [
+        "Tactics is knowing what to do when there is something to do.",
+        "Every move creates a weakness. Find mine.",
+        "Before you move, look at what my piece is now doing.",
+        "A pin is mightier than a sword.",
+        "Double attacks are the shortest path to victory.",
+        "Always check, it might be mate!",
+        "An undefended piece is a gift to your opponent.",
+        "Capture with the right piece. Think about the recapture.",
+        "Threats are often stronger than the execution.",
+        "When you see a good move, look for a better one."
+    ],
+    safety: [
+        "Is your King safe, or just lucky?",
+        "A castle-less King is a target in the woods.",
+        "You ignored my threat. That is a dangerous habit.",
+        "Protect your warriors, and they will protect you.",
+        "Space is the breath of your army.",
+        "Don't trade your active pieces for my lazy ones.",
+        "A bad plan is better than no plan at all.",
+        "Eyes on the whole board, not just your attack.",
+        "Your Queen is lonely. Support her!",
+        "Patience is the greatest weapon in chess."
+    ],
+    general: [
+        "Chess is mental torture, but beautiful.",
+        "Even a Grandmaster was once a beginner.",
+        "The board is a mirror of your mind.",
+        "Victory goes to the one who makes the second to last mistake.",
+        "Play the board, not the person.",
+        "Analyze your losses more than your wins.",
+        "The hardest game to win is a won game.",
+        "Strategy is for the long term; tactics is for now.",
+        "Every pawn is a potential Queen.",
+        "Respect the board, and the board will respect you."
+    ]
 };
+
+const PIECE_VALUES = { p: 10, n: 30, b: 35, r: 50, q: 90, k: 900 };
 
 function evaluateBoard(current_game) {
     let totalEvaluation = 0;
     const board = current_game.board();
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            totalEvaluation += getPieceValue(board[i][j], i, j);
+            let piece = board[i][j];
+            if (piece) {
+                let val = PIECE_VALUES[piece.type];
+                totalEvaluation += (piece.color === 'w' ? val : -val);
+            }
         }
     }
     return totalEvaluation;
-}
-
-function getPieceValue(piece, x, y) {
-    if (piece === null) return 0;
-    let val = PIECE_VALUES[piece.type];
-    if (boardWeights[piece.type]) {
-        val += (piece.color === 'w' ? boardWeights[piece.type][x][y] : boardWeights[piece.type][7-x][y]);
-    }
-    return piece.color === 'w' ? val : -val;
 }
 
 function getBestMove() {
@@ -116,8 +117,8 @@ function getBestMove() {
         let worstReply = -9999;
         for (let reply of replies) {
             game.move(reply);
-            let replyValue = evaluateBoard(game);
-            if (replyValue > worstReply) worstReply = replyValue;
+            let val = evaluateBoard(game);
+            if (val > worstReply) worstReply = val;
             game.undo();
         }
         game.undo();
@@ -130,16 +131,28 @@ function getBestMove() {
 }
 
 function makeMove() {
-    let move = getBestMove();
-    if (!move) return;
-    game.move(move);
+    let moveStr = getBestMove();
+    if (!moveStr) return;
+    
+    let moveObj = game.move(moveStr);
     board.position(game.fen());
     
-    let msg = "A calculated response. Do you see the threat?";
-    if (move.includes('O-O')) msg = "I have castled. My King is safe in the royal palace.";
-    if (move.includes('x')) msg = "A capture in the center. The value of your piece has been accounted for.";
+    // Select Remark Category
+    let moveCount = Math.floor(game.history().length / 2);
+    let category = "general";
+    if (moveCount < 8) category = "opening";
+    else if (moveObj.captured || moveStr.includes('+')) category = "tactical";
+    else if (!game.history().some(m => m.includes('O-O')) && moveCount > 10) category = "safety";
     
-    $('#tutor-comment').text('"' + msg + '"');
+    let pool = REMARKS[category];
+    let remark = pool[Math.floor(Math.random() * pool.length)];
+    
+    // Override with Castling discipline
+    if (moveCount >= 12 && !game.history().some(m => m.includes('O-O'))) {
+        remark = "STUDENT! You have not castled! Your King is in grave danger!";
+    }
+
+    $('#tutor-comment').text('"' + remark + '"');
 }
 
 function onSquareClick(square) {
