@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coach Busayo: Wine Castle Siege</title>
     
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
@@ -12,26 +12,25 @@
 
     <style>
         :root { --wine: #800000; --yellow: #FFD700; --dark-wine: #4a0000; }
-        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 10px; box-sizing: border-box; }
+        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
         
-        /* Mobile-First Responsive Layout */
-        #main-ui { display: flex; flex-wrap: wrap; gap: 15px; width: 100%; max-width: 1000px; justify-content: center; }
-        .panel { background: var(--wine); border: 3px solid var(--yellow); border-radius: 12px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex: 1; min-width: 280px; max-width: 350px; }
+        #main-ui { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; gap: 15px; }
+        .panel { background: var(--wine); border: 3px solid var(--yellow); border-radius: 12px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
 
-        /* Board Scaling for fit-to-screen */
-        #board-area { flex: 2; width: 100%; max-width: 450px; }
         #board { width: 100% !important; border: 2px solid var(--yellow); }
 
-        /* Game Elements */
         #timer-wrap { width: 100%; height: 18px; background: var(--dark-wine); border: 2px solid var(--yellow); border-radius: 9px; margin-bottom: 8px; overflow: hidden; }
         #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 1s linear; }
-        #sir-tactics { width: 60px; filter: drop-shadow(0 3px 3px black); transition: transform 0.3s; }
+        #sir-tactics { width: 50px; filter: drop-shadow(0 3px 3px black); }
         
-        /* Typography & UI */
-        .btn { background: var(--yellow); color: var(--wine); border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
-        .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; font-size: 0.9rem; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 15px; }
-        .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
+        .btn { background: var(--yellow); color: var(--wine); border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; font-size: 0.9rem; }
+        .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; border-collapse: collapse; }
+        .leaderboard-table td { padding: 8px 5px; border-bottom: 1px solid rgba(255,215,0,0.1); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
+
+        /* Highlight for click-to-move selection */
+        .highlight-sq { box-shadow: inset 0 0 3px 3px white !important; background-color: rgba(255, 215, 0, 0.6) !important; }
     </style>
 </head>
 <body>
@@ -40,131 +39,155 @@
     <div class="modal">
         <h2 style="color: var(--yellow); margin-top: 0;">⚔️ WINE CASTLE SIEGE ⚔️</h2>
         <input type="text" id="playerName" placeholder="Enter Knight Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
-        <div style="text-align: left; font-size: 0.85rem; margin-bottom: 15px; color: #eee;">
-            <p>🛡️ 1. Click piece then target square to move.</p>
-            <p>⏳ 2. 5 minutes to breach the gates.</p>
-            <p>🔥 3. 3-in-a-row levels up your Knight!</p>
-        </div>
         <button class="btn" onclick="startQuest()">BEGIN QUEST</button>
     </div>
 </div>
 
 <div id="main-ui">
-    <div id="board-area">
-        <div id="timer-wrap"><div id="timer-bar"></div></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight">
-            <div id="streak-ui" style="color: var(--yellow); font-weight: bold;">Streak: 0 ⭐</div>
-        </div>
-        <div id="board"></div>
-        <h4 id="status-msg" style="text-align: center; color: var(--yellow); margin: 10px 0;">Breach the Castle!</h4>
+    <div id="timer-wrap"><div id="timer-bar"></div></div>
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px;">
+        <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight">
+        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Streak: 0 ⭐</div>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-        <div class="panel">
-            <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 TOP 3</h3>
-            <table class="leaderboard-table">
-                <tbody id="leaderboard-body"></tbody>
-            </table>
-            <button class="btn" style="font-size: 0.75rem;" onclick="alert('Top 3 only!')">🖨️ PRINT DECREE</button>
-        </div>
-        <div class="panel" style="min-height: 100px;">
-            <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏛️ HALL OF FAME</h3>
-            <div id="hall-of-fame-list" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; font-size: 0.7rem;"></div>
-        </div>
+    <div id="board"></div>
+
+    <h3 id="status-msg" style="text-align: center; color: var(--yellow); margin: 10px 0;">Click a piece to begin!</h3>
+
+    <div class="panel">
+        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 TOP 3</h3>
+        <table class="leaderboard-table">
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+        <button class="btn" onclick="generateCertificate()">🖨️ PRINT DECREE</button>
     </div>
 </div>
 
 <script>
-    // FEN positions ONLY from your provided screenshots
     const puzzles = [
-        { fen: 'r1bqkb1r/pp2p1pp/1np5/8/4P3/1BN2N2/PPP2PPP/R1BQK2R w KQkq - 0 1', solution: 'Bf7+', theme: 'Deflection' },
-        { fen: 'r1bqk1nr/pp1p1ppp/2n5/n7/4P3/2N5/PPP2PPP/R1BQKB1R w KQkq - 0 1', solution: 'Qh5+', theme: 'Double Attack' },
-        { fen: '1k6/ppp5/8/1n4Q1/P7/6P1/b3PPK1/8 w - - 0 1', solution: 'Qd8#', theme: 'Back-Rank Mate' },
-        { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rh7#', theme: 'Arabian Mate' },
-        { fen: 'r4rkR/ppN2p1p/2p3p1/6Q1/8/1B4P1/PPP2P1P/6K1 w - - 0 1', solution: 'Qxg6+', theme: 'Pin' },
-        { fen: '5bnr/R5pk/4p2p/5N2/4Q2n/rPq3P1/P3PPK1/8 w - - 0 1', solution: 'Nh4#', theme: 'Discovered Mate' },
-        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', theme: 'Knight Smother' },
-        { fen: 'q2k4/1p1p1r2/2ppp1p1/8/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Ra8+', theme: 'Skewer' },
-        { fen: '3k4/pp3ppp/8/2p3B1/2N4r/3P4/PPPBPKPP/8 w - - 0 1', solution: 'Bg5+', theme: 'Fork' },
-        { fen: 'r3k3/pp3pp1/2p1r2p/n3p3/4P3/2P1PP2/PP6/4RRK1 w - - 0 1', solution: 'Nc7+', theme: 'Family Fork' },
-        { fen: 'r2qk1br/p2pp3/1p3pp1/6p1/8/2NQ3P/PPP2PP1/3R1RK1 w - - 0 1', solution: 'Qh5#', theme: 'Mate in One' },
-        { fen: '6nn/5Ppk/6pp/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=N#', theme: 'Underpromotion' },
-        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', theme: 'Discovered Check' },
-        { fen: '4r1k1/pp3pp1/1p1b4/1B6/2P3q1/2P4Q/PP3PPR/6K1 w - - 0 1', solution: 'Qh8#', theme: 'Back-Rank Mate' },
-        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', theme: 'Checkmate' },
-        { fen: 'r4rk1/pp3pp1/2pnP2p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qh7#', theme: 'Battery Mate' }
+        { fen: '5bnr/R5pk/4p2p/5N2/4Q2n/rPq3P1/P3PPK1/8 w - - 0 1', solution: 'Nxh4#' },
+        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#' },
+        { fen: 'r4rkr/ppN2p1p/2p3p1/6Q1/8/1B4P1/PPP2P1P/6K1 w - - 0 1', solution: 'Qxg6+' },
+        { fen: 'r1bqkb1r/pp2p1pp/1np5/8/4P3/1BN2N2/PPP2PPP/R1BQK2R w KQkq - 0 1', solution: 'Bf7+' },
+        { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+' },
+        { fen: '6nn/5Ppk/6pp/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=N#' },
+        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#' },
+        { fen: '4r1k1/pp3pp1/1p1b4/1B6/2P3q1/2P4Q/PP3PPR/6K1 w - - 0 1', solution: 'Qh8#' },
+        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#' },
+        { fen: '2r4k/p1R5/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rh7#' }
     ];
 
     let game = new Chess();
     let board = null;
     let currentIdx = 0;
     let streak = 0;
-    let timeLeft = 300;
+    let timeLeft = 300; // This is set to 300 seconds (5 minutes)
     let players = JSON.parse(localStorage.getItem('chessQuestPlayers')) || [];
     let currentPlayer = null;
+    let selectedSquare = null;
 
     function startQuest() {
         const name = document.getElementById('playerName').value.trim();
-        if (!name) return alert("Identify yourself, Knight!");
-        currentPlayer = { name: name, stars: 0 };
+        if (!name) return alert("Enter your name, Knight!");
+        currentPlayer = players.find(p => p.name === name) || { name: name, stars: 0 };
+        if (!players.find(p => p.name === name)) players.push(currentPlayer);
         document.getElementById('login-screen').style.display = 'none';
         initBoard();
+        
         setInterval(() => {
             if (timeLeft > 0) {
                 timeLeft--;
                 document.getElementById('timer-bar').style.width = (timeLeft / 300 * 100) + "%";
             }
         }, 1000);
+        updateUI();
     }
 
     function initBoard() {
         game.load(puzzles[currentIdx].fen);
         board = Chessboard('board', {
-            draggable: true,
+            draggable: false, 
             position: puzzles[currentIdx].fen,
-            // FIX: Piece images will load from this CDN
-            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-            onDrop: handleMove,
-            onSnapEnd: () => board.position(game.fen())
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         });
+
+        $('#board').on('click', '.square-55d63', function() {
+            onSquareClick($(this).data('square'));
+        });
+
         $(window).resize(board.resize);
     }
 
-    function handleMove(source, target) {
-        let move = game.move({ from: source, to: target, promotion: 'q' });
-        if (move === null) return 'snapback';
+    function removeHighlights() {
+        $('#board .square-55d63').removeClass('highlight-sq');
+    }
 
-        if (move.san === puzzles[currentIdx].solution) {
+    function onSquareClick(square) {
+        if (selectedSquare === null) {
+            const piece = game.get(square);
+            if (piece && piece.color === game.turn()) {
+                selectedSquare = square;
+                removeHighlights();
+                $('.square-' + square).addClass('highlight-sq');
+            }
+        } else {
+            const moveResult = handleMove(selectedSquare, square);
+            if (moveResult) {
+                selectedSquare = null;
+                removeHighlights();
+            } else {
+                const piece = game.get(square);
+                if (piece && piece.color === game.turn()) {
+                    selectedSquare = square;
+                    removeHighlights();
+                    $('.square-' + square).addClass('highlight-sq');
+                } else {
+                    selectedSquare = null;
+                    removeHighlights();
+                }
+            }
+        }
+    }
+
+    function handleMove(source, target) {
+        const solution = puzzles[currentIdx].solution;
+        const isKnightPromo = solution.includes('=N');
+        let move = game.move({ from: source, to: target, promotion: isKnightPromo ? 'n' : 'q' });
+
+        if (move === null) return false;
+
+        board.position(game.fen());
+        const moveSan = move.san;
+
+        if (moveSan === solution || moveSan === solution.replace('#', '') || (moveSan + '#') === solution) {
             streak++;
             currentPlayer.stars += 10;
-            document.getElementById('status-msg').innerHTML = "<span style='color:#00ff00'>✅ BREACHED!</span>";
-            if (streak % 3 === 0) {
-                document.getElementById('sir-tactics').style.transform = "scale(1.4) rotate(10deg)";
-                setTimeout(() => document.getElementById('sir-tactics').style.transform = "scale(1)", 500);
-            }
-            saveAndRefresh();
+            document.getElementById('status-msg').innerHTML = "<span style='color:#00ff00'>✅ VICTORY!</span>";
+            saveData();
             setTimeout(nextPuzzle, 1000);
         } else {
             streak = 0;
-            document.getElementById('status-msg').innerHTML = "<span style='color:#ff4444'>❌ DEFLECTED!</span>";
-            game.undo();
-            return 'snapback';
+            document.getElementById('status-msg').innerHTML = "<span style='color:#ff4444'>❌ FAILED!</span>";
+            setTimeout(() => {
+                game.undo();
+                board.position(game.fen());
+            }, 800);
         }
         document.getElementById('streak-ui').innerText = `Streak: ${streak} ⭐`;
+        return true;
     }
 
     function nextPuzzle() {
         currentIdx = (currentIdx + 1) % puzzles.length;
         game.load(puzzles[currentIdx].fen);
         board.position(puzzles[currentIdx].fen);
-        document.getElementById('status-msg').innerText = "Onward to the next gate!";
+        document.getElementById('status-msg').innerText = "Onward, Knight!";
+        selectedSquare = null;
+        removeHighlights();
     }
 
-    function saveAndRefresh() {
-        let existing = players.find(p => p.name === currentPlayer.name);
-        if (existing) existing.stars = currentPlayer.stars;
-        else players.push(currentPlayer);
+    function saveData() {
         localStorage.setItem('chessQuestPlayers', JSON.stringify(players));
         updateUI();
     }
@@ -174,6 +197,16 @@
         document.getElementById('leaderboard-body').innerHTML = sorted.map((p, i) => 
             `<tr><td>${['🥇','🥈','🥉'][i]}</td><td>${p.name}</td><td>${p.stars}</td></tr>`
         ).join('');
+    }
+
+    function generateCertificate() {
+        const sorted = [...players].sort((a, b) => b.stars - a.stars).slice(0, 3);
+        const topNames = sorted.map(p => p.name);
+        if (currentPlayer && topNames.includes(currentPlayer.name)) {
+            alert("Generating decree for " + currentPlayer.name + "...");
+        } else {
+            alert("Only the Top 3 Knights can claim a Decree!");
+        }
     }
 </script>
 </body>
