@@ -41,7 +41,6 @@
         .panel { background: var(--wine); border: 3px solid var(--yellow); border-radius: 12px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
         
         #board { width: 100% !important; border: 2px solid var(--yellow); transition: transform 0.2s; }
-        
         #timer-wrap { width: 100%; height: 18px; background: var(--dark-wine); border: 2px solid var(--yellow); border-radius: 9px; margin-bottom: 8px; overflow: hidden; }
         #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 1s linear; }
         
@@ -52,28 +51,29 @@
         .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; border-collapse: collapse; }
         .leaderboard-table td { padding: 8px 5px; border-bottom: 1px solid rgba(255,215,0,0.1); }
         
-        /* --- INTEGRATED CENTERING FIXES --- */
+        /* --- PERFECTLY CENTERED OVERLAY & MODAL --- */
         .overlay { 
             position: fixed; 
             top: 0; 
             left: 0; 
-            width: 100%; 
-            height: 100%; 
+            width: 100vw; 
+            height: 100vh; 
             background: rgba(0,0,0,0.96); 
             z-index: 1000; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            padding: 15px; 
+            padding: 0; 
+            margin: 0;
             box-sizing: border-box; 
         }
         
         .modal { 
             background: var(--wine); 
             border: 4px solid var(--yellow); 
-            padding: 20px; 
+            padding: 25px; 
             border-radius: 20px; 
-            width: 90%; 
+            width: 90%; /* Responsive width */
             max-width: 400px; 
             display: flex;
             flex-direction: column;
@@ -81,9 +81,8 @@
             justify-content: center;
             text-align: center; 
             animation: modalFadeIn 0.6s ease-out; 
-            position: relative; 
             box-sizing: border-box; 
-            margin: auto; /* Essential for browser centering logic */
+            margin: auto; /* Absolute centering fallback */
         }
         
         .story-container { 
@@ -124,7 +123,7 @@
 
 <div id="game-over-screen" class="overlay" style="display: none;">
     <div class="modal">
-        <h2 id="end-title" style="color: var(--yellow); font-size: 1.4rem;">⌛ MISSION ENDED</h2>
+        <h2 id="end-title" style="color: var(--yellow); font-size: 1.4rem;">🏆 COACH BUSAYO IS SAFE!</h2>
         <p id="final-score-msg" style="font-size: 1.1rem; margin: 15px 0;"></p>
         <button class="btn" onclick="location.reload()">TRY RESCUE AGAIN</button>
     </div>
@@ -189,7 +188,7 @@
         { fen: 'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 4', solution: 'Ng5', remark: "Targeting the weak f7 square!" },
         { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate: The King is trapped by his own guards!" },
         { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! Rook and Knight perfectly trap the King." },
-        { fen: 'r1bq2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kg3', remark: "Keeping the king safe and preparing to castle artificially." },
+        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kg3', remark: "Keeping the king safe and preparing to castle artificially." },
         { fen: 'r1b1k1nr/p2p1ppp/n1p1p3/1p6/1b1PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 0 7', solution: 'axb4', remark: "Free Material! Capitalizing on a tactical blunder." },
         { fen: '6k1/ppp2ppp/8/8/8/8/PP3PPP/3R2K1 w - - 0 1', solution: 'Rd8#', remark: "Back Rank Mate! Forcing the enemy into a corner." },
         { fen: '2r3k1/p4p1p/6p1/1R6/8/5P2/P1r3PP/1R4K1 w - - 0 1', solution: 'Rb8', remark: "Simplification! Trading pieces to secure the endgame." },
@@ -295,8 +294,13 @@
         gameActive = false;
         const title = document.getElementById('end-title');
         const msg = document.getElementById('final-score-msg');
-        if (reason === 'win') { title.innerText = "🏆 COACH BUSAYO IS SAFE!"; msg.innerHTML = `Heroic effort!<br><b>TOTAL STARS: ${currentPlayer.stars} ⭐</b>`; }
-        else { title.innerText = "⌛ MISSION FAILED"; msg.innerHTML = `Time's up hero.<br><b>FINAL STARS: ${currentPlayer.stars} ⭐</b>`; }
+        if (reason === 'win') { 
+            title.innerText = "🏆 COACH BUSAYO IS SAFE!"; 
+            msg.innerHTML = `Heroic effort! You broke every seal on the castle.<br><b>TOTAL STARS: ${currentPlayer.stars} ⭐</b>`; 
+        } else { 
+            title.innerText = "⌛ MISSION FAILED"; 
+            msg.innerHTML = `Time's up hero.<br><b>FINAL STARS: ${currentPlayer.stars} ⭐</b>`; 
+        }
         document.getElementById('game-over-screen').style.display = 'flex';
     }
 
