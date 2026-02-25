@@ -78,7 +78,7 @@
         { fen: 'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4', solution: 'Ng5', remark: "Targeting the weak f7 square!" },
         { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate: The King is trapped by his own guards!" },
         { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! Rook and Knight perfectly trap the King." },
-        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kxg4', remark: "King Defense! Sometimes the leader must enter the fray." },
+        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kg3', remark: "Keeping the king safe and preparing to castle artificially with h3." },
         { fen: 'r1b1k1nr/p2p1ppp/n1p1p3/1p6/1b1PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 0 7', solution: 'axb4', remark: "Free Material! Capitalizing on a tactical blunder." },
         { fen: '5rk1/ppp2ppp/8/8/8/8/PP3PPP/3R2K1 w - - 0 1', solution: 'Rd8', remark: "Back Rank Pressure! Forcing the enemy into a corner." },
         { fen: '2r3k1/p4p1p/6p1/1R6/8/5P2/P1r3PP/1R4K1 w - - 0 1', solution: 'Rb8', remark: "Simplification! Trading pieces to secure the endgame." },
@@ -88,7 +88,7 @@
     let game = new Chess();
     let board = null;
     let currentIdx = 0;
-    let timeLeft = 300; 
+    let timeLeft = 120; // 2 minutes
     let players = JSON.parse(localStorage.getItem('chessQuestPlayers')) || [];
     let currentPlayer = null;
     let selectedSquare = null;
@@ -121,7 +121,7 @@
         const timerInterval = setInterval(() => {
             if (timeLeft > 0 && gameActive) {
                 timeLeft--;
-                document.getElementById('timer-bar').style.width = (timeLeft / 300 * 100) + "%";
+                document.getElementById('timer-bar').style.width = (timeLeft / 120 * 100) + "%";
             } else if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 if(gameActive) endGame('time');
