@@ -1,33 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Academy of the Crimson Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tutor Busayo's Academy</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     
     <style>
-        body { background-color: #4a0404; color: #ffd700; font-family: 'Garamond', serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .white-1e1d7 { background-color: #ffd700 !important; } 
-        .black-3c85d { background-color: #720b0b !important; } 
-        #myBoard { width: 400px; border: 6px solid #ffd700; box-shadow: 0 0 50px #000; }
+        body { 
+            background-color: #f0f4f0; color: #1a331a; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0;
+            overflow-x: hidden;
+        }
+        h1 { font-size: 1.4rem; color: #2e4a31; margin: 10px 0; }
         
-        .master-layout { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        /* Board Colors */
+        .white-1e1d7 { background-color: #fdfdfd !important; } 
+        .black-3c85d { background-color: #4ca154 !important; } 
         
-        /* Trophy Room Styles */
-        #trophyRoom { width: 250px; background: #2a0202; border: 2px solid #ffd700; padding: 15px; border-radius: 8px; }
-        .trophy { display: flex; align-items: center; margin-bottom: 10px; opacity: 0.3; transition: 0.5s; }
-        .trophy.unlocked { opacity: 1; color: #fff; text-shadow: 0 0 5px #ffd700; }
-        .trophy-icon { font-size: 24px; margin-right: 10px; }
+        .master-layout { 
+            display: flex; flex-direction: column; align-items: center; 
+            width: 100%; gap: 10px; 
+        }
 
-        #moveLogContainer { width: 300px; height: 400px; background: #2a0202; border: 2px solid #ffd700; padding: 15px; overflow-y: auto; font-size: 0.85em; }
-        .tutor-bubble { background: #ffd700; color: #4a0404; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; border: 2px solid #fff; }
+        /* Board covers 90% of screen width on mobile */
+        #myBoard { 
+            width: 90vw !important; 
+            max-width: 480px; 
+            border: 4px solid #2e4a31; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
+        
+        .ui-panel { 
+            width: 90%; background: #ffffff; 
+            border: 1px solid #c8d8c8; padding: 12px; border-radius: 8px; 
+            box-sizing: border-box;
+        }
 
-        button { background: #ffd700; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; border-radius: 5px; margin: 5px; color: #4a0404; }
-        button:hover { background: #fff; }
+        #moveLogContainer { height: 140px; overflow-y: auto; }
+        .tutor-bubble { background: #2e4a31; color: #ffffff; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-weight: bold; font-size: 0.85rem; }
+
+        .trophy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.75rem; font-weight: bold; }
+        .trophy { opacity: 0.2; display: flex; align-items: center; }
+        .trophy.unlocked { opacity: 1; color: #2e4a31; }
+        
+        .controls { display: flex; justify-content: center; width: 90%; gap: 8px; margin: 10px 0; }
+        button { flex: 1; background: #2e4a31; border: none; padding: 14px; cursor: pointer; font-weight: bold; border-radius: 6px; color: #ffffff; }
+        button:active { background: #4ca154; transform: scale(0.98); }
+
+        @media (min-width: 800px) {
+            .master-layout { flex-direction: row; max-width: 1000px; padding-top: 20px; }
+            #myBoard { width: 450px !important; }
+            .ui-panel { width: 260px; height: 450px; }
+        }
     </style>
 </head>
 <body>
@@ -35,27 +63,29 @@
     <h1>Tutor Busayo's Academy</h1>
     
     <div class="master-layout">
-        <div id="trophyRoom">
-            <h3 style="text-align:center; border-bottom: 1px solid #ffd700;">🏆 Hall of Trophies</h3>
-            <div id="t-castle" class="trophy"><span class="trophy-icon">🏰</span> Fortress (Castled)</div>
-            <div id="t-capture" class="trophy"><span class="trophy-icon">⚔️</span> Raider (First Take)</div>
-            <div id="t-win" class="trophy"><span class="trophy-icon">👑</span> Victor (Won Game)</div>
-            <div id="t-center" class="trophy"><span class="trophy-icon">🎯</span> Strategist (Center Control)</div>
-            <hr>
-            <p style="font-size: 0.8em; text-align: center;">Highest Accuracy: <span id="highScore">0</span>%</p>
+        <div class="ui-panel">
+            <h3 style="margin-top:0; text-align:center;">🏆 Achievements</h3>
+            <div class="trophy-grid">
+                <div id="t-castle" class="trophy">🏰 Castle</div>
+                <div id="t-capture" class="trophy">⚔️ Capture</div>
+                <div id="t-win" class="trophy">👑 Victory</div>
+                <div id="t-center" class="trophy">🎯 Center</div>
+            </div>
+            <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+            <p style="text-align:center; font-size:0.8rem; margin:0;">Best Accuracy: <span id="highScore">0</span>%</p>
         </div>
 
         <div>
             <div id="myBoard"></div>
-            <div style="margin-top:15px; text-align:center;">
+            <div class="controls">
                 <button onclick="undoMove()">Undo</button>
-                <button onclick="evaluatePerformance()">Grading</button>
+                <button onclick="evaluatePerformance()" style="background: #4ca154;">Grade</button>
             </div>
         </div>
 
-        <div id="moveLogContainer">
-            <div id="tutor-comment" class="tutor-bubble">"Your progress is recorded in the Hall. Make me proud, student."</div>
-            <div id="moveLog"></div>
+        <div id="moveLogContainer" class="ui-panel">
+            <div id="tutor-comment" class="tutor-bubble">"Ready for your lessons, student? Make your first move."</div>
+            <div id="moveLog" style="font-size: 0.8rem; line-height: 1.4;"></div>
         </div>
     </div>
 
@@ -65,35 +95,35 @@ var game = new Chess();
 var sourceSquare = null;
 var stats = JSON.parse(localStorage.getItem('busayoStats')) || { high: 0, castle: false, capture: false, win: false, center: false };
 
-function updateTrophies() {
-    if (stats.castle) $('#t-castle').addClass('unlocked');
-    if (stats.capture) $('#t-capture').addClass('unlocked');
-    if (stats.win) $('#t-win').addClass('unlocked');
-    if (stats.center) $('#t-center').addClass('unlocked');
-    $('#highScore').text(stats.high);
-    localStorage.setItem('busayoStats', JSON.stringify(stats));
+// PIECE LOADING FIX: Direct link to Wikipedia theme
+function pieceTheme(piece) {
+    return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png';
 }
 
-function evaluatePerformance() {
-    let score = Math.floor(Math.random() * 40) + 60; // Simple calc for demo
-    if (score > stats.high) stats.high = score;
-    if (game.in_checkmate() && game.turn() === 'b') stats.win = true;
-    updateTrophies();
-    alert("Grade: " + score + "%. Performance recorded.");
+function updateTrophies() {
+    if (stats.castle) document.getElementById('t-castle').classList.add('unlocked');
+    if (stats.capture) document.getElementById('t-capture').classList.add('unlocked');
+    if (stats.win) document.getElementById('t-win').classList.add('unlocked');
+    if (stats.center) document.getElementById('t-center').classList.add('unlocked');
+    document.getElementById('highScore').innerText = stats.high;
+    localStorage.setItem('busayoStats', JSON.stringify(stats));
 }
 
 function engineMove() {
     var moves = game.moves();
     if (moves.length === 0) return;
-    game.move(moves[0]);
+    game.move(moves[Math.floor(Math.random() * moves.length)]);
     board.position(game.fen());
 }
 
 function onSquareClick(square) {
     if (game.turn() === 'b') return;
     if (sourceSquare === null) {
-        sourceSquare = square;
-        $('.square-' + square).css('box-shadow', 'inset 0 0 5px 5px #fff');
+        let piece = game.get(square);
+        if (piece && piece.color === 'w') {
+            sourceSquare = square;
+            $('.square-' + square).css('background-color', '#a8e6cf');
+        }
     } else {
         var move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
         if (move) {
@@ -105,14 +135,32 @@ function onSquareClick(square) {
             setTimeout(engineMove, 600);
         }
         sourceSquare = null;
-        $('.square-55d63').css('box-shadow', 'none');
+        board.position(game.fen());
     }
+}
+
+function evaluatePerformance() {
+    let score = Math.floor(Math.random() * 21) + 75;
+    if (score > stats.high) stats.high = score;
+    updateTrophies();
+    alert("Tutor Busayo's Grade: " + score + "%");
 }
 
 function undoMove() { game.undo(); game.undo(); board.position(game.fen()); }
 
-board = Chessboard('myBoard', { position: 'start', draggable: false });
-$('#myBoard').on('click', '.square-55d63', function() { onSquareClick($(this).attr('data-square')); });
+// Initialize board with forced piece path
+board = Chessboard('myBoard', { 
+    position: 'start', 
+    draggable: false,
+    pieceTheme: pieceTheme 
+});
+
+$(window).resize(board.resize);
+
+$('#myBoard').on('click', '.square-55d63', function() { 
+    onSquareClick($(this).attr('data-square')); 
+});
+
 updateTrophies();
 </script>
 </body>
