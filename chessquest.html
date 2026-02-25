@@ -1,9 +1,11 @@
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coach Busayo: Wine Castle Siege</title>
+    <title>Save Coach Busayo: Wine Castle Siege</title>
     
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -19,30 +21,33 @@
         #timer-wrap { width: 100%; height: 18px; background: var(--dark-wine); border: 2px solid var(--yellow); border-radius: 9px; margin-bottom: 8px; overflow: hidden; }
         #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 1s linear; }
         .btn { background: var(--yellow); color: var(--wine); border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; font-size: 0.9rem; }
+        .btn-resign { background: #444; color: #ccc; margin-top: 5px; font-size: 0.7rem; padding: 5px; border: 1px solid #666; }
         .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; border-collapse: collapse; }
         .leaderboard-table td { padding: 8px 5px; border-bottom: 1px solid rgba(255,215,0,0.1); }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
         .highlight-sq { box-shadow: inset 0 0 3px 3px white !important; background-color: rgba(255, 215, 0, 0.6) !important; }
-        #status-msg { min-height: 50px; text-align: center; color: var(--yellow); margin: 10px 0; }
-        .remark-text { display: block; color: #fff; font-size: 0.85rem; font-style: italic; margin-top: 4px; }
+        #status-msg { min-height: 95px; text-align: center; color: var(--yellow); margin: 10px 0; font-weight: bold; }
+        .remark-text { display: block; color: #fff; font-size: 0.85rem; font-style: italic; margin-top: 4px; font-weight: normal; }
+        #next-btn { display: none; margin: 5px auto; width: 75%; border: 2px solid white; }
     </style>
 </head>
 <body>
 
 <div id="login-screen" class="overlay">
     <div class="modal">
-        <h2 style="color: var(--yellow); margin-top: 0;">⚔️ WINE CASTLE SIEGE ⚔️</h2>
-        <input type="text" id="playerName" placeholder="Enter Knight Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
-        <button class="btn" onclick="startQuest()">BEGIN QUEST</button>
+        <h2 style="color: var(--yellow); margin-top: 0;">🏰 SAVE COACH BUSAYO 🏰</h2>
+        <p style="margin-bottom: 20px; font-size: 0.9rem;">The Coach is trapped in the Wine Castle! Solve the tactics to break the siege.</p>
+        <input type="text" id="playerName" placeholder="Enter Hero's Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
+        <button class="btn" onclick="startQuest()">START RESCUE</button>
     </div>
 </div>
 
 <div id="game-over-screen" class="overlay" style="display: none;">
     <div class="modal">
-        <h2 id="end-title" style="color: var(--yellow);">⌛ SIEGE ENDED</h2>
+        <h2 id="end-title" style="color: var(--yellow);">⌛ MISSION ENDED</h2>
         <p id="final-score-msg" style="font-size: 1.2rem; margin: 20px 0;"></p>
-        <button class="btn" onclick="location.reload()">RE-SIEGE CASTLE</button>
+        <button class="btn" onclick="location.reload()">TRY RESCUE AGAIN</button>
     </div>
 </div>
 
@@ -50,12 +55,16 @@
     <div id="timer-wrap"><div id="timer-bar"></div></div>
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px;">
         <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight" style="width:50px; cursor: pointer;" onclick="adminReset()">
-        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Streak: 0 ⭐</div>
+        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Stars: 0 ⭐</div>
     </div>
     <div id="board"></div>
-    <h3 id="status-msg">Click a piece to move!</h3>
+    <div id="status-msg">
+        <div id="msg-text">Select your first move!</div>
+        <button id="next-btn" class="btn" onclick="nextPuzzle()">ADVANCE TO NEXT GATE ➔</button>
+        <button id="resign-btn" class="btn btn-resign" onclick="if(confirm('Abandon the Coach?')) endGame('surrender')">🏳️ RAISE WHITE FLAG</button>
+    </div>
     <div class="panel">
-        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 TOP 10 KNIGHTS</h3>
+        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 HALL OF HEROES</h3>
         <table class="leaderboard-table">
             <tbody id="leaderboard-body"></tbody>
         </table>
@@ -65,19 +74,19 @@
 
 <script>
     const puzzles = [
-        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bf7+', remark: "Deflection! Sacrifice the Bishop to lure the King and win the Queen." },
-        { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Attacking the King and the Rook simultaneously." }, 
-        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', remark: "Discovered Mate! The Bishop move reveals a terminal check." },   
-        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', remark: "Mating Battery! The Queen and Knight coordinate for the finish." }, 
-        { fen: 'r4rk1/pp3pph/2pn3p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qxh7#', remark: "Battery checkmate on the H-file with the Bishop support." }, 
-        { fen: 'r2qk b2/p2pp3/1p3p2/6p1/8/2NP3P/PPP2PP1/3QR1K1 w - - 0 1', solution: 'Qh5+', remark: "Exploiting dark-square weaknesses around the uncastled King." }, 
-        { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Attacking the King to win the Rook behind it." }, 
-        { fen: 'q2k4/1p1p1r2/2ppp1p1/6Q1/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Qxa8+', remark: "Capturing the Queen by removing the defender." }, 
-        { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+', remark: "Classical sacrifice on f7 to disrupt the King's safety." }, 
-        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered mate pattern! The King is trapped by its own pieces." }, 
-        { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q', remark: "Promotion! Converting the pawn into a Queen to win the endgame." }, 
-        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+', remark: "Winning material through a tactical combination." }, 
-        { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! The Rook and Knight cooperate to trap the King." } 
+        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bf7+', remark: "Deflection! You force the King to move so you can win the Queen." },
+        { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Your Knight traps both King and Rook." }, 
+        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', remark: "Discovered Mate! The Bishop uncovers a fatal attack." },   
+        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', remark: "Mating Battery! Queen and Knight storm the gate." }, 
+        { fen: 'r4rk1/pp3pph/2pn3p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qxh7#', remark: "Classic Finisher: The Bishop supports the Queen's final blow." }, 
+        { fen: 'r2qk b2/p2pp3/1p3p2/6p1/8/2NP3P/PPP2PP1/3QR1K1 w - - 0 1', solution: 'Qh5+', remark: "The King is exposed! Punish his lack of safety." }, 
+        { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Strike through the King to win the Rook." }, 
+        { fen: 'q2k4/1p1p1r2/2ppp1p1/6Q1/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Qxa8+', remark: "Clearing the path: Win the enemy Queen to weaken the defense." }, 
+        { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+', remark: "Sacrifice! Shatter the fortress to expose the King." }, 
+        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate: The King is trapped by his own guards!" }, 
+        { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q', remark: "Promotion! A new Queen arrives to finish the rescue." }, 
+        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+', remark: "Tactical Strike! Breaking the line of defense." }, 
+        { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! Rook and Knight perfectly trap the King." } 
     ];
 
     let game = new Chess();
@@ -92,7 +101,7 @@
 
     function startQuest() {
         const name = document.getElementById('playerName').value.trim();
-        if (!name) return alert("Identify yourself, Knight!");
+        if (!name) return alert("Who is this hero?");
         currentPlayer = players.find(p => p.name === name) || { name: name, stars: 0 };
         if (!players.find(p => p.name === name)) players.push(currentPlayer);
         document.getElementById('login-screen').style.display = 'none';
@@ -105,7 +114,7 @@
                 document.getElementById('timer-bar').style.width = (timeLeft / 300 * 100) + "%";
             } else if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                endGame();
+                if(gameActive) endGame('time');
             }
         }, 1000);
         updateUI();
@@ -122,9 +131,13 @@
         $('#board').off('click').on('click', '.square-55d63', function() { 
             if(gameActive) onSquareClick($(this).data('square')); 
         });
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('resign-btn').style.display = 'inline-block';
+        document.getElementById('msg-text').innerHTML = "Gate " + (currentIdx + 1) + " of 13";
     }
 
     function onSquareClick(square) {
+        if (document.getElementById('next-btn').style.display === 'block') return;
         if (selectedSquare === null) {
             const piece = game.get(square);
             if (piece && piece.color === game.turn()) {
@@ -142,55 +155,60 @@
     function handleMove(source, target) {
         const puzzle = puzzles[currentIdx];
         let move = game.move({ from: source, to: target, promotion: 'q' });
-        
         if (move === null) return;
 
         board.position(game.fen());
-        
-        const history = game.history({ verbose: true });
-        const lastMove = history[history.length - 1];
-        const san = lastMove.san;
+        const san = game.history({ verbose: true }).pop().san;
 
         if (san === puzzle.solution) {
             streak++;
             currentPlayer.stars += 10;
-            document.getElementById('status-msg').innerHTML = 
-                `<span style="color:#00ff00">✅ VICTORY!</span><br><span class="remark-text">${puzzle.remark}</span>`;
+            document.getElementById('msg-text').innerHTML = 
+                `<span style="color:#00ff00">GATE OPENED!</span><br><span class="remark-text">${puzzle.remark}</span>`;
+            document.getElementById('next-btn').style.display = 'block';
+            document.getElementById('resign-btn').style.display = 'none';
             saveData();
-            setTimeout(nextPuzzle, 2000);
         } else {
             streak = 0;
-            currentPlayer.stars = 0; 
-            document.getElementById('status-msg').innerHTML = "<span style='color:#ff4444'>❌ FAILED!</span>";
-            saveData();
-            setTimeout(() => { game.undo(); board.position(game.fen()); }, 800);
+            document.getElementById('msg-text').innerHTML = "<span style='color:#ff4444'>GATE LOCKED!</span>";
+            setTimeout(() => { 
+                game.undo(); 
+                board.position(game.fen()); 
+                document.getElementById('msg-text').innerText = "Try a different tactic!";
+            }, 800);
         }
-        document.getElementById('streak-ui').innerText = `Streak: ${streak} ⭐`;
+        document.getElementById('streak-ui').innerText = `Stars: ${currentPlayer.stars} ⭐`;
     }
 
     function nextPuzzle() {
-        if(!gameActive) return;
         currentIdx++;
         if (currentIdx >= puzzles.length) {
-            currentIdx = 0; 
+            endGame('win');
+            return;
         }
-        game.load(puzzles[currentIdx].fen);
-        board.position(puzzles[currentIdx].fen);
-        document.getElementById('status-msg').innerText = "Onward, Knight!";
+        initBoard();
     }
 
-    function endGame() {
+    function endGame(reason) {
         gameActive = false;
         const title = document.getElementById('end-title');
         const msg = document.getElementById('final-score-msg');
-        title.innerText = "⌛ TIME EXPIRED";
-        msg.innerText = `${currentPlayer.name}, you secured ${currentPlayer.stars} stars!`;
+        
+        if (reason === 'win') {
+            title.innerText = "🏆 COACH BUSAYO IS SAFE!";
+            msg.innerHTML = `Heroic effort! You broke every seal on the castle.<br><b>TOTAL STARS: ${currentPlayer.stars} ⭐</b>`;
+        } else if (reason === 'surrender') {
+            title.innerText = "🏳️ MISSION ABANDONED";
+            msg.innerHTML = `${currentPlayer.name} retreated from the walls.<br><b>STARS EARNED: ${currentPlayer.stars} ⭐</b>`;
+        } else {
+            title.innerText = "⌛ TIME IS UP";
+            msg.innerHTML = `The castle doors have locked forever!<br><b>FINAL STARS: ${currentPlayer.stars} ⭐</b>`;
+        }
         document.getElementById('game-over-screen').style.display = 'flex';
     }
 
     function adminReset() {
-        const pw = prompt("Enter Master Key:");
-        if (pw === "coach2026") {
+        if (prompt("Master Key:") === "coach2026") {
             players = [];
             localStorage.removeItem('chessQuestPlayers');
             location.reload();
@@ -207,7 +225,7 @@
         const icons = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
         document.getElementById('leaderboard-body').innerHTML = sorted.length ? sorted.map((p, i) => 
             `<tr><td>${icons[i]}</td><td>${p.name}</td><td>${p.stars}</td></tr>`
-        ).join('') : "<tr><td colspan='3' style='text-align:center;'>No Knights in the scroll yet.</td></tr>";
+        ).join('') : "<tr><td colspan='3'>No Heroes yet.</td></tr>";
     }
 </script>
 </body>
