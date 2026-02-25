@@ -24,8 +24,8 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
         .highlight-sq { box-shadow: inset 0 0 3px 3px white !important; background-color: rgba(255, 215, 0, 0.6) !important; }
-        #status-msg { min-height: 60px; text-align: center; color: var(--yellow); margin: 10px 0; font-weight: bold; }
-        .remark { color: white; font-size: 0.85rem; font-weight: normal; display: block; margin-top: 5px; font-style: italic; }
+        #status-msg { min-height: 50px; text-align: center; color: var(--yellow); margin: 10px 0; }
+        .remark-text { display: block; color: #fff; font-size: 0.85rem; font-style: italic; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -53,7 +53,7 @@
         <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Streak: 0 ⭐</div>
     </div>
     <div id="board"></div>
-    <div id="status-msg">Click a piece to move!</div>
+    <h3 id="status-msg">Click a piece to move!</h3>
     <div class="panel">
         <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 TOP 10 KNIGHTS</h3>
         <table class="leaderboard-table">
@@ -65,19 +65,19 @@
 
 <script>
     const puzzles = [
-        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bf7+', remark: "The 'Greek Gift' setup: White sacrifices the Bishop to pull the King out and win the Queen!" }, 
-        { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "A Royal Fork! The Knight strikes both the King and the Rook." }, 
-        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', remark: "Discovered Mate: The Bishop moves to shield the King and reveal a checkmate." },   
-        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', remark: "A powerful Queen and Knight battery delivering a final blow." }, 
-        { fen: 'r4rk1/pp3pph/2pn3p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qxh7#', remark: "The Bishop and Queen battery—a classic mating pattern on the kingside." }, 
-        { fen: 'r2qk b2/p2pp3/1p3p2/6p1/8/2NP3P/PPP2PP1/3QR1K1 w - - 0 1', solution: 'Qh5+', remark: "Punishing the uncastled King by exploiting the weak dark squares." }, 
-        { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "A deadly skewer: Attacking the King to capture the Rook behind it." }, 
-        { fen: 'q2k4/1p1p1r2/2ppp1p1/6Q1/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Qxa8+', remark: "Removing the defender to capture the most valuable enemy piece." }, 
-        { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+', remark: "Demolishing the King's protection with a tactical sacrifice." }, 
-        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate style: The King is trapped by his own army." }, 
-        { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q', remark: "Siege complete! Promoting the pawn to a Queen wins the game." }, 
-        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+', remark: "Shattering the defensive line with a tactical exchange." }, 
-        { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "The Arabian Mate: The Knight and Rook coordinate to trap the King in the corner." } 
+        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bf7+', remark: "Deflection! Sacrifice the Bishop to lure the King and win the Queen." },
+        { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Attacking the King and the Rook simultaneously." }, 
+        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#', remark: "Discovered Mate! The Bishop move reveals a terminal check." },   
+        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', remark: "Mating Battery! The Queen and Knight coordinate for the finish." }, 
+        { fen: 'r4rk1/pp3pph/2pn3p/3p4/3q4/P2Q3P/1PB2PP1/R4RK1 w - - 0 1', solution: 'Qxh7#', remark: "Battery checkmate on the H-file with the Bishop support." }, 
+        { fen: 'r2qk b2/p2pp3/1p3p2/6p1/8/2NP3P/PPP2PP1/3QR1K1 w - - 0 1', solution: 'Qh5+', remark: "Exploiting dark-square weaknesses around the uncastled King." }, 
+        { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Attacking the King to win the Rook behind it." }, 
+        { fen: 'q2k4/1p1p1r2/2ppp1p1/6Q1/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Qxa8+', remark: "Capturing the Queen by removing the defender." }, 
+        { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+', remark: "Classical sacrifice on f7 to disrupt the King's safety." }, 
+        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered mate pattern! The King is trapped by its own pieces." }, 
+        { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q', remark: "Promotion! Converting the pawn into a Queen to win the endgame." }, 
+        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+', remark: "Winning material through a tactical combination." }, 
+        { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! The Rook and Knight cooperate to trap the King." } 
     ];
 
     let game = new Chess();
@@ -151,24 +151,19 @@
         const lastMove = history[history.length - 1];
         const san = lastMove.san;
 
-        // Structure Fix: Compare exact SAN to allow progression past level 3
         if (san === puzzle.solution) {
             streak++;
             currentPlayer.stars += 10;
             document.getElementById('status-msg').innerHTML = 
-                `✅ VICTORY! <span class="remark">${puzzle.remark}</span>`;
+                `<span style="color:#00ff00">✅ VICTORY!</span><br><span class="remark-text">${puzzle.remark}</span>`;
             saveData();
-            setTimeout(nextPuzzle, 2500); // 2.5s pause to read the remark
+            setTimeout(nextPuzzle, 2000);
         } else {
             streak = 0;
-            currentPlayer.stars = Math.max(0, currentPlayer.stars - 5); 
+            currentPlayer.stars = 0; 
             document.getElementById('status-msg').innerHTML = "<span style='color:#ff4444'>❌ FAILED!</span>";
             saveData();
-            setTimeout(() => { 
-                game.undo(); 
-                board.position(game.fen()); 
-                document.getElementById('status-msg').innerText = "Try again, Knight!";
-            }, 800);
+            setTimeout(() => { game.undo(); board.position(game.fen()); }, 800);
         }
         document.getElementById('streak-ui').innerText = `Streak: ${streak} ⭐`;
     }
