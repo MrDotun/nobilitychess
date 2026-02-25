@@ -63,7 +63,7 @@
 
 <script>
     const puzzles = [
-        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+' }, // Corrected 1: Bxf7+
+        { fen: 'r1bqkbnr/ppp1p1pp/8/n7/2B1P3/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bf7+' }, // Corrected: No capture
         { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+' }, 
         { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#' },   
         { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#' }, 
@@ -74,7 +74,7 @@
         { fen: 'r1bqkbnr/pp1pp1pp/1np5/5p2/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxf7+' }, 
         { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#' }, 
         { fen: '2n3nn/5Pp1/7k/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=Q' }, 
-        { fen: 'r1bqkbnr/pp1pp1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+' }, 
+        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+' }, 
         { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#' } 
     ];
 
@@ -98,10 +98,10 @@
         initBoard();
         
         const timerInterval = setInterval(() => {
-            if (timeLeft > 0) {
+            if (timeLeft > 0 && gameActive) {
                 timeLeft--;
                 document.getElementById('timer-bar').style.width = (timeLeft / 300 * 100) + "%";
-            } else {
+            } else if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 endGame();
             }
@@ -144,8 +144,8 @@
 
         board.position(game.fen());
         
-        // Use history for robust validation
-        const lastMove = game.history({ verbose: true }).slice(-1)[0];
+        const history = game.history({ verbose: true });
+        const lastMove = history[history.length - 1];
         const san = lastMove.san;
 
         const clean = (s) => s.replace(/[#\+=]/g, '');
@@ -169,7 +169,7 @@
         if(!gameActive) return;
         currentIdx++;
         if (currentIdx >= puzzles.length) {
-            currentIdx = 0; // Loop back
+            currentIdx = 0; 
         }
         game.load(puzzles[currentIdx].fen);
         board.position(puzzles[currentIdx].fen);
@@ -182,10 +182,10 @@
         const msg = document.getElementById('final-score-msg');
         if (currentPlayer.stars === 0) {
             title.innerText = "❌ SIEGE FAILED";
-            msg.innerText = `${currentPlayer.name}, the castle remains un-sieged.`;
+            msg.innerText = `${currentPlayer.name}, you failed to breach the walls. Your stars are lost.`;
         } else {
             title.innerText = "⌛ TIME EXPIRED";
-            msg.innerText = `${currentPlayer.name}, you captured ${currentPlayer.stars} stars!`;
+            msg.innerText = `${currentPlayer.name}, you secured ${currentPlayer.stars} stars!`;
         }
         document.getElementById('game-over-screen').style.display = 'flex';
     }
@@ -209,7 +209,7 @@
         const icons = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
         document.getElementById('leaderboard-body').innerHTML = sorted.length ? sorted.map((p, i) => 
             `<tr><td>${icons[i]}</td><td>${p.name}</td><td>${p.stars}</td></tr>`
-        ).join('') : "<tr><td colspan='3' style='text-align:center;'>No Knights yet.</td></tr>";
+        ).join('') : "<tr><td colspan='3' style='text-align:center;'>No Knights in the scroll yet.</td></tr>";
     }
 </script>
 </body>
