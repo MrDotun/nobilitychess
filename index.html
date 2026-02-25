@@ -82,6 +82,23 @@
         .nav-logo { width: 40px; height: 40px; border: 1px solid var(--yellow); border-radius: 5px; mix-blend-mode: screen; }
         .nav-title { font-family: 'Cinzel'; color: var(--yellow); font-size: 0.9rem; font-weight: 700; }
 
+        /* Added Quest Link Style */
+        .quest-link {
+            text-decoration: none;
+            background: var(--wine);
+            color: var(--yellow);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: 'Cinzel';
+            font-size: 0.8rem;
+            border: 1px solid var(--yellow);
+            transition: 0.3s;
+        }
+        .quest-link:hover {
+            background: var(--yellow);
+            color: var(--wine);
+        }
+
         section { display: none; min-height: 100vh; padding: 80px 20px; text-align: center; box-sizing: border-box; }
         section.active { display: block; animation: quickFade 0.4s ease; }
         @keyframes quickFade { from { opacity: 0; } to { opacity: 1; } }
@@ -107,244 +124,63 @@
             100% { transform: rotateY(-360deg); }
         }
 
-        .intro-container {
-            max-width: 440px;
-            margin: 10px auto;
-            padding: 15px 20px;
-            background: rgba(10, 25, 47, 0.7);
-            border-left: 4px solid var(--wine);
-            border-right: 4px solid var(--wine);
+        /* Adventure Card Style */
+        .adventure-card {
+            background: linear-gradient(45deg, var(--wine), var(--noble-blue));
+            border: 2px solid var(--yellow);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            margin-top: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .intro-text {
-            line-height: 1.45;
-            font-size: 0.95rem;
-            color: #e0e0e0;
-            text-align: justify;
-        }
-
-        .ceo-contact {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-        }
-        .contact-pill {
-            display: inline-flex;
-            align-items: center;
-            background: var(--wine);
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: var(--yellow);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 1px solid var(--yellow);
-            transition: 0.3s;
-        }
-        .contact-pill:hover {
-            background: var(--yellow);
-            color: var(--wine);
-        }
-
-        .slide-btn {
-            background: var(--wine); color: var(--yellow); padding: 22px 60px;
-            border: 2px solid var(--yellow); border-radius: 50px; font-weight: 900;
-            cursor: pointer; margin-top: 30px; display: inline-block;
-            box-shadow: 0 0 20px rgba(93, 24, 35, 0.6); 
-            font-size: 1.3rem;
-            font-family: 'Cinzel';
-            transition: 0.3s;
-            animation: pulseBtn 2s infinite;
-        }
-        
-        @keyframes pulseBtn {
-            0% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0.4); }
-        }
-
-        #side-popup {
-            position: fixed;
-            bottom: 30px;
-            right: -300px; 
-            background: var(--yellow);
-            color: var(--wine);
-            padding: 15px 25px;
-            border-radius: 50px 0 0 50px;
-            font-family: 'Cinzel';
-            font-weight: 900;
-            font-size: 0.9rem;
-            box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
-            transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #side-popup.visible { right: 0; }
-
-        #academy { background: linear-gradient(180deg, var(--noble-blue) 0%, var(--wine) 100%); }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; max-width: 400px; margin: 0 auto; }
-        
-        .box { 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 3px solid var(--yellow); 
-            padding: 25px 10px; 
-            border-radius: 25px; 
-            text-decoration: none; 
-            color: white; 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 0 var(--wine); 
-            position: relative;
-            display: block; 
-        }
-
-        .box:active { transform: translateY(4px); box-shadow: 0 4px 0 var(--wine); }
-
-        .box span { 
-            font-size: 2.5rem; 
-            display: block; 
-            margin-bottom: 10px; 
-            animation: bounceIcon 2s infinite ease-in-out;
-        }
-
-        @keyframes bounceIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .box h3 { font-size: 0.9rem; margin: 0; font-family: 'Cinzel'; color: var(--yellow); letter-spacing: 1px; }
-
-        .box-special {
-            grid-column: span 2;
-            background: var(--yellow) !important;
-            border-color: #fff !important;
-            box-shadow: 0 8px 0 #b8860b !important;
-        }
-
-        .box-special h3, .box-special span { color: var(--wine) !important; }
-
-        /* KHUSKY ENTERPRISE STYLES */
-        #parents { background: var(--parent-slate); }
-        .enterprise-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px 20px;
-            max-width: 450px;
-            margin: 20px auto;
-            text-align: left;
-        }
-        .enterprise-card h2 { color: var(--yellow); font-family: 'Cinzel'; margin-top: 0; }
-        .service-list { list-style: none; padding: 0; margin: 20px 0; }
-        .service-list li { margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; }
-        .service-list li::before { content: "✓"; color: var(--yellow); font-weight: bold; }
-        .enterprise-btn {
-            display: block; background: transparent; color: var(--yellow); border: 2px solid var(--yellow);
-            padding: 15px; text-align: center; text-decoration: none; font-weight: 900;
-            border-radius: 5px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-        .enterprise-btn:hover { background: var(--yellow); color: var(--parent-slate); }
+        .adventure-card h2 { font-family: 'Cinzel'; color: var(--yellow); }
+        .adventure-card p { font-size: 1.1rem; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-<div id="splash">
-    <div class="shield">
-        <img src="Screenshot_20260223-215614.jpg">
-    </div>
-    <div class="logo-text">Welcome to Nobility Chess</div>
-    <button class="proceed-btn" onclick="startApp()">PROCEED</button>
-</div>
-
-<div id="side-popup" onclick="show('academy'); this.classList.remove('visible');">
-    ENTER ACADEMY ⮕
-</div>
-
-<nav id="main-nav">
-    <div class="nav-brand">
-        <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">NOBILITY CHESS</span>
-    </div>
-    <div style="font-size: 11px; font-weight: 900; cursor: pointer; color: var(--yellow); letter-spacing: 1px;" onclick="show('home')">HOME</div>
-</nav>
-
-<section id="home" class="active">
-    <div class="stage">
-        <div class="ring">
-            <div class="img1"><img src="1771877010696.jpg"></div> 
-            <div class="img2"><img src="1771877893498.jpg"></div> 
-            <div class="img3"><img src="Screenshot_20260224-044342.jpg"></div> 
+    <div id="splash">
+        <div class="shield">
+            <img src="logo.png" alt="Academy Logo">
         </div>
+        <div class="logo-text">NOBILITY CHESS ACADEMY</div>
+        <button class="proceed-btn" onclick="startApp()">ENTER REALM</button>
     </div>
-    
-    <div class="intro-container">
-        <p style="font-weight:900; margin:0 0 10px 0; color:var(--yellow); font-size: 1.3rem; font-family: 'Cinzel';">ADEKUNLE BUSAYO</p>
-        <div class="intro-text">
-            Meet <b>Mr. Adekunle Busayo</b>, the visionary CEO of <b>Nobility Chess</b>. Under his leadership, the academy has become a powerhouse of intellect, providing expert chess instruction to over <b>28 prestigious schools</b> across Nigeria. <br><br>
-            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>, which specializes in professional <b>video gaming installation and sales</b>.
+
+    <nav id="navbar">
+        <div class="nav-brand">
+            <img src="logo.png" class="nav-logo" alt="Logo">
+            <span class="nav-title">NOBILITY CHESS</span>
         </div>
-        <div class="ceo-contact">
-            <a href="https://wa.me/2347039739084" target="_blank" class="contact-pill">💬 CHAT WITH THE CEO</a>
+        <a href="chessquest.html" class="quest-link">🏆 START QUEST</a>
+    </nav>
+
+    <section id="home" class="active">
+        <div class="stage">
+            <div class="ring">
+                <div class="img1"><img src="trophy.png" alt="Trophy"></div>
+                <div class="img2"><img src="knight.png" alt="Knight"></div>
+                <div class="img3"><img src="king.png" alt="King"></div>
+            </div>
         </div>
-    </div>
-    
-    <button class="slide-btn" onclick="show('academy')">ENTER ACADEMY</button>
-    
-    <p onclick="show('parents')" style="color:#555; font-size: 11px; margin-top: 50px; cursor: pointer; text-decoration: underline;">
-        Parent Portal: <b style="color:var(--yellow); font-weight: 900;">KHUSKY ENTERPRISE</b> & Tech Services
-    </p>
-</section>
 
-<section id="academy">
-    <h2 style="font-size: 1.8rem; color: var(--yellow); font-family: 'Cinzel'; margin-bottom: 25px; text-shadow: 2px 2px var(--wine);">ACADEMIC CURRICULUM</h2>
-    <div class="grid">
-        <a href="theory.html" class="box"><span>📖</span><h3>Theory</h3></a>
-        <a href="puzzles.html" class="box"><span>🧠</span><h3>Tactics</h3></a>
-        <a href="assessment.html" class="box"><span>📝</span><h3>Assessment</h3></a>
-        <a href="analysis.html" class="box"><span>🏛️</span><h3>Analysis</h3></a>
-        <a href="https://lichess.org" target="_blank" class="box box-special"><span>🏆</span><h3>COMPETITIVE PLAY</h3></a>
-    </div>
-    <p onclick="show('home')" style="color:var(--yellow); font-size: 14px; margin-top: 40px; cursor: pointer; font-weight: 900; text-decoration: underline;">← GO BACK</p>
-</section>
+        <div class="adventure-card">
+            <h2>NEW ADVENTURE!</h2>
+            <p>Coach Adekunle Busayo has been captured! Only the bravest tacticians can solve the puzzles and complete the mission.</p>
+            <a href="chessquest.html" style="text-decoration: none;">
+                <button class="proceed-btn" style="margin-top: 10px; padding: 12px 30px; font-size: 1rem;">RESCUE THE COACH</button>
+            </a>
+        </div>
+    </section>
 
-<section id="parents">
-    <div class="enterprise-card">
-        <h2>KHUSKY ENTERPRISE</h2>
-        <p>Expert Technical Solutions for Modern Families. We specialize in creating high-performance gaming and educational environments.</p>
-        <ul class="service-list">
-            <li>Professional Video Game Installation</li>
-            <li>Premium Console Sales & Maintenance</li>
-            <li>System Performance Optimization</li>
-        </ul>
-        <a href="stores.html" class="enterprise-btn">View Mini-Store & Gallery</a>
-        <a href="https://wa.me/2347039739084" target="_blank" class="enterprise-btn" style="border-color: #fff; color: #fff; font-size: 0.75rem;">Contact for Installation</a>
-    </div>
-    <p onclick="show('home')" style="color:var(--yellow); font-size: 14px; margin-top: 20px; cursor: pointer; font-weight: 900; text-decoration: underline;">← BACK TO ACADEMY</p>
-</section>
-
-<script>
-    function show(id) {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function startApp() {
-        document.getElementById('splash').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('splash').style.display = 'none';
-            document.getElementById('main-nav').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('side-popup').classList.add('visible');
-            }, 5000);
-        }, 500);
-    }
-</script>
-
+    <script>
+        function startApp() {
+            document.getElementById('splash').style.transform = 'translateY(-100%)';
+            document.getElementById('navbar').style.display = 'flex';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
 </body>
 </html>
