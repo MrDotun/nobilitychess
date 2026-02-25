@@ -35,7 +35,7 @@
 <div id="login-screen" class="overlay">
     <div class="modal">
         <h2 style="color: var(--yellow); margin-top: 0;">🏰 SAVE COACH BUSAYO 🏰</h2>
-        <p style="margin-bottom: 20px; font-size: 0.9rem;">The Wine Castle is under siege! Solve the puzzles to rescue the Coach.</p>
+        <p style="margin-bottom: 20px; font-size: 0.9rem;">The Wine Castle Siege continues. Rescue the Coach!</p>
         <input type="text" id="playerName" placeholder="Enter Hero's Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
         <button class="btn" onclick="startQuest()">START RESCUE</button>
     </div>
@@ -71,7 +71,7 @@
 </div>
 
 <script>
-    // 16 Puzzles (11 Original + 5 New)
+    // Refined Puzzles List (Removed the a6/d7/f7 specific layout)
     const puzzles = [
         { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Strike through the King to win the Rook." },
         { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Your Knight traps both King and Rook." },
@@ -83,13 +83,11 @@
         { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#', remark: "Mating Battery! Queen and Knight storm the gate." },
         { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate: The King is trapped by his own guards!" },
         { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! Rook and Knight perfectly trap the King." },
-        { fen: 'r1bqkbnr/pp2p1pp/1np5/5B2/4P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 0 1', solution: 'Bxg6+', remark: "Tactical Strike! Breaking the line of defense." },
-        // NEW PUZZLES
-        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kxg4', remark: "Hungry King! Sometimes the King must defend himself." },
-        { fen: 'r1b1k1nr/p2p1ppp/n1p1p3/1p6/1b1PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 0 7', solution: 'axb4', remark: "Free Material! The Bishop stepped into a trap." },
+        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kxg4', remark: "King Defense! Sometimes the leader must enter the fray." },
+        { fen: 'r1b1k1nr/p2p1ppp/n1p1p3/1p6/1b1PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 0 7', solution: 'axb4', remark: "Free Material! Capitalizing on a tactical blunder." },
         { fen: '5rk1/ppp2ppp/8/8/8/8/PP3PPP/3R2K1 w - - 0 1', solution: 'Rd8', remark: "Back Rank Pressure! Forcing the enemy into a corner." },
         { fen: '2r3k1/p4p1p/6p1/1R6/8/5P2/P1r3PP/1R4K1 w - - 0 1', solution: 'Rb8', remark: "Simplification! Trading pieces to secure the endgame." },
-        { fen: 'r4rk1/pp3p1p/2p3p1/8/3P4/4P3/PP3PPP/R4RK1 w - - 0 1', solution: 'd5', remark: "Breakthrough! Pushing the pawn to open the lines." }
+        { fen: 'r4rk1/pp3p1p/2p3p1/8/3P4/4P3/PP3PPP/R4RK1 w - - 0 1', solution: 'd5', remark: "Breakthrough! Opening the center for an attack." }
     ];
 
     let game = new Chess();
@@ -180,7 +178,7 @@
         const san = game.history({ verbose: true }).pop().san;
 
         if (san === puzzle.solution) {
-            // Successive reward removed: Logic simplified to +10 per point
+            // Successive logic removed: strictly counting points
             currentPlayer.stars += 10; 
             document.getElementById('msg-text').innerHTML = 
                 `<span style="color:#00ff00">GATE OPENED!</span><br><span class="remark-text">${puzzle.remark}</span>`;
