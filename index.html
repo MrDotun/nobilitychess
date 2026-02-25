@@ -2,379 +2,211 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nobility Chess Academy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coach Busayo: Wine Castle Siege</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
     <style>
-        /* Restored original blue + added Wine and Yellow */
-        :root { 
-            --yellow: #FFD700; 
-            --wine: #5d1823; 
-            --dark: #0b0c10; 
-            --noble-blue: #0a192f; 
-            --parent-slate: #1c2541; /* Professional tone for parents */
-        }
+        :root { --wine: #800000; --yellow: #FFD700; --dark-wine: #4a0000; }
+        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
         
-        body { margin: 0; background: var(--dark); color: #c5c6c7; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        #main-ui { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; gap: 15px; }
+        .panel { background: var(--wine); border: 3px solid var(--yellow); border-radius: 12px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
+
+        #board { width: 100% !important; border: 2px solid var(--yellow); }
+
+        #timer-wrap { width: 100%; height: 18px; background: var(--dark-wine); border: 2px solid var(--yellow); border-radius: 9px; margin-bottom: 8px; overflow: hidden; }
+        #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 1s linear; }
+        #sir-tactics { width: 50px; filter: drop-shadow(0 3px 3px black); }
         
-        #splash {
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle, #1a3a5f 0%, var(--dark) 100%);
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 2000; transition: 0.5s;
-        }
+        .btn { background: var(--yellow); color: var(--wine); border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; font-size: 0.9rem; }
+        .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; border-collapse: collapse; }
+        .leaderboard-table td { padding: 8px 5px; border-bottom: 1px solid rgba(255,215,0,0.1); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
 
-        .shield {
-            width: 220px; height: 240px; 
-            background: transparent;
-            border: 4px solid var(--yellow); border-radius: 20% 20% 45% 45%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(93, 24, 35, 0.5); 
-            padding: 10px;
-            overflow: hidden;
-        }
-        
-        .shield img { 
-            width: 110%; 
-            height: auto; 
-            object-fit: contain; 
-            mix-blend-mode: screen; 
-            filter: contrast(1.1) brightness(1.1);
-        }
-
-        .logo-text { color: var(--yellow); font-family: 'Cinzel'; margin-top: 25px; font-size: 1.4rem; text-align: center; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-
-        .proceed-btn {
-            margin-top: 40px;
-            background: var(--yellow);
-            color: var(--dark);
-            border: 2px solid var(--yellow);
-            padding: 18px 60px;
-            font-family: 'Cinzel';
-            font-weight: 900;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); box-shadow: 0 20px 30px rgba(255, 215, 0, 0.3); }
-        }
-
-        .proceed-btn:hover {
-            background: var(--wine);
-            color: var(--yellow);
-            border-color: var(--wine);
-        }
-
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 10px 20px;
-            display: none; align-items: center; justify-content: space-between;
-            background: rgba(10, 25, 47, 0.95); z-index: 1000; border-bottom: 2px solid var(--wine);
-            box-sizing: border-box;
-        }
-        .nav-brand { display: flex; align-items: center; gap: 10px; }
-        .nav-logo { width: 40px; height: 40px; border: 1px solid var(--yellow); border-radius: 5px; mix-blend-mode: screen; }
-        .nav-title { font-family: 'Cinzel'; color: var(--yellow); font-size: 0.9rem; font-weight: 700; }
-
-        section { display: none; min-height: 100vh; padding: 80px 20px; text-align: center; box-sizing: border-box; }
-        section.active { display: block; animation: quickFade 0.4s ease; }
-        @keyframes quickFade { from { opacity: 0; } to { opacity: 1; } }
-
-        .stage { height: 320px; perspective: 1000px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; }
-        .ring { 
-            width: 190px; 
-            height: 240px; 
-            transform-style: preserve-3d; 
-            animation: revolve 12s ease-in-out infinite; 
-        }
-        .ring div { position: absolute; inset: 0; overflow: hidden; background: transparent; }
-        .ring img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); }
-        
-        .img1 { transform: rotateY(0deg) translateZ(210px); }
-        .img2 { transform: rotateY(120deg) translateZ(210px); }
-        .img3 { transform: rotateY(240deg) translateZ(210px); }
-
-        @keyframes revolve {
-            0%, 25% { transform: rotateY(0deg); }
-            33%, 58% { transform: rotateY(-120deg); }
-            66%, 91% { transform: rotateY(-240deg); }
-            100% { transform: rotateY(-360deg); }
-        }
-
-        .intro-container {
-            max-width: 440px;
-            margin: 10px auto;
-            padding: 15px 20px;
-            background: rgba(10, 25, 47, 0.7);
-            border-left: 4px solid var(--wine);
-            border-right: 4px solid var(--wine);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .intro-text {
-            line-height: 1.45;
-            font-size: 0.95rem;
-            color: #e0e0e0;
-            text-align: justify;
-        }
-
-        .ceo-contact {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-        .contact-pill {
-            display: inline-flex;
-            align-items: center;
-            background: var(--wine);
-            padding: 8px 20px;
-            border-radius: 20px;
-            color: var(--yellow);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 1px solid var(--yellow);
-            transition: 0.3s;
-            width: fit-content;
-        }
-        .contact-pill:hover {
-            background: var(--yellow);
-            color: var(--wine);
-        }
-
-        .enterprise-pill {
-            background: var(--yellow);
-            color: var(--dark);
-            border: 1px solid white;
-        }
-        .enterprise-pill:hover {
-            background: white;
-            color: var(--dark);
-        }
-
-        .slide-btn {
-            background: var(--wine); color: var(--yellow); padding: 22px 60px;
-            border: 2px solid var(--yellow); border-radius: 50px; font-weight: 900;
-            cursor: pointer; margin-top: 30px; display: inline-block;
-            box-shadow: 0 0 20px rgba(93, 24, 35, 0.6); 
-            font-size: 1.3rem;
-            font-family: 'Cinzel';
-            transition: 0.3s;
-            animation: pulseBtn 2s infinite;
-        }
-        
-        @keyframes pulseBtn {
-            0% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 215, 0, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 0 0px rgba(255, 215, 0, 0.4); }
-        }
-
-        #side-popup {
-            position: fixed;
-            bottom: 30px;
-            right: -300px; 
-            background: var(--yellow);
-            color: var(--wine);
-            padding: 15px 25px;
-            border-radius: 50px 0 0 50px;
-            font-family: 'Cinzel';
-            font-weight: 900;
-            font-size: 0.9rem;
-            box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
-            transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #side-popup.visible { right: 0; }
-
-        #academy { background: linear-gradient(180deg, var(--noble-blue) 0%, var(--wine) 100%); }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; max-width: 400px; margin: 0 auto; }
-        
-        .box { 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 3px solid var(--yellow); 
-            padding: 25px 10px; 
-            border-radius: 25px; 
-            text-decoration: none; 
-            color: white; 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 0 var(--wine); 
-            position: relative;
-            display: block; 
-        }
-
-        .box:active { transform: translateY(4px); box-shadow: 0 4px 0 var(--wine); }
-
-        .box span { 
-            font-size: 2.5rem; 
-            display: block; 
-            margin-bottom: 10px; 
-            animation: bounceIcon 2s infinite ease-in-out;
-        }
-
-        @keyframes bounceIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .box h3 { font-size: 0.9rem; margin: 0; font-family: 'Cinzel'; color: var(--yellow); letter-spacing: 1px; }
-
-        .box-special {
-            grid-column: span 2;
-            background: var(--yellow) !important;
-            border-color: #fff !important;
-            box-shadow: 0 8px 0 #b8860b !important;
-        }
-
-        .box-special h3, .box-special span { color: var(--wine) !important; }
-
-        /* KHUSKY ENTERPRISE STYLES */
-        #parents { background: var(--parent-slate); }
-        .enterprise-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px 20px;
-            max-width: 450px;
-            margin: 20px auto;
-            text-align: left;
-        }
-        .enterprise-card h2 { color: var(--yellow); font-family: 'Cinzel'; margin-top: 0; }
-        .service-list { list-style: none; padding: 0; margin: 20px 0; }
-        .service-list li { margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; }
-        .service-list li::before { content: "✓"; color: var(--yellow); font-weight: bold; }
-        .enterprise-btn {
-            display: block; background: transparent; color: var(--yellow); border: 2px solid var(--yellow);
-            padding: 15px; text-align: center; text-decoration: none; font-weight: 900;
-            border-radius: 5px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-        .enterprise-btn:hover { background: var(--yellow); color: var(--parent-slate); }
+        /* Highlight for click-to-move selection */
+        .highlight-sq { box-shadow: inset 0 0 3px 3px yellow !important; background-color: rgba(255, 215, 0, 0.4) !important; }
     </style>
 </head>
 <body>
 
-<div id="splash">
-    <div class="shield">
-        <img src="Screenshot_20260223-215614.jpg">
+<div id="login-screen" class="overlay">
+    <div class="modal">
+        <h2 style="color: var(--yellow); margin-top: 0;">⚔️ WINE CASTLE SIEGE ⚔️</h2>
+        <input type="text" id="playerName" placeholder="Enter Knight Name..." style="padding: 12px; width: 90%; border-radius: 5px; border: none; font-size: 1rem; margin-bottom: 15px;">
+        <button class="btn" onclick="startQuest()">BEGIN QUEST</button>
     </div>
-    <div class="logo-text">Welcome to Nobility Chess</div>
-    <button class="proceed-btn" onclick="startApp()">PROCEED</button>
 </div>
 
-<div id="side-popup" onclick="show('academy');">
-    ENTER ACADEMY ⮕
+<div id="main-ui">
+    <div id="timer-wrap"><div id="timer-bar"></div></div>
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px;">
+        <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight">
+        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Streak: 0 ⭐</div>
+    </div>
+
+    <div id="board"></div>
+
+    <h3 id="status-msg" style="text-align: center; color: var(--yellow); margin: 10px 0;">Ready your move, Knight!</h3>
+
+    <div class="panel">
+        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 TOP 3</h3>
+        <table class="leaderboard-table">
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+        <button class="btn" onclick="generateCertificate()">🖨️ PRINT DECREE</button>
+    </div>
+
+    <div class="panel">
+        <h3 style="margin:0 0 5px 0; text-align: center; color: var(--yellow);">🏛️ HALL OF FAME</h3>
+        <div id="hall-of-fame-list" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; font-size: 0.7rem;"></div>
+    </div>
 </div>
-
-<nav id="main-nav">
-    <div class="nav-brand">
-        <img src="Screenshot_20260223-215614.jpg" class="nav-logo"> <span class="nav-title">NOBILITY CHESS</span>
-    </div>
-    <div style="font-size: 11px; font-weight: 900; cursor: pointer; color: var(--yellow); letter-spacing: 1px;" onclick="show('home')">HOME</div>
-</nav>
-
-<section id="home" class="active">
-    <div class="stage">
-        <div class="ring">
-            <div class="img1"><img src="1771877010696.jpg"></div> 
-            <div class="img2"><img src="1771877893498.jpg"></div> 
-            <div class="img3"><img src="Screenshot_20260224-044342.jpg"></div> 
-        </div>
-    </div>
-    
-    <div class="intro-container">
-        <p style="font-weight:900; margin:0 0 10px 0; color:var(--yellow); font-size: 1.3rem; font-family: 'Cinzel';">ADEKUNLE BUSAYO</p>
-        <div class="intro-text">
-            Meet <b>Mr. Adekunle Busayo</b>, the visionary CEO of <b>Nobility Chess</b>. Under his leadership, the academy has become a powerhouse of intellect, providing expert chess instruction to over <b>28 prestigious schools</b> across Nigeria. <br><br>
-            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>, which specializes in professional <b>video gaming installation and laptop sales</b>.
-        </div>
-        <div class="ceo-contact">
-            <a href="https://wa.me/2347039739084" target="_blank" class="contact-pill">💬 CHAT WITH THE CEO</a>
-            <a href="javascript:void(0)" onclick="show('parents')" class="contact-pill enterprise-pill">💻 KHUSKY ENTERPRISE & TECH</a>
-        </div>
-    </div>
-    
-    <button class="slide-btn" onclick="show('academy')">ENTER ACADEMY</button>
-</section>
-
-<section id="academy">
-    <h2 style="font-size: 1.8rem; color: var(--yellow); font-family: 'Cinzel'; margin-bottom: 25px; text-shadow: 2px 2px var(--wine);">ACADEMIC CURRICULUM</h2>
-    <div class="grid">
-        <a href="theory.html" class="box"><span>📖</span><h3>Theory</h3></a>
-        <a href="puzzles.html" class="box"><span>🧠</span><h3>Puzzles</h3></a>
-        <a href="assessment.html" class="box"><span>📝</span><h3>Assessment</h3></a>
-        <a href="analysis.html" class="box"><span>🏛️</span><h3>Analysis</h3></a>
-        <a href="https://lichess.org" target="_blank" class="box box-special"><span>🏆</span><h3>COMPETITIVE PLAY</h3></a>
-    </div>
-    <p onclick="show('home')" style="color:var(--yellow); font-size: 14px; margin-top: 40px; cursor: pointer; font-weight: 900; text-decoration: underline;">← GO BACK</p>
-</section>
-
-<section id="parents">
-    <div class="enterprise-card">
-        <h2>KHUSKY ENTERPRISE</h2>
-        <p>Expert Technical Solutions for Modern Families. We specialize in creating high-performance gaming and educational environments.</p>
-        <ul class="service-list">
-            <li>Professional Video Game Installation</li>
-            <li>Premium Laptop & Console Sales</li>
-            <li>System Performance Optimization</li>
-        </ul>
-        <a href="stores.html" class="enterprise-btn">View Mini-Store & Gallery</a>
-        <a href="https://wa.me/2347039739084" target="_blank" class="enterprise-btn" style="border-color: #fff; color: #fff; font-size: 0.75rem;">Contact for Installation</a>
-    </div>
-    <p onclick="show('home')" style="color:var(--yellow); font-size: 14px; margin-top: 20px; cursor: pointer; font-weight: 900; text-decoration: underline;">← BACK TO ACADEMY</p>
-</section>
 
 <script>
-    function show(id) {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
+    const puzzles = [
+        { fen: '5bnr/R5pk/4p2p/5N2/4Q2n/rPq3P1/P3PPK1/8 w - - 0 1', solution: 'Nxh4#' },
+        { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#' },
+        { fen: 'r4rkR/ppN2p1p/2p3p1/6Q1/8/1B4P1/PPP2P1P/6K1 w - - 0 1', solution: 'Qxg6+' },
+        { fen: 'r1bqkb1r/pp2p1pp/1np5/8/4P3/1BN2N2/PPP2PPP/R1BQK2R w KQkq - 0 1', solution: 'Bf7+' },
+        { fen: 'q2k4/1p1p1r2/2ppp1p1/8/4P1Q1/3P4/1PPK4/R7 w - - 0 1', solution: 'Ra8+' },
+        { fen: '3k4/pp3ppp/8/2p3B1/2N4r/3P4/PPPBPKPP/8 w - - 0 1', solution: 'Bg5+' },
+        { fen: 'r3k3/pp3pp1/2p1r2p/n3p3/4P3/2P1PP2/PP6/4RRK1 w - - 0 1', solution: 'Nc7+' },
+        { fen: 'r2qk1br/p2pp3/1p3pp1/6p1/8/2NQ3P/PPP2PP1/3R1RK1 w - - 0 1', solution: 'Qh5#' },
+        { fen: '6nn/5Ppk/6pp/3K4/8/2P5/PP6/8 w - - 0 1', solution: 'f8=N#' },
+        { fen: '3rkB1R/3p1p2/r7/1PP5/2K5/8/8/4P3 w - - 0 1', solution: 'Bd6#' },
+        { fen: '4r1k1/pp3pp1/1p1b4/1B6/2P3q1/2P4Q/PP3PPR/6K1 w - - 0 1', solution: 'Qh8#' },
+        { fen: '5rk1/1p2Rpph/p7/4q1N1/4Q3/P2P4/2P3PP/6K1 w - - 0 1', solution: 'Qxh7#' }
+    ];
 
-    function startApp() {
-        document.getElementById('splash').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('splash').style.display = 'none';
-            document.getElementById('main-nav').style.display = 'flex';
-            
-            // Start the recursive loop for the popup
-            triggerPopupLoop();
-        }, 500);
-    }
+    let game = new Chess();
+    let board = null;
+    let currentIdx = 0;
+    let streak = 0;
+    let timeLeft = 300;
+    let players = JSON.parse(localStorage.getItem('chessQuestPlayers')) || [];
+    let currentPlayer = null;
+    let sourceSquare = null;
 
-    // Function to handle the vanish/reappear logic
-    function triggerPopupLoop() {
-        const popup = document.getElementById('side-popup');
+    function startQuest() {
+        const name = document.getElementById('playerName').value.trim();
+        if (!name) return alert("Enter your name, Knight!");
+        currentPlayer = players.find(p => p.name === name) || { name: name, stars: 0 };
+        if (!players.find(p => p.name === name)) players.push(currentPlayer);
+        document.getElementById('login-screen').style.display = 'none';
+        initBoard();
         
-        // Initial wait before first appearance
-        setTimeout(() => {
-            showPopup();
-        }, 5000);
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('timer-bar').style.width = (timeLeft / 300 * 100) + "%";
+            }
+        }, 1000);
+        updateUI();
+    }
 
-        function showPopup() {
-            popup.classList.add('visible');
-            // Vanish after 3 seconds
+    function initBoard() {
+        game.load(puzzles[currentIdx].fen);
+        board = Chessboard('board', {
+            draggable: false, // Click to move only
+            position: puzzles[currentIdx].fen,
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+        });
+
+        // Event delegation to catch clicks on squares even after board updates
+        $('#board').on('click', '.square-55d63', function() {
+            const square = $(this).data('square');
+            handleSquareClick(square);
+        });
+
+        $(window).resize(board.resize);
+    }
+
+    function handleSquareClick(square) {
+        if (sourceSquare === null) {
+            // Pick up piece
+            const piece = game.get(square);
+            if (piece && piece.color === game.turn()) {
+                sourceSquare = square;
+                $('.square-55d63').removeClass('highlight-sq');
+                $('.square-' + square).addClass('highlight-sq');
+            }
+        } else {
+            // Attempt move
+            handleMove(sourceSquare, square);
+            sourceSquare = null;
+            $('.square-55d63').removeClass('highlight-sq');
+        }
+    }
+
+    function handleMove(source, target) {
+        const solution = puzzles[currentIdx].solution;
+        const isKnightPromo = solution.includes('=N');
+        
+        let move = game.move({ 
+            from: source, 
+            to: target, 
+            promotion: isKnightPromo ? 'n' : 'q' 
+        });
+
+        if (move === null) return;
+
+        board.position(game.fen());
+
+        // Standardize SAN to check against solution
+        const moveSan = move.san;
+        if (moveSan === solution || moveSan === solution.replace('#', '') || (moveSan + '#') === solution) {
+            streak++;
+            currentPlayer.stars += 10;
+            document.getElementById('status-msg').innerHTML = "<span style='color:#00ff00'>✅ CORRECT!</span>";
+            saveData();
+            setTimeout(nextPuzzle, 1000);
+        } else {
+            streak = 0;
+            document.getElementById('status-msg').innerHTML = "<span style='color:#ff4444'>❌ DEFLECTED!</span>";
             setTimeout(() => {
-                popup.classList.remove('visible');
-                // Reappear again after a short delay (e.g., 5 seconds)
-                setTimeout(showPopup, 5000);
-            }, 3000);
+                game.undo();
+                board.position(game.fen());
+            }, 600);
+        }
+        document.getElementById('streak-ui').innerText = `Streak: ${streak} ⭐`;
+    }
+
+    function nextPuzzle() {
+        currentIdx = (currentIdx + 1) % puzzles.length;
+        game.load(puzzles[currentIdx].fen);
+        board.position(puzzles[currentIdx].fen);
+        document.getElementById('status-msg').innerText = "Onward, Knight!";
+        $('.square-55d63').removeClass('highlight-sq');
+    }
+
+    function saveData() {
+        localStorage.setItem('chessQuestPlayers', JSON.stringify(players));
+        updateUI();
+    }
+
+    function updateUI() {
+        const sorted = [...players].sort((a, b) => b.stars - a.stars).slice(0, 3);
+        document.getElementById('leaderboard-body').innerHTML = sorted.map((p, i) => 
+            `<tr><td>${['🥇','🥈','🥉'][i]}</td><td>${p.name}</td><td>${p.stars}</td></tr>`
+        ).join('');
+    }
+
+    function generateCertificate() {
+        const sorted = [...players].sort((a, b) => b.stars - a.stars).slice(0, 3);
+        const topNames = sorted.map(p => p.name);
+        if (currentPlayer && topNames.includes(currentPlayer.name)) {
+            alert("Generating Royal Decree for " + currentPlayer.name + "...");
+        } else {
+            alert("Only the Top 3 Knights can claim a Decree!");
         }
     }
 </script>
-
 </body>
 </html>
