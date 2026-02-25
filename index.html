@@ -127,13 +127,15 @@
         .ceo-contact {
             margin-top: 15px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
         }
         .contact-pill {
             display: inline-flex;
             align-items: center;
             background: var(--wine);
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
             color: var(--yellow);
             text-decoration: none;
@@ -141,10 +143,21 @@
             font-weight: 700;
             border: 1px solid var(--yellow);
             transition: 0.3s;
+            width: fit-content;
         }
         .contact-pill:hover {
             background: var(--yellow);
             color: var(--wine);
+        }
+
+        .enterprise-pill {
+            background: var(--yellow);
+            color: var(--dark);
+            border: 1px solid white;
+        }
+        .enterprise-pill:hover {
+            background: white;
+            color: var(--dark);
         }
 
         .slide-btn {
@@ -262,7 +275,7 @@
     <button class="proceed-btn" onclick="startApp()">PROCEED</button>
 </div>
 
-<div id="side-popup" onclick="show('academy'); this.classList.remove('visible');">
+<div id="side-popup" onclick="show('academy');">
     ENTER ACADEMY ⮕
 </div>
 
@@ -286,25 +299,22 @@
         <p style="font-weight:900; margin:0 0 10px 0; color:var(--yellow); font-size: 1.3rem; font-family: 'Cinzel';">ADEKUNLE BUSAYO</p>
         <div class="intro-text">
             Meet <b>Mr. Adekunle Busayo</b>, the visionary CEO of <b>Nobility Chess</b>. Under his leadership, the academy has become a powerhouse of intellect, providing expert chess instruction to over <b>28 prestigious schools</b> across Nigeria. <br><br>
-            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>, which specializes in professional <b>video gaming installation and sales</b>.
+            Beyond the chessboard, he is the pioneering founder of <b>Khusky Enterprise</b>, which specializes in professional <b>video gaming installation and laptop sales</b>.
         </div>
         <div class="ceo-contact">
             <a href="https://wa.me/2347039739084" target="_blank" class="contact-pill">💬 CHAT WITH THE CEO</a>
+            <a href="javascript:void(0)" onclick="show('parents')" class="contact-pill enterprise-pill">💻 KHUSKY ENTERPRISE & TECH</a>
         </div>
     </div>
     
     <button class="slide-btn" onclick="show('academy')">ENTER ACADEMY</button>
-    
-    <p onclick="show('parents')" style="color:#555; font-size: 11px; margin-top: 50px; cursor: pointer; text-decoration: underline;">
-        Parent Portal: <b style="color:var(--yellow); font-weight: 900;">KHUSKY ENTERPRISE</b> & Tech Services
-    </p>
 </section>
 
 <section id="academy">
     <h2 style="font-size: 1.8rem; color: var(--yellow); font-family: 'Cinzel'; margin-bottom: 25px; text-shadow: 2px 2px var(--wine);">ACADEMIC CURRICULUM</h2>
     <div class="grid">
         <a href="theory.html" class="box"><span>📖</span><h3>Theory</h3></a>
-        <a href="puzzles.html" class="box"><span>🧠</span><h3>Tactics</h3></a>
+        <a href="puzzles.html" class="box"><span>🧠</span><h3>Puzzles</h3></a>
         <a href="assessment.html" class="box"><span>📝</span><h3>Assessment</h3></a>
         <a href="analysis.html" class="box"><span>🏛️</span><h3>Analysis</h3></a>
         <a href="https://lichess.org" target="_blank" class="box box-special"><span>🏆</span><h3>COMPETITIVE PLAY</h3></a>
@@ -318,7 +328,7 @@
         <p>Expert Technical Solutions for Modern Families. We specialize in creating high-performance gaming and educational environments.</p>
         <ul class="service-list">
             <li>Professional Video Game Installation</li>
-            <li>Premium Console Sales & Maintenance</li>
+            <li>Premium Laptop & Console Sales</li>
             <li>System Performance Optimization</li>
         </ul>
         <a href="stores.html" class="enterprise-btn">View Mini-Store & Gallery</a>
@@ -339,10 +349,30 @@
         setTimeout(() => {
             document.getElementById('splash').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('side-popup').classList.add('visible');
-            }, 5000);
+            
+            // Start the recursive loop for the popup
+            triggerPopupLoop();
         }, 500);
+    }
+
+    // Function to handle the vanish/reappear logic
+    function triggerPopupLoop() {
+        const popup = document.getElementById('side-popup');
+        
+        // Initial wait before first appearance
+        setTimeout(() => {
+            showPopup();
+        }, 5000);
+
+        function showPopup() {
+            popup.classList.add('visible');
+            // Vanish after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('visible');
+                // Reappear again after a short delay (e.g., 5 seconds)
+                setTimeout(showPopup, 5000);
+            }, 3000);
+        }
     }
 </script>
 
