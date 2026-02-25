@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classroom | Nobility Chess Academy</title>
+    <title>Assessments | Nobility Chess Academy</title>
     
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     
     <style>
         :root {
@@ -22,7 +20,7 @@
         body {
             font-family: 'Trebuchet MS', sans-serif;
             margin: 0;
-            background-color: var(--sky-blue); /* Brighter for kids */
+            background-color: var(--sky-blue);
             color: #333;
         }
 
@@ -59,8 +57,8 @@
 
         .main-layout {
             display: flex;
-            flex-direction: column; /* Better alignment for mobile */
-            align-items: center;    /* Centralizes the content */
+            flex-direction: column;
+            align-items: center;
             max-width: 1200px;
             margin: 20px auto;
             gap: 30px;
@@ -71,57 +69,15 @@
             .main-layout { flex-direction: row; align-items: flex-start; }
         }
 
-        #board-section {
-            flex: 1.2;
-            width: 100%;
-            max-width: 550px;
-            background: transparent; /* Removed white background to blend with theme */
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: none; /* Removed section shadow */
-            text-align: center;
-            border: none;
-        }
-
-        #myBoard {
-            width: 100%;
-            margin: 0 auto;
-            border: 6px solid var(--navy); /* Themed border directly on the board */
-            border-radius: 8px;
-            box-sizing: border-box;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* Shadow moved to the board */
-        }
-
-        /* Highlight class for click-to-move */
-        .highlight-square {
-            box-shadow: inset 0 0 0 4px var(--yellow) !important;
-            cursor: pointer;
-        }
-
-        .controls { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
-        
-        .btn-tool {
-            background: var(--navy);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            cursor: pointer;
-            border-radius: 50px; /* Bubble buttons */
-            font-weight: bold;
-            box-shadow: 0 4px var(--wine);
-            transition: 0.2s;
-        }
-
-        .btn-tool:active { transform: translateY(3px); box-shadow: 0 1px var(--wine); }
-
-        #lesson-menu {
+        /* Menu Section */
+        #topic-menu {
             flex: 1;
             width: 100%;
-            max-width: 500px;
+            max-width: 350px;
         }
 
         .chapter-title {
-            background: var(--grass-green); /* Energetic color */
+            background: var(--grass-green);
             color: white;
             padding: 12px 20px;
             margin: 10px 0;
@@ -135,7 +91,7 @@
             width: 100%;
             background: var(--white);
             color: var(--navy);
-            padding: 18px;
+            padding: 15px;
             text-align: left;
             border: 2px solid #e0e0e0;
             margin-bottom: 8px;
@@ -143,34 +99,111 @@
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
             transition: 0.3s;
         }
 
-        .topic-btn:hover { border-color: var(--wine); background-color: #fff9c4; transform: scale(1.02); }
+        .topic-btn:hover, .topic-btn.active { 
+            border-color: var(--wine); 
+            background-color: #fff9c4; 
+            transform: scale(1.02); 
+        }
 
-        .content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-            background: #fff;
-            border-radius: 0 0 15px 15px;
-            margin-top: -10px;
+        /* Quiz Section */
+        #quiz-section {
+            flex: 2;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border: 4px solid var(--navy);
+            display: none; /* Hidden until topic selected */
+        }
+
+        #quiz-title {
+            color: var(--wine);
+            font-size: 1.8rem;
+            margin-top: 0;
+            border-bottom: 3px dashed var(--yellow);
+            padding-bottom: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--navy);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1rem;
             margin-bottom: 10px;
+            color: var(--navy);
         }
 
-        .inner-text { 
-            padding: 20px; 
-            line-height: 1.6; 
-            font-size: 1rem; 
-            border: 2px solid var(--wine);
-            border-top: none;
-            border-radius: 0 0 15px 15px;
-            background: #fdfdfd;
+        /* Label Styling for Click-to-Move */
+        .option-label {
+            display: block;
+            margin: 8px 0;
+            padding: 12px;
+            background: var(--white);
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
         }
 
-        .active-content { max-height: 500px; }
+        .option-label:hover { background: var(--sky-blue); border-color: var(--navy); }
+        .option-label input { margin-right: 12px; pointer-events: none; }
+
+        /* Highlight the selected option box */
+        .option-label.selected-box {
+            border-color: var(--navy);
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; }
+        .incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; }
+
+        .btn-tool {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px var(--wine);
+            transition: 0.2s;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .btn-tool:active { transform: translateY(3px); box-shadow: 0 1px var(--wine); }
+
+        .btn-submit {
+            background: var(--grass-green);
+            box-shadow: 0 4px #388e3c;
+        }
+        .btn-submit:active { box-shadow: 0 1px #388e3c; }
+
+        #results-area {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid var(--yellow);
+        }
+
+        #score-display { font-size: 1.5rem; font-weight: bold; color: var(--navy); margin-bottom: 15px; }
 
         footer { text-align: center; padding: 40px; color: var(--navy); font-weight: bold; }
     </style>
@@ -184,72 +217,32 @@
 
 <nav>
     <a href="index.html">🏠 Home</a>
+    <a href="classroom.html">🏫 Classroom</a>
     <a href="puzzles.html">🧩 Puzzles</a>
-    <a href="assessment.html">📝 Assessments</a>
 </nav>
 
 <div class="main-layout">
-    <section id="board-section">
-        <div id="myBoard"></div>
-        <div class="controls">
-            <button class="btn-tool" onclick="board.start()">🔄 Reset</button>
-            <button class="btn-tool" onclick="board.flip()">🔃 Flip Board</button>
-        </div>
-        <p id="topic-display" style="font-size: 1.2rem; font-weight: bold; color: var(--wine); margin-top: 15px;">Topic: Standard Start</p>
+    <section id="topic-menu">
+        <div class="chapter-title">🛡️ Select a Quiz</div>
+        <button class="topic-btn" onclick="loadQuiz('Development', this)">Development</button>
+        <button class="topic-btn" onclick="loadQuiz('Castling', this)">Castling</button>
+        <button class="topic-btn" onclick="loadQuiz('Endgame', this)">Endgame Planning</button>
+        <button class="topic-btn" onclick="loadQuiz('Center', this)">Center Control</button>
+        <button class="topic-btn" onclick="loadQuiz('Pins', this)">Pins</button>
+        <button class="topic-btn" onclick="loadQuiz('Forks', this)">Forks</button>
     </section>
 
-    <section id="lesson-menu">
-        <div class="chapter-title">🛡️ Chapter 1: The Foundations</div>
+    <section id="quiz-section">
+        <h2 id="quiz-title">Quiz Title</h2>
+        <div id="questions-container"></div>
         
-        <button class="topic-btn" onclick="loadPos('start', 'Development', this)">Development <span>⭐</span></button>
-        <div class="content"><div class="inner-text">Think of Chess as a race! Development means bringing your pieces out from the back row into the action. If you leave your Knights and Bishops sleeping, your army is too weak to win. <strong>Tip:</strong> Try to move every piece at least once before moving the same piece twice!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1', 'Castling', this)">Castling <span>🏰</span></button>
-        <div class="content"><div class="inner-text">Every King needs a castle! Castling protects your King by tucking him safely in the corner and brings your Rook into the center to fight. You can only do this if the King and Rook haven't moved yet and the path is clear.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('4k3/8/8/8/8/8/4P3/4K3 w - - 0 1', 'Endgame Planning', this)">Endgame Planning <span>🏆</span></button>
-        <div class="content"><div class="inner-text">When most pieces are gone, your King stops hiding! In the Endgame, the King becomes a hero that helps his Pawns reach the other side. Your main goal is to turn a Pawn into a Queen to deliver the final checkmate.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r1bqk2r/pp2bppp/2n1pn2/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R w KQkq - 0 1', 'Trading/Exchanges', this)">Trading <span>🤝</span></button>
-        <div class="content"><div class="inner-text">Trading is like an equal swap. If you take a Knight and the opponent takes yours, that is a trade. A Noble player only trades when it helps them. Never trade your best attacking piece for an opponent's piece that isn't doing anything!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('8/8/8/2pP4/8/8/8/8 w - c6 0 1', 'En Passant', this)">En Passant <span>👻</span></button>
-        <div class="content"><div class="inner-text">This is a secret "Ghost Move." If an enemy pawn jumps two squares to land right next to yours, you can capture it as if it only moved one square. But be careful—you must do it <strong>immediately</strong> on the next turn, or the ghost vanishes!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('k7/7P/8/8/8/8/8/K7 w - - 0 1', 'Promotion', this)">Promotion <span>👑</span></button>
-        <div class="content"><div class="inner-text">The Pawn is a tiny soldier with a big dream. If he makes it all the way to the 8th rank, he levels up! You can turn him into a Queen, Rook, Bishop, or Knight. Most players choose the Queen because she is the most powerful.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('8/P7/8/8/8/2k5/8/2K5 w - - 0 1', 'Underpromotion', this)">Underpromotion <span>💡</span></button>
-        <div class="content"><div class="inner-text">Sometimes, a Queen is <i>too</i> powerful and causes a stalemate (a draw). In this lesson, we promote to a <strong>Knight</strong> instead to give a check and win the game. It’s all about being smart, not just strong!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r4rk1/pb2bp1p/1p2p1p1/2p1P3/3P4/2PB1N2/P4PPP/R2R2K1 w - - 0 1', 'Prophylaxis', this)">Prophylaxis <span>🧠</span></button>
-        <div class="content"><div class="inner-text">This is the "Mind Reading" move. Instead of just making your own plan, you ask: "What is my opponent planning to do to me?" Prophylaxis is a move that stops their best idea before they even get to try it.</div></div>
-
-        <div class="chapter-title">⚔️ Chapter 2: Tactics & Strategy</div>
-
-        <button class="topic-btn" onclick="loadPos('8/8/p7/kp6/p7/K7/8/8 w - - 0 1', 'Zugzwang', this)">Zugzwang <span>🌪️</span></button>
-        <div class="content"><div class="inner-text">In Chess, you MUST move when it is your turn. Zugzwang is a trap where every possible move you can make is a bad one. It’s like being forced to step into a hole because you aren't allowed to stay still!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppppppp/2n5/4P3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 1', 'Center Control', this)">Center Control <span>🎯</span></button>
-        <div class="content"><div class="inner-text">The middle of the board (e4, d4, e5, d5) is the "High Ground." If you control the center, your pieces can jump to any side of the board much faster. Own the center, own the game!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1', 'Pawn Structures', this)">Pawn Structures <span>🧱</span></button>
-        <div class="content"><div class="inner-text">Pawns are like the walls of a castle. When they stand together in a chain, they are strong. When they are alone (Isolated), they are weak targets. Learn to build your walls so your bigger pieces can hide behind them.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('4k3/8/4r3/8/8/4R3/4Q3/4K3 w - - 0 1', 'Pins', this)">Pins <span>📌</span></button>
-        <div class="content"><div class="inner-text">A Pin is when you attack a piece that cannot move because a more important piece (like the King) is behind it. It's like putting a thumbtack through two pieces at once! The piece in front is "pinned" to the board.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('1q6/2k5/8/4B3/8/8/8/4K3 w - - 0 1', 'Skewers', this)">Skewers <span>🍢</span></button>
-        <div class="content"><div class="inner-text">A Skewer is like a "Reverse Pin." You attack a big piece (like a King), and when he runs away, you take the piece that was hiding behind him. It's named after a kebab stick because it goes right through them!</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r3k3/8/3N4/8/2q5/8/8/4K3 w - - 0 1', 'Forks', this)">Forks <span>🍴</span></button>
-        <div class="content"><div class="inner-text">A Fork is when one piece attacks two or more enemies at the same time. Knights are the kings of forks! In this position, the White Knight is attacking the King, the Queen, AND the Rook all at once.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r1bqkb1r/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 1', 'Scholar Mate', this)">Scholar's Mate <span>⚡</span></button>
-        <div class="content"><div class="inner-text">This is the famous 4-move checkmate! It tries to catch the weak f7 square. Every Noble player must learn how it works so they can block it and make the opponent's Queen regret coming out too early.</div></div>
-
-        <button class="topic-btn" onclick="loadPos('r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1', 'Openings', this)">Openings <span>📖</span></button>
-        <div class="content"><div class="inner-text">Every great player has a favorite way to start. Whether it is the <strong>Ruy Lopez</strong> (shown here), the <strong>Sicilian Defense</strong>, or the <strong>Italian Game</strong>, learning the names helps you remember the best plans!</div></div>
+        <button class="btn-tool" id="grade-btn" onclick="gradeQuiz()">📝 Grade My Quiz!</button>
+        
+        <div id="results-area">
+            <div id="score-display"></div>
+            <p>Ready to send your score to Mr. Adekunle Busayo?</p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSekiG39AhkScM8UWkqzZF9o3RhGLK-ehF6td-NoZuA3D5wWFw/viewform?usp=pp_url" target="_blank" class="btn-tool btn-submit">✅ Submit Score</a>
+        </div>
     </section>
 </div>
 
@@ -258,67 +251,141 @@
 </footer>
 
 <script>
-    var board = Chessboard('myBoard', {
-        draggable: true, // Kept dragging enabled too!
-        dropOffBoard: 'snapback',
-        position: 'start',
-        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
-    });
+    const quizData = {
+        "Development": [
+            { q: "What does 'Development' mean in chess?", options: ["Hiding your King", "Bringing pieces out from the back row", "Sacrificing your Queen", "Moving only Pawns"], a: 1 },
+            { q: "Which pieces should you usually develop first?", options: ["Rooks and Queen", "Knights and Bishops", "King and Pawns", "Only the Queen"], a: 1 },
+            { q: "Why is it bad to bring your Queen out too early?", options: ["She can be attacked easily by smaller pieces", "She gets tired", "It is against the rules", "She moves too slowly"], a: 0 },
+            { q: "How many times should you ideally move a piece in the opening?", options: ["As many as possible", "Three times", "Once, until all pieces are developed", "Never"], a: 2 },
+            { q: "What is a 'sleeping' piece?", options: ["A piece that has been captured", "A piece still on its starting square", "A piece defending the King", "A Pawn"], a: 1 }
+        ],
+        "Castling": [
+            { q: "Which two pieces are involved in Castling?", options: ["King and Queen", "Queen and Rook", "King and Rook", "King and Bishop"], a: 2 },
+            { q: "What is the main purpose of Castling?", options: ["To attack the enemy Queen", "To keep the King safe and activate the Rook", "To trade pieces", "To checkmate"], a: 1 },
+            { q: "Can you castle if your King has already moved?", options: ["Yes, always", "Only on the Queenside", "No, never", "Only if you move him back"], a: 2 },
+            { q: "Can you castle if you are in Check?", options: ["Yes", "No", "Only if it blocks the check", "Only if it is early in the game"], a: 1 },
+            { q: "How many squares does the King move when Castling?", options: ["One square", "Two squares", "Three squares", "Four squares"], a: 1 }
+        ],
+        "Endgame": [
+            { q: "In the endgame, what role does the King play?", options: ["He stays hidden", "He becomes an active attacker", "He must be captured", "He cannot move"], a: 1 },
+            { q: "What is the primary goal for Pawns in the endgame?", options: ["To capture the enemy King", "To promote to a Queen", "To stay on the 2nd rank", "To block their own pieces"], a: 1 },
+            { q: "What is 'Stalemate'?", options: ["A win for White", "A win for Black", "A draw where a player has no legal moves but is not in check", "A checkmate"], a: 2 },
+            { q: "Which piece is usually the most important to promote a pawn?", options: ["The King helping the Pawn advance", "A Rook staying behind", "A Knight jumping around", "A Bishop on the opposite color"], a: 0 },
+            { q: "What does 'Zugzwang' mean in the endgame?", options: ["A powerful attack", "Being forced to make a bad move", "A draw offer", "Promoting a pawn"], a: 1 }
+        ],
+        "Center": [
+            { q: "Which squares make up the center of the board?", options: ["a1, h1, a8, h8", "e4, d4, e5, d5", "f2, g2, h2, e2", "a4, a5, h4, h5"], a: 1 },
+            { q: "Why is controlling the center important?", options: ["It looks nice", "It gives your pieces more mobility and space", "It guarantees a win immediately", "It hides your King"], a: 1 },
+            { q: "Which piece naturally controls the center best from the start?", options: ["The Rook", "The Knight on f3 or c3", "The King", "The a-pawn"], a: 1 },
+            { q: "If you don't control the center, what usually happens?", options: ["Your pieces get cramped", "You automatically win", "You get an extra turn", "The board flips"], a: 0 },
+            { q: "What is the 'Hypermodern' way to control the center?", options: ["With Pawns directly", "From a distance using Bishops and Knights", "By sacrificing the Queen", "By not moving at all"], a: 1 }
+        ],
+        "Pins": [
+            { q: "What is a Pin in chess?", options: ["Attacking a piece that cannot move without exposing a more valuable piece", "Forcing the King to move", "Trading two Knights", "A special Pawn move"], a: 0 },
+            { q: "Which pieces can create a Pin?", options: ["Knights and Pawns", "Queens, Rooks, and Bishops", "Kings only", "Only Rooks"], a: 1 },
+            { q: "What is an 'Absolute Pin'?", options: ["When a piece is pinned to the Queen", "When a piece is pinned to the King and legally cannot move", "When a Rook pins a Knight", "A pin that can be broken easily"], a: 1 },
+            { q: "What is a 'Relative Pin'?", options: ["A pin against the King", "A pin against a piece other than the King (like a Queen)", "A pin involving relatives", "A broken pin"], a: 1 },
+            { q: "How do you usually exploit a pinned piece?", options: ["Leave it alone", "Attack it again with another piece", "Trade your Queen for it", "Move your King towards it"], a: 1 }
+        ],
+        "Forks": [
+            { q: "What is a Fork?", options: ["Eating food while playing", "One piece attacking two or more enemy pieces at the same time", "Moving two pieces at once", "A type of draw"], a: 1 },
+            { q: "Which piece is most famous for its tricky Forks?", options: ["The King", "The Knight", "The Rook", "The Pawn"], a: 1 },
+            { q: "Can a Pawn execute a Fork?", options: ["No, never", "Yes, by attacking diagonally in two directions", "Only on the 8th rank", "Only if it captures first"], a: 1 },
+            { q: "What makes a 'Royal Fork' so special?", options: ["It is done by the King", "It attacks the King and the Queen at the same time", "It involves Castling", "It happens on the first move"], a: 1 },
+            { q: "How can you defend against a Fork?", options: ["Move the most valuable piece away", "Counter-attack with check", "Capture the attacking piece", "All of the above"], a: 3 }
+        ]
+    };
 
-    // Custom Click-to-Move Functionality added here!
-    var selectedSquare = null;
+    let currentTopic = "";
 
-    $('#myBoard').on('click', '.square-55d63', function() {
-        var clickedSquare = $(this).attr('data-square');
-        var currentPosition = board.position();
+    function loadQuiz(topic, btnElement) {
+        currentTopic = topic;
+        $('.topic-btn').removeClass('active');
+        $(btnElement).addClass('active');
 
-        if (selectedSquare === null) {
-            // If nothing is selected, check if they clicked a piece
-            if (currentPosition[clickedSquare]) {
-                selectedSquare = clickedSquare;
-                $(this).addClass('highlight-square'); // Highlight the square
-            }
-        } else {
-            // If a piece is already selected
-            if (selectedSquare === clickedSquare) {
-                // Clicking the same piece deselects it
-                selectedSquare = null;
-                $('.square-55d63').removeClass('highlight-square');
-            } else if (currentPosition[clickedSquare] && currentPosition[clickedSquare].charAt(0) === currentPosition[selectedSquare].charAt(0)) {
-                // Clicking another piece of the same color switches selection
-                $('.square-55d63').removeClass('highlight-square');
-                selectedSquare = clickedSquare;
-                $(this).addClass('highlight-square');
-            } else {
-                // Otherwise, move to the target square
-                board.move(selectedSquare + '-' + clickedSquare);
-                selectedSquare = null;
-                $('.square-55d63').removeClass('highlight-square'); // Remove all highlights
-            }
-        }
-    });
+        $('#quiz-section').show();
+        $('#quiz-title').html(`📝 ${$(btnElement).text()} Quiz`);
+        $('#results-area').hide();
+        $('#grade-btn').show();
 
-    function loadPos(fen, title, btn) {
-        board.position(fen);
-        document.getElementById('topic-display').innerText = "Topic: " + title;
+        const container = $('#questions-container');
+        container.empty();
 
-        var allContent = document.getElementsByClassName("content");
-        for (var i = 0; i < allContent.length; i++) {
-            allContent[i].classList.remove("active-content");
-        }
-        btn.nextElementSibling.classList.add("active-content");
-        
-        // Auto-scroll to board on mobile when a topic is clicked
+        const questions = quizData[topic];
+
+        questions.forEach((item, qIndex) => {
+            let optionsHtml = '';
+            item.options.forEach((opt, oIndex) => {
+                optionsHtml += `
+                    <label class="option-label" id="label-${qIndex}-${oIndex}" onclick="handleOptionClick(${qIndex}, ${oIndex})">
+                        <input type="radio" name="q${qIndex}" value="${oIndex}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            container.append(`
+                <div class="question-block" id="block-${qIndex}">
+                    <div class="question-text">${qIndex + 1}. ${item.q}</div>
+                    ${optionsHtml}
+                </div>
+            `);
+        });
+
         if (window.innerWidth < 900) {
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({top: document.getElementById('quiz-section').offsetTop - 20, behavior: 'smooth'});
         }
-
-        // Clear any click-to-move highlights when changing topics
-        selectedSquare = null;
-        $('.square-55d63').removeClass('highlight-square');
     }
 
-    $(window).resize(board.resize);
+    function handleOptionClick(qIndex, oIndex) {
+        // Find the specific radio inside this label and check it
+        $(`input[name="q${qIndex}"][value="${oIndex}"]`).prop('checked', true);
+        
+        // Visual feedback: remove selection from others in the same question and add to this one
+        $(`#block-${qIndex} .option-label`).removeClass('selected-box');
+        $(`#label-${qIndex}-${oIndex}`).addClass('selected-box');
+    }
+
+    function gradeQuiz() {
+        if (!currentTopic) return;
+
+        const questions = quizData[currentTopic];
+        let score = 0;
+        let allAnswered = true;
+
+        questions.forEach((item, qIndex) => {
+            const selectedOpt = $(`input[name="q${qIndex}"]:checked`).val();
+            
+            if (selectedOpt === undefined) {
+                allAnswered = false;
+            } else {
+                const selectedInt = parseInt(selectedOpt);
+                $(`#block-${qIndex} .option-label`).removeClass('correct incorrect selected-box');
+                $(`#label-${qIndex}-${item.a}`).addClass('correct');
+
+                if (selectedInt === item.a) {
+                    score++;
+                } else {
+                    $(`#label-${qIndex}-${selectedInt}`).addClass('incorrect');
+                }
+            }
+        });
+
+        if (!allAnswered) {
+            alert("A Noble player completes their mission! Please answer all 5 questions before grading.");
+            return;
+        }
+
+        $('#grade-btn').hide();
+        $('#results-area').show();
+        
+        let message = "";
+        if (score === 5) message = "Perfect Score! You are a Grandmaster! 🏆";
+        else if (score >= 3) message = "Great Job! You have a Noble mind! 🌟";
+        else message = "Good try! Keep studying the board! ♟️";
+
+        $('#score-display').html(`You scored: ${score} / 5<br><span style="font-size: 1.1rem; font-weight: normal; color: #555;">${message}</span>`);
+    }
 </script>
 
 </body>
