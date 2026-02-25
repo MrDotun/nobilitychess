@@ -12,76 +12,120 @@
 
     <style>
         :root { --wine: #800000; --yellow: #FFD700; --dark-wine: #4a0000; }
-        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            box-sizing: border-box; 
+            overflow-x: hidden;
+        }
         
         /* --- ANIMATIONS --- */
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         @keyframes knightBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         @keyframes blinkCursor { 50% { border-color: transparent; } }
-        
-        /* New: Gate Opening Shake */
-        @keyframes gateShake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-
-        /* New: Success Pulse */
-        @keyframes successPulse {
-            0% { transform: scale(1); text-shadow: 0 0 0px var(--yellow); }
-            50% { transform: scale(1.1); text-shadow: 0 0 20px var(--yellow); }
-            100% { transform: scale(1); text-shadow: 0 0 0px var(--yellow); }
-        }
+        @keyframes gateShake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        @keyframes successPulse { 0% { transform: scale(1); text-shadow: 0 0 0px var(--yellow); } 50% { transform: scale(1.05); text-shadow: 0 0 15px var(--yellow); } 100% { transform: scale(1); text-shadow: 0 0 0px var(--yellow); } }
 
         .gate-success { animation: gateShake 0.4s ease-in-out; }
         .msg-success { animation: successPulse 0.6s ease-in-out infinite; }
 
         #main-ui { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; gap: 15px; }
         .panel { background: var(--wine); border: 3px solid var(--yellow); border-radius: 12px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); width: 100%; box-sizing: border-box; }
+        
         #board { width: 100% !important; border: 2px solid var(--yellow); transition: transform 0.2s; }
+        
         #timer-wrap { width: 100%; height: 18px; background: var(--dark-wine); border: 2px solid var(--yellow); border-radius: 9px; margin-bottom: 8px; overflow: hidden; }
         #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 1s linear; }
+        
         .btn { background: var(--yellow); color: var(--wine); border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; font-size: 0.9rem; transition: 0.2s; }
-        .btn:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--yellow); }
+        .btn:hover { transform: scale(1.02); }
         
         .btn-resign { background: #444; color: #ccc; margin-top: 5px; font-size: 0.7rem; padding: 5px; border: 1px solid #666; }
         .leaderboard-table { width: 100%; color: var(--yellow); text-align: left; border-collapse: collapse; }
         .leaderboard-table td { padding: 8px 5px; border-bottom: 1px solid rgba(255,215,0,0.1); }
         
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal { background: var(--wine); border: 4px solid var(--yellow); padding: 30px; border-radius: 20px; width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: modalFadeIn 0.6s ease-out; position: relative; }
+        /* --- INTEGRATED CENTERING FIXES --- */
+        .overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.96); 
+            z-index: 1000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            box-sizing: border-box; 
+        }
         
-        .story-container { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; margin: 20px 0; min-height: 140px; width: 90%; text-align: center; border: 1px solid rgba(255,215,0,0.2); box-sizing: border-box; }
-        #typewriter-text { font-size: 0.95rem; line-height: 1.6; color: #fffae6; display: inline-block; border-right: 2px solid var(--yellow); animation: blinkCursor 0.8s infinite; }
+        .modal { 
+            background: var(--wine); 
+            border: 4px solid var(--yellow); 
+            padding: 20px; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: 400px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center; 
+            animation: modalFadeIn 0.6s ease-out; 
+            position: relative; 
+            box-sizing: border-box; 
+            margin: auto; /* Essential for browser centering logic */
+        }
+        
+        .story-container { 
+            background: rgba(0,0,0,0.4); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin: 15px 0; 
+            min-height: 120px; 
+            width: 100%; 
+            text-align: center; 
+            border: 1px solid rgba(255,215,0,0.2); 
+            box-sizing: border-box; 
+        }
+        
+        #typewriter-text { font-size: 0.9rem; line-height: 1.5; color: #fffae6; display: inline-block; border-right: 2px solid var(--yellow); animation: blinkCursor 0.8s infinite; }
 
         .highlight-sq { box-shadow: inset 0 0 3px 3px white !important; background-color: rgba(255, 215, 0, 0.6) !important; }
         #status-msg { min-height: 95px; text-align: center; color: var(--yellow); margin: 10px 0; font-weight: bold; }
         .remark-text { display: block; color: #fff; font-size: 0.85rem; font-style: italic; margin-top: 4px; font-weight: normal; }
-        #next-btn { display: none; margin: 5px auto; width: 75%; border: 2px solid white; }
+        #next-btn { display: none; margin: 5px auto; width: 80%; border: 2px solid white; }
     </style>
 </head>
 <body onload="startTypewriter()">
 
 <div id="login-screen" class="overlay">
     <div class="modal">
-        <img src="https://img.icons8.com/color/96/knight.png" alt="Knight" style="width:80px; animation: knightBounce 2.5s infinite ease-in-out;">
-        <h2 style="color: var(--yellow); margin: 15px 0 5px 0; text-shadow: 2px 2px #000;">🏰 WINE CASTLE SIEGE 🏰</h2>
+        <img src="https://img.icons8.com/color/96/knight.png" alt="Knight" style="width:70px; animation: knightBounce 2.5s infinite ease-in-out;">
+        <h2 style="color: var(--yellow); margin: 10px 0; text-shadow: 2px 2px #000; font-size: 1.4rem;">🏰 WINE CASTLE SIEGE 🏰</h2>
         
         <div class="story-container">
             <span id="typewriter-text"></span>
         </div>
 
-        <input type="text" id="playerName" placeholder="Enter Hero's Name..." style="padding: 15px; width: 90%; border-radius: 8px; border: 2px solid var(--yellow); font-size: 1.1rem; margin-bottom: 15px; background: #fff; outline: none; text-align: center;">
-        <button class="btn" onclick="startQuest(); playTriumphSound();" style="width: 100%; height: 55px; font-size: 1.1rem;">RESCUE COACH BUSAYO</button>
+        <input type="text" id="playerName" placeholder="Enter Hero's Name..." style="padding: 12px; width: 100%; border-radius: 8px; border: 2px solid var(--yellow); font-size: 1rem; margin-bottom: 15px; background: #fff; outline: none; text-align: center; box-sizing: border-box;">
+        <button class="btn" onclick="startQuest(); playTriumphSound();" style="width: 100%; height: 50px;">RESCUE COACH BUSAYO</button>
     </div>
 </div>
 
 <div id="game-over-screen" class="overlay" style="display: none;">
     <div class="modal">
-        <h2 id="end-title" style="color: var(--yellow);">⌛ MISSION ENDED</h2>
-        <p id="final-score-msg" style="font-size: 1.2rem; margin: 20px 0;"></p>
+        <h2 id="end-title" style="color: var(--yellow); font-size: 1.4rem;">⌛ MISSION ENDED</h2>
+        <p id="final-score-msg" style="font-size: 1.1rem; margin: 15px 0;"></p>
         <button class="btn" onclick="location.reload()">TRY RESCUE AGAIN</button>
     </div>
 </div>
@@ -89,8 +133,8 @@
 <div id="main-ui">
     <div id="timer-wrap"><div id="timer-bar"></div></div>
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px;">
-        <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight" style="width:50px; cursor: pointer;" onclick="adminReset()">
-        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.2rem;">Stars: 0 ⭐</div>
+        <img id="sir-tactics" src="https://img.icons8.com/color/96/knight.png" alt="Knight" style="width:45px; cursor: pointer;" onclick="adminReset()">
+        <div id="streak-ui" style="color: var(--yellow); font-weight: bold; font-size: 1.1rem;">Stars: 0 ⭐</div>
     </div>
     <div id="board"></div>
     <div id="status-msg">
@@ -99,11 +143,11 @@
         <button id="resign-btn" class="btn btn-resign" onclick="if(confirm('Abandon the Coach?')) endGame('surrender')">🏳️ RAISE WHITE FLAG</button>
     </div>
     <div class="panel">
-        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow);">🏆 HALL OF HEROES</h3>
+        <h3 style="margin:0 0 10px 0; text-align: center; color: var(--yellow); font-size: 1.1rem;">🏆 HALL OF HEROES</h3>
         <table class="leaderboard-table">
             <tbody id="leaderboard-body"></tbody>
         </table>
-        <button class="btn" onclick="alert('Decree printed for ' + (currentPlayer ? currentPlayer.name : 'Knight'))">🖨️ PRINT DECREE</button>
+        <button class="btn" onclick="alert('Decree printed for ' + (currentPlayer ? currentPlayer.name : 'Knight'))" style="padding: 8px; font-size: 0.8rem;">🖨️ PRINT DECREE</button>
     </div>
 </div>
 
@@ -122,19 +166,6 @@
     }
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playTriumphSound() {
-        playTone(330, 0, 0.1); playTone(440, 0.1, 0.1); playTone(660, 0.2, 0.2);
-    }
-
-    // New: Success melody
-    function playSuccessSound() {
-        playTone(523, 0, 0.05);   // C5
-        playTone(659, 0.05, 0.05); // E5
-        playTone(783, 0.1, 0.05);  // G5
-        playTone(1046, 0.15, 0.2); // C6
-    }
-
     function playTone(freq, delay, duration) {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -148,6 +179,9 @@
         osc.stop(audioCtx.currentTime + delay + duration);
     }
 
+    function playTriumphSound() { playTone(330, 0, 0.1); playTone(440, 0.1, 0.1); playTone(660, 0.2, 0.2); }
+    function playSuccessSound() { playTone(523, 0, 0.05); playTone(659, 0.05, 0.05); playTone(783, 0.1, 0.05); playTone(1046, 0.15, 0.2); }
+
     let puzzles = [
         { fen: '3k4/pp3ppp/8/2p5/2N4r/3P4/PPPBKPPP/8 w - - 0 1', solution: 'Bg5+', remark: "The Skewer! Strike through the King to win the Rook." },
         { fen: 'r3k3/pp3pp1/2p1r2p/1N2p3/4P3/2P1PP2/PP4PP/5RK1 w - - 0 1', solution: 'Nc7+', remark: "Royal Fork! Your Knight traps both King and Rook." },
@@ -155,7 +189,7 @@
         { fen: 'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 4', solution: 'Ng5', remark: "Targeting the weak f7 square!" },
         { fen: '1r3rk1/p1p2p1p/1pN3p1/8/1r6/1P1q1PP1/P3P2P/Q5K1 w - - 0 1', solution: 'Ne7#', remark: "Smothered Mate: The King is trapped by his own guards!" },
         { fen: '2r4k/p1R4p/1p3N2/4n3/8/6P1/5PK1/8 w - - 0 1', solution: 'Rxh7#', remark: "Arabian Mate! Rook and Knight perfectly trap the King." },
-        { fen: 'r1bqk2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kg3', remark: "Keeping the king safe and preparing to castle artificially with h3" },
+        { fen: 'r1bq2r/pppp1ppp/2n5/4p3/2B1P1n1/3P1N2/PPP2KPP/RNBQ3R w kq - 1 6', solution: 'Kg3', remark: "Keeping the king safe and preparing to castle artificially." },
         { fen: 'r1b1k1nr/p2p1ppp/n1p1p3/1p6/1b1PP3/P1N2N2/1PP2PPP/R1BQKB1R w KQkq - 0 7', solution: 'axb4', remark: "Free Material! Capitalizing on a tactical blunder." },
         { fen: '6k1/ppp2ppp/8/8/8/8/PP3PPP/3R2K1 w - - 0 1', solution: 'Rd8#', remark: "Back Rank Mate! Forcing the enemy into a corner." },
         { fen: '2r3k1/p4p1p/6p1/1R6/8/5P2/P1r3PP/1R4K1 w - - 0 1', solution: 'Rb8', remark: "Simplification! Trading pieces to secure the endgame." },
@@ -189,18 +223,11 @@
     function startQuest() {
         const name = document.getElementById('playerName').value.trim();
         if (!name) return alert("Who is this hero?");
-        
-        for (let i = puzzles.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [puzzles[i], puzzles[j]] = [puzzles[j], puzzles[i]];
-        }
-
         currentPlayer = players.find(p => p.name === name) || { name: name, stars: 0 };
         if (!players.find(p => p.name === name)) players.push(currentPlayer);
         document.getElementById('login-screen').style.display = 'none';
         gameActive = true;
         initBoard();
-        
         const timerInterval = setInterval(() => {
             if (timeLeft > 0 && gameActive) {
                 timeLeft--;
@@ -214,23 +241,14 @@
     }
 
     function initBoard() {
-        let cleanFen = puzzles[currentIdx].fen.trim();
-        game.load(cleanFen);
-        
+        game.load(puzzles[currentIdx].fen);
         board = Chessboard('board', {
-            draggable: false, 
-            position: cleanFen,
+            draggable: false, position: puzzles[currentIdx].fen,
             pieceTheme: function(piece) { return pieceUrls[piece]; }
         });
-        
-        $('#board').off('click').on('click', '.square-55d63', function() { 
-            if(gameActive) onSquareClick($(this).data('square')); 
-        });
+        $('#board').off('click').on('click', '.square-55d63', function() { if(gameActive) onSquareClick($(this).data('square')); });
         document.getElementById('next-btn').style.display = 'none';
-        document.getElementById('resign-btn').style.display = 'inline-block';
-        document.getElementById('msg-text').innerHTML = "Gate " + (currentIdx + 1) + " of " + puzzles.length;
-        
-        // Remove success effects from previous gate
+        document.getElementById('msg-text').innerHTML = "Gate " + (currentIdx + 1);
         $('#board').removeClass('gate-success');
         $('#msg-text').removeClass('msg-success');
     }
@@ -245,91 +263,49 @@
                 $('.square-' + square).addClass('highlight-sq');
             }
         } else {
-            handleMove(selectedSquare, square);
+            let move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+            if (move) {
+                board.position(game.fen());
+                if (game.history({ verbose: true }).pop().san === puzzles[currentIdx].solution) {
+                    currentPlayer.stars += 10;
+                    playSuccessSound();
+                    $('#board').addClass('gate-success');
+                    $('#msg-text').addClass('msg-success').html(`<span style="color:#00ff00">GATE OPENED!</span><br><span class="remark-text">${puzzles[currentIdx].remark}</span>`);
+                    document.getElementById('next-btn').style.display = 'block';
+                    saveData();
+                } else {
+                    game.undo();
+                    board.position(game.fen());
+                    document.getElementById('msg-text').innerHTML = "<span style='color:#ff4444'>WRONG MOVE!</span>";
+                }
+            }
             selectedSquare = null;
             $('.square-55d63').removeClass('highlight-sq');
-        }
-    }
-
-    function handleMove(source, target) {
-        const puzzle = puzzles[currentIdx];
-        let move = game.move({ from: source, to: target, promotion: 'q' });
-        if (move === null) return;
-
-        board.position(game.fen());
-        const san = game.history({ verbose: true }).pop().san;
-
-        if (san === puzzle.solution) {
-            currentPlayer.stars += 10; 
-            playSuccessSound();
-            
-            // Visual feedback
-            $('#board').addClass('gate-success');
-            $('#msg-text').addClass('msg-success').html( 
-                `<span style="color:#00ff00">GATE OPENED!</span><br><span class="remark-text">${puzzle.remark}</span>`
-            );
-            
-            document.getElementById('next-btn').style.display = 'block';
-            document.getElementById('resign-btn').style.display = 'none';
-            saveData();
-        } else {
-            document.getElementById('msg-text').innerHTML = "<span style='color:#ff4444'>GATE LOCKED!</span>";
-            setTimeout(() => { 
-                game.undo(); 
-                board.position(game.fen()); 
-                document.getElementById('msg-text').innerText = "Try a different tactic!";
-            }, 800);
         }
         document.getElementById('streak-ui').innerText = `Stars: ${currentPlayer.stars} ⭐`;
     }
 
     function nextPuzzle() {
         currentIdx++;
-        if (currentIdx >= puzzles.length) {
-            endGame('win');
-            return;
-        }
-        initBoard();
+        if (currentIdx >= puzzles.length) endGame('win');
+        else initBoard();
     }
 
     function endGame(reason) {
         gameActive = false;
         const title = document.getElementById('end-title');
         const msg = document.getElementById('final-score-msg');
-        
-        if (reason === 'win') {
-            title.innerText = "🏆 COACH BUSAYO IS SAFE!";
-            msg.innerHTML = `Heroic effort! You broke every seal on the castle.<br><b>TOTAL STARS: ${currentPlayer.stars} ⭐</b>`;
-        } else if (reason === 'surrender') {
-            title.innerText = "🏳️ MISSION ABANDONED";
-            msg.innerHTML = `${currentPlayer.name} retreated from the walls.<br><b>STARS EARNED: ${currentPlayer.stars} ⭐</b>`;
-        } else {
-            title.innerText = "⌛ TIME IS UP";
-            msg.innerHTML = `The castle doors have locked forever!<br><b>FINAL STARS: ${currentPlayer.stars} ⭐</b>`;
-        }
+        if (reason === 'win') { title.innerText = "🏆 COACH BUSAYO IS SAFE!"; msg.innerHTML = `Heroic effort!<br><b>TOTAL STARS: ${currentPlayer.stars} ⭐</b>`; }
+        else { title.innerText = "⌛ MISSION FAILED"; msg.innerHTML = `Time's up hero.<br><b>FINAL STARS: ${currentPlayer.stars} ⭐</b>`; }
         document.getElementById('game-over-screen').style.display = 'flex';
     }
 
-    function adminReset() {
-        if (prompt("Master Key:") === "coach2026") {
-            players = [];
-            localStorage.removeItem('chessQuestPlayers');
-            location.reload();
-        }
-    }
-
-    function saveData() {
-        localStorage.setItem('chessQuestPlayers', JSON.stringify(players));
-        updateUI();
-    }
-
+    function saveData() { localStorage.setItem('chessQuestPlayers', JSON.stringify(players)); updateUI(); }
     function updateUI() {
-        const sorted = [...players].sort((a, b) => b.stars - a.stars).slice(0, 10);
-        const icons = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-        document.getElementById('leaderboard-body').innerHTML = sorted.length ? sorted.map((p, i) => 
-            `<tr><td>${icons[i]}</td><td>${p.name}</td><td>${p.stars}</td></tr>`
-        ).join('') : "<tr><td colspan='3'>No Heroes yet.</td></tr>";
+        const sorted = [...players].sort((a, b) => b.stars - a.stars).slice(0, 5);
+        document.getElementById('leaderboard-body').innerHTML = sorted.map((p, i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${p.stars}</td></tr>`).join('');
     }
+    function adminReset() { if (prompt("Master Key:") === "coach2026") { players = []; localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
