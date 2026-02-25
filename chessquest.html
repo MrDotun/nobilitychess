@@ -1,5 +1,3 @@
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,10 +119,13 @@
     }
 
     function initBoard() {
-        game.load(puzzles[currentIdx].fen);
+        // Sanitize FEN string to remove invisible zero-width spaces
+        let cleanFen = puzzles[currentIdx].fen.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        
+        game.load(cleanFen);
         board = Chessboard('board', {
             draggable: false, 
-            position: puzzles[currentIdx].fen,
+            position: cleanFen,
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         });
         
