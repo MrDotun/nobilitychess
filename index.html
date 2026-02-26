@@ -185,7 +185,7 @@
         #side-popup.visible { right: 0; }
         #side-popup:hover { background: white; }
 
-        #academy { background: linear-gradient(180deg, var(--dark) 0%, var(--wine) 100%); }
+        #academy, #tactics { background: linear-gradient(180deg, var(--dark) 0%, var(--wine) 100%); }
 
         .grid { 
             display: grid; 
@@ -302,6 +302,11 @@
     <div class="grid">
         <a href="theory.html" class="box"><span>📖</span><h3>Theory</h3></a>
         <a href="puzzles.html" class="box"><span>🧠</span><h3>Puzzles</h3></a>
+        
+        <a href="javascript:void(0)" onclick="show('tactics')" class="box" style="border-color: #fff; background: rgba(255,255,255,0.1);">
+            <span>🏹</span><h3>Tactics</h3>
+        </a>
+
         <a href="assessment.html" class="box"><span>📝</span><h3>Assessment</h3></a>
         <a href="analysis.html" class="box"><span>📖</span><h3>Workbooks</h3></a>
         
@@ -314,6 +319,22 @@
         </a>
     </div>
     <p onclick="show('home')" style="color:var(--yellow); font-size: 14px; margin-top: 40px; cursor: pointer; font-weight: 900; text-decoration: underline;">← GO BACK</p>
+</section>
+
+<section id="tactics">
+    <h2 style="font-size: 1.8rem; color: var(--yellow); font-family: 'Cinzel'; margin-bottom: 25px; text-shadow: 2px 2px var(--wine);">TACTICAL TRAINING</h2>
+    <div class="grid">
+        <a href="https://lichess.org/training/daily" target="_blank" class="box">
+            <span>🧩</span><h3>Daily Puzzles</h3>
+        </a>
+        <a href="tal.html" class="box">
+            <span>👹</span><h3>Save Mikhail Tal</h3>
+        </a>
+        <a href="speed.html" class="box box-special">
+            <span>⚡</span><h3>Precision & Speed</h3>
+        </a>
+    </div>
+    <p onclick="show('academy')" style="color:var(--yellow); font-size: 14px; margin-top: 40px; cursor: pointer; font-weight: 900; text-decoration: underline;">← BACK TO CURRICULUM</p>
 </section>
 
 <script>
