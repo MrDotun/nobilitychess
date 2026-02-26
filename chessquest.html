@@ -2,159 +2,251 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tutor Busayo's Academy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play against Tutor Busayo</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-    
     <style>
-        body { background-color: #4a0404; color: #ffd700; font-family: 'Georgia', serif; display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; min-height: 100vh; }
-        h2 { margin: 15px 0; color: #ffd700; text-shadow: 2px 2px 4px #000; text-align: center; }
-        .white-1e1d7 { background-color: #ffffff !important; } 
-        .black-3c85d { background-color: #4ca154 !important; } 
-        .highlight-white, .highlight-black { box-shadow: none !important; background-color: transparent !important; }
-        #myBoard { width: 95vw !important; max-width: 450px; border: 6px solid #ffd700; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .ui-panel { width: 95%; max-width: 450px; background: #ffd700; color: #4a0404; border: 2px solid #ffffff; padding: 15px; border-radius: 8px; box-sizing: border-box; margin-top: 10px; }
-        .tutor-bubble { background: #4a0404; color: #ffd700; padding: 12px; border-radius: 6px; font-weight: bold; border-left: 5px solid #ffffff; min-height: 60px; line-height: 1.4; display: flex; align-items: center; }
-        .controls { display: flex; width: 95%; max-width: 450px; gap: 8px; margin: 10px 0; }
-        button { flex: 1; background: #ffd700; border: 2px solid #ffffff; padding: 15px; cursor: pointer; font-weight: bold; border-radius: 6px; color: #4a0404; }
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%; width: 100%;
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            /* Theme: Wine Background */
+            background-color: #4c0519;
+        }
+        #game-container {
+            width: 90vmin; 
+            max-width: 600px;
+            text-align: center;
+        }
+        #board { width: 100%; margin-bottom: 10px; border: 4px solid #facc15; border-radius: 4px; box-shadow: 0 0 20px rgba(250, 204, 21, 0.2); }
+        .info-panel {
+            /* Theme: Deep Wine and Yellow accents */
+            background: #701a28; padding: 15px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 2px solid #facc15;
+            color: white;
+        }
+        h2 { margin: 0 0 10px 0; color: #facc15; text-transform: uppercase; letter-spacing: 1px; }
+        .grade { font-size: 1.5em; font-weight: bold; color: #facc15; }
+        
+        /* Highlight square on click */
+        .highlight-white { background-color: #f6f669 !important; }
+        .highlight-black { background-color: #e6e600 !important; }
+
+        /* Board Square Colors (UNCHANGED) */
+        .white-1e1d7 { background-color: #ebecd0 !important; }
+        .black-3c85d { background-color: #779556 !important; }
+        
+        /* Remark Styling */
+        #remark { font-style: italic; color: #facc15; min-height: 1.2em; display: block; margin-bottom: 5px; font-weight: 500; }
+        #status { color: #fef08a; }
     </style>
 </head>
 <body>
 
-    <h2>Tutor Busayo's Royal Academy</h2>
-    <div id="myBoard"></div>
-    <div class="controls">
-        <button onclick="undoMove()">Undo Move</button>
-        <button onclick="location.reload()" style="background: #ffffff;">Reset Board</button>
+<div id="game-container">
+    <div class="info-panel">
+        <h2>Playing against: <strong>Tutor Busayo</strong></h2>
+        <div id="board"></div>
+        <p id="remark">"Show me your best moves!"</p>
+        <p>Your Grade: <span id="grade" class="grade">Beginner</span></p>
+        <p id="status">Your turn! Click a piece to select it.</p>
     </div>
-    <div class="ui-panel">
-        <div id="tutor-comment" class="tutor-bubble">"Develop your pieces, student. Don't be lazy with your army."</div>
-    </div>
+</div>
 
 <script>
-var board = null;
-var game = new Chess();
-var sourceSquare = null;
+    var board = null;
+    var game = new Chess();
+    var $status = $('#status');
+    var $grade = $('#grade');
+    var $remark = $('#remark');
+    var sourceSquare = null; 
 
-const REMARKS = {
-    opening: ["The opening is about harmony, not just moving pieces.", "Don't move the same piece twice in the opening.", "A Knight on the rim is dim. Keep them central!", "Control the center, control the world.", "Development is a race. Are you winning it?"],
-    tactical: ["Tactics is knowing what to do when there is something to do.", "Every move creates a weakness. Find mine.", "Before you move, look at what my piece is now doing.", "A pin is mightier than a sword.", "Always check, it might be mate!"],
-    safety: ["Is your King safe, or just lucky?", "A castle-less King is a target in the woods.", "You ignored my threat. That is a dangerous habit.", "Protect your warriors, and they will protect you.", "Patience is the greatest weapon in chess."],
-    general: ["Chess is mental torture, but beautiful.", "Even a Grandmaster was once a beginner.", "The board is a mirror of your mind.", "Play the board, not the person.", "Respect the board, and the board will respect you."]
-};
+    var pieceValues = { 'p': 10, 'n': 30, 'b': 30, 'r': 50, 'q': 90, 'k': 0 };
+    var totalScore = 0;
 
-const PIECE_VALUES = { p: 10, n: 30, b: 35, r: 50, q: 90, k: 900 };
+    function updateGrade() {
+        if (totalScore >= 200) $grade.text("Grandmaster! 👑");
+        else if (totalScore >= 120) $grade.text("Expert 🏆");
+        else if (totalScore >= 70) $grade.text("Pro 🌟");
+        else if (totalScore >= 30) $grade.text("Advanced 👍");
+        else $grade.text("Beginner");
+    }
 
-function removeHighlights() {
-    $('#myBoard .square-55d63').css('box-shadow', 'none').css('background-color', '');
-}
+    function akingRemarks(type) {
+        var remarks = {
+            illegal: "That's not a legal move in my kingdom!",
+            bad: ["Are you sure about that?", "My Knights are laughing at that move.", "You might need more practice!"],
+            good: ["Impressive strategy!", "A move fit for a King!", "You're getting stronger!"],
+            win: "CHECKMATE! You have defeated Tutor Busayo! Congratulations, Champion! 🏆",
+            lose: "CHECKMATE! Better luck next time. Tutor Busayo remains undefeated!"
+        };
 
-function evaluateBoard(current_game) {
-    let totalEvaluation = 0;
-    const board = current_game.board();
-    const moveHistory = current_game.history({ verbose: true });
-    const moveCount = Math.floor(moveHistory.length / 2);
-
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-            let piece = board[i][j];
-            if (piece) {
-                let val = PIECE_VALUES[piece.type];
-                totalEvaluation += (piece.color === 'w' ? val : -val);
-            }
+        if (type === 'illegal') {
+            $remark.text(remarks.illegal);
+        } else if (type === 'good') {
+            $remark.text(remarks.good[Math.floor(Math.random() * remarks.good.length)]);
+        } else if (type === 'bad') {
+            $remark.text(remarks.bad[Math.floor(Math.random() * remarks.bad.length)]);
+        } else if (type === 'win') {
+            $remark.text(remarks.win);
+            $status.text("Victory is yours!");
+        } else if (type === 'lose') {
+            $remark.text(remarks.lose);
+            $status.text("Game Over.");
         }
     }
-    return totalEvaluation;
-}
 
-function getBestMove() {
-    let moves = game.moves({ verbose: true });
-    let bestMove = null;
-    let bestValue = 9999; 
-    let moveCount = Math.floor(game.history().length / 2);
+    function makeAIMove() {
+        if (game.game_over()) {
+            checkGameOver();
+            return;
+        }
 
-    // Track which Black pieces have already moved
-    let movedBlackPieces = new Set();
-    game.history({ verbose: true }).forEach(m => {
-        if (m.color === 'b') movedBlackPieces.add(m.from);
+        var moves = game.moves({ verbose: true });
+        
+        var threatenedSquares = [];
+        var fen = game.fen();
+        var tempGame = new Chess(fen);
+        var tokens = fen.split(' ');
+        tokens[1] = tokens[1] === 'w' ? 'b' : 'w'; 
+        tempGame.load(tokens.join(' '));
+        tempGame.moves({ verbose: true }).forEach(function(m) {
+            if (m.captured) threatenedSquares.push(m.to);
+        });
+
+        var scoredMoves = moves.map(function(move) {
+            var score = Math.random() * 5; 
+            if (move.san.includes('#')) return { move: move, score: 10000 };
+            
+            if (threatenedSquares.includes(move.from)) {
+                var val = pieceValues[move.piece] || 10;
+                score += val * 15;
+            }
+            if (move.captured) score += pieceValues[move.captured] * 20;
+
+            game.move(move);
+            var opponentMoves = game.moves({ verbose: true });
+            if (opponentMoves.find(function(m) { return m.to === move.to; })) {
+                var val = pieceValues[move.piece] || 10;
+                score -= (val * 25);
+            }
+            game.undo();
+            return { move: move, score: score };
+        });
+
+        scoredMoves.sort(function(a, b) { return b.score - a.score; });
+        game.move(scoredMoves[0].move);
+        
+        board.position(game.fen());
+        
+        if (game.game_over()) {
+            checkGameOver();
+        } else {
+            $status.text("Tutor Busayo moved. Your turn!");
+        }
+    }
+
+    function checkGameOver() {
+        if (game.in_checkmate()) {
+            if (game.turn() === 'b') { // If it's black's turn to move and they are in mate, white (player) won
+                akingRemarks('win');
+            } else {
+                akingRemarks('lose');
+            }
+        } else if (game.in_draw()) {
+            $status.text("Game Over - It's a Draw!");
+            $remark.text("A hard-fought stalemate!");
+        } else {
+            $status.text("Game Over!");
+        }
+    }
+
+    function onSquareClick(square) {
+        if (game.game_over()) return;
+
+        if (sourceSquare === null) {
+            var piece = game.get(square);
+            if (piece && piece.color === 'w') {
+                sourceSquare = square;
+                removeHighlights();
+                addHighlight(square);
+                $status.text("Piece selected. Click where to move.");
+            }
+            return;
+        }
+
+        var move = game.move({
+            from: sourceSquare,
+            to: square,
+            promotion: 'q'
+        });
+
+        if (move === null) {
+            var piece = game.get(square);
+            if (piece && piece.color === 'w') {
+                sourceSquare = square;
+                removeHighlights();
+                addHighlight(square);
+            } else {
+                sourceSquare = null;
+                removeHighlights();
+                $status.text("Invalid move.");
+                akingRemarks('illegal');
+            }
+            return;
+        }
+
+        board.position(game.fen());
+        sourceSquare = null;
+        removeHighlights();
+
+        if (move.captured) {
+            totalScore += pieceValues[move.captured];
+            updateGrade();
+            akingRemarks('good');
+        } else {
+            if(Math.random() > 0.7) akingRemarks('bad');
+        }
+
+        if (game.game_over()) {
+            checkGameOver();
+        } else {
+            $status.text("Nice move! Tutor Busayo is thinking...");
+            window.setTimeout(makeAIMove, 500);
+        }
+    }
+
+    function addHighlight(square) {
+        var $el = $('#board .square-' + square);
+        if ($el.hasClass('black-3c85d')) $el.addClass('highlight-black');
+        else $el.addClass('highlight-white');
+    }
+
+    function removeHighlights() {
+        $('#board [class*="square-"]').removeClass('highlight-white highlight-black');
+    }
+
+    var config = {
+        draggable: false,
+        position: 'start',
+        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+    };
+    
+    board = ChessBoard('board', config);
+
+    $('#board').on('click', '[class*="square-"]', function() {
+        var square = $(this).attr('data-square');
+        onSquareClick(square);
     });
 
-    for (let move of moves) {
-        game.move(move);
-        
-        let replies = game.moves();
-        let worstReply = -9999;
-        
-        for (let reply of replies) {
-            game.move(reply);
-            let val = evaluateBoard(game);
-            
-            // AI RESTRAINT: Penalty for moving the same piece twice before Move 6
-            if (moveCount < 6 && movedBlackPieces.has(move.from) && !move.captured) {
-                val += 25; // Massive penalty (lower is better for AI)
-            }
-            
-            if (val > worstReply) worstReply = val;
-            game.undo();
-        }
-        game.undo();
-        
-        if (worstReply < bestValue) {
-            bestValue = worstReply;
-            bestMove = move;
-        }
-    }
-    return bestMove;
-}
-
-function makeMove() {
-    removeHighlights();
-    let moveObj = getBestMove();
-    if (!moveObj) return;
-    
-    game.move(moveObj);
-    board.position(game.fen());
-    
-    let moveCount = Math.floor(game.history().length / 2);
-    let category = moveCount < 8 ? "opening" : (moveObj.captured ? "tactical" : "general");
-    let remark = REMARKS[category][Math.floor(Math.random() * REMARKS[category].length)];
-    
-    $('#tutor-comment').text('"' + remark + '"');
-}
-
-function onSquareClick(square) {
-    if (game.turn() === 'b') return;
-    if (sourceSquare === null) {
-        let piece = game.get(square);
-        if (piece && piece.color === 'w') {
-            sourceSquare = square;
-            removeHighlights();
-            $('.square-' + square).css('box-shadow', 'inset 0 0 10px 5px #4a0404');
-        }
-    } else {
-        var move = game.move({ from: sourceSquare, to: square, promotion: 'q' });
-        if (move) {
-            board.position(game.fen());
-            sourceSquare = null;
-            removeHighlights();
-            setTimeout(makeMove, 500);
-        } else {
-            sourceSquare = null;
-            removeHighlights();
-            board.position(game.fen());
-        }
-    }
-}
-
-function undoMove() { game.undo(); game.undo(); board.position(game.fen()); removeHighlights(); }
-function pieceTheme(piece) { return 'https://chessboardjs.com/img/chesspieces/wikipedia/' + piece + '.png'; }
-
-board = Chessboard('myBoard', { position: 'start', draggable: false, pieceTheme: pieceTheme });
-$(window).resize(board.resize);
-$('#myBoard').on('click', '.square-55d63', function() { onSquareClick($(this).attr('data-square')); });
+    $(window).resize(board.resize);
 </script>
 </body>
 </html>
