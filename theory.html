@@ -19,10 +19,41 @@
             --grass-green: #4caf50;
         }
 
+        /* Passkey Overlay Styles */
+        #passkey-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--navy);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+        }
+        #passkey-overlay input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #passkey-overlay button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: var(--yellow);
+            color: var(--navy);
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         body {
             font-family: 'Trebuchet MS', sans-serif;
             margin: 0;
-            background-color: var(--sky-blue); /* Brighter for kids */
+            background-color: var(--sky-blue);
             color: #333;
         }
 
@@ -59,8 +90,8 @@
 
         .main-layout {
             display: flex;
-            flex-direction: column; /* Better alignment for mobile */
-            align-items: center;    /* Centralizes the content */
+            flex-direction: column; 
+            align-items: center;    
             max-width: 1200px;
             margin: 20px auto;
             gap: 30px;
@@ -77,7 +108,7 @@
             max-width: 550px;
             background: white;
             padding: 20px;
-            border-radius: 25px; /* Rounded corners for kid-friendly look */
+            border-radius: 25px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             text-align: center;
             border: 4px solid var(--navy);
@@ -90,6 +121,8 @@
             border-radius: 10px;
             box-sizing: border-box;
         }
+        /* Highlight for click-to-move */
+        .highlight-square { box-shadow: inset 0 0 3px 3px yellow; }
 
         .controls { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
         
@@ -99,7 +132,7 @@
             border: none;
             padding: 12px 24px;
             cursor: pointer;
-            border-radius: 50px; /* Bubble buttons */
+            border-radius: 50px; 
             font-weight: bold;
             box-shadow: 0 4px var(--wine);
             transition: 0.2s;
@@ -114,7 +147,7 @@
         }
 
         .chapter-title {
-            background: var(--grass-green); /* Energetic color */
+            background: var(--grass-green); 
             color: white;
             padding: 12px 20px;
             margin: 10px 0;
@@ -170,6 +203,13 @@
 </head>
 <body>
 
+<div id="passkey-overlay">
+    <h2>Nobility Academy Classroom</h2>
+    <p>Please enter the secret passkey to enter:</p>
+    <input type="password" id="passkey-input" placeholder="Enter Passkey">
+    <button onclick="checkPasskey()">Enter Classroom</button>
+</div>
+
 <header>
     <h1>Nobility Interactive Hall</h1>
     <p>Academy of Mr. Adekunle Busayo</p>
@@ -185,7 +225,7 @@
     <section id="board-section">
         <div id="myBoard"></div>
         <div class="controls">
-            <button class="btn-tool" onclick="board.start()">🔄 Reset</button>
+            <button class="btn-tool" onclick="resetBoard()">🔄 Reset</button>
             <button class="btn-tool" onclick="board.flip()">🔃 Flip Board</button>
         </div>
         <p id="topic-display" style="font-size: 1.2rem; font-weight: bold; color: var(--wine); margin-top: 15px;">Topic: Standard Start</p>
@@ -251,15 +291,63 @@
 </footer>
 
 <script>
-    var board = Chessboard('myBoard', {
-        draggable: true,
-        dropOffBoard: 'snapback',
+    // Logic for the passkey
+    function checkPasskey() {
+        const input = document.getElementById('passkey-input').value;
+        if (input === '1122') {
+            document.getElementById('passkey-overlay').style.display = 'none';
+        } else {
+            alert('Incorrect passkey! Please try again.');
+        }
+    }
+
+    // Click-to-move Logic
+    var sourceSquare = null;
+
+    function onSquareClick(square) {
+        // If there's no source square yet, select the clicked square
+        if (sourceSquare === null) {
+            sourceSquare = square;
+            $('#myBoard .square-' + square).addClass('highlight-square');
+            return;
+        }
+
+        // Move the piece from source to the clicked square
+        var move = sourceSquare + '-' + square;
+        board.move(move);
+
+        // Reset highlight and source
+        $('#myBoard .square-55d6').removeClass('highlight-square');
+        sourceSquare = null;
+        $('.square-55d6').removeClass('highlight-square'); 
+        removeHighlights();
+    }
+
+    function removeHighlights() {
+        $('#myBoard .square-55d6').removeClass('highlight-square');
+        // Clean all highlights manually by class if needed
+        $('[class*="square-"]').removeClass('highlight-square');
+    }
+
+    function resetBoard() {
+        board.start();
+        removeHighlights();
+        sourceSquare = null;
+    }
+
+    var config = {
+        draggable: false, // DRAG DISABLED
         position: 'start',
+        onSquareClick: onSquareClick, // ENABLE CLICK
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
-    });
+    };
+
+    var board = Chessboard('myBoard', config);
 
     function loadPos(fen, title, btn) {
         board.position(fen);
+        removeHighlights();
+        sourceSquare = null;
         document.getElementById('topic-display').innerText = "Topic: " + title;
 
         var allContent = document.getElementsByClassName("content");
@@ -268,7 +356,6 @@
         }
         btn.nextElementSibling.classList.add("active-content");
         
-        // Auto-scroll to board on mobile when a topic is clicked
         if (window.innerWidth < 900) {
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
